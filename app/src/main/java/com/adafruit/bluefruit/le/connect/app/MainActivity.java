@@ -78,6 +78,7 @@ import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 
 // Testing our first commit
+// Testing our fist commit to preview branch
 
 public class MainActivity extends AppCompatActivity implements BleManager.BleManagerListener, BleUtils.ResetBluetoothAdapterListener, FirmwareUpdater.FirmwareUpdaterListener {
     // Constants
