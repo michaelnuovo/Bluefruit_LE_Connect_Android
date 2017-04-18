@@ -44,6 +44,7 @@ import com.google.android.gms.location.LocationServices;
 import java.nio.ByteBuffer;
 
 public class ControllerActivity extends UartInterfaceActivity implements SensorEventListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
     // Config
     private final static boolean kKeepUpdatingParentValuesInChildActivities = true;
 
@@ -89,12 +90,13 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
     private float[] mOrientation = new float[3];
     private float[] mQuaternion = new float[4];
 
-    private DataFragment mRetainedDataFragment;
+    private DataFragment mRetainedDataFragment; // Inner class that extends Fragment see line 568
 
     private boolean isSensorPollingEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
 

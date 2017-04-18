@@ -271,6 +271,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
                 return;
             }
 
+            // See BleGattExecutor
             mExecutor.enableIndication(service, uuid, enabled);
             mExecutor.execute(mGatt);
         }

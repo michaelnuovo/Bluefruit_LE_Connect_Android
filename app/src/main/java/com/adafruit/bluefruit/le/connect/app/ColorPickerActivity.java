@@ -30,11 +30,11 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
     private final static int kFirstTimeColor = 0x0000ff;
 
     // UI
-    private ColorPicker mColorPicker;
-    private View mRgbColorView;
-    private TextView mRgbTextView;
+    private ColorPicker mColorPicker; // The circular hue selector
+    private View mRgbColorView; // The rectangular color display
+    private TextView mRgbTextView; // Text view displaying RGB values of selected color
 
-    private int mSelectedColor;
+    private int mSelectedColor; // The int value of the selected color
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,8 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
         mColorPicker = (ColorPicker) findViewById(R.id.colorPicker);
-        if (mColorPicker != null) {
+
+        if (mColorPicker != null) { // Prevents null reference error?
             mColorPicker.addSaturationBar(mSaturationBar);
             mColorPicker.addValueBar(mValueBar);
             mColorPicker.setOnColorChangedListener(this);
@@ -161,6 +162,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
 
     @Override
     public void onColorChanged(int color) {
+
         // Save selected color
         mSelectedColor = color;
 

@@ -80,7 +80,14 @@ import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 // Testing our first commit
 // Testing our fist commit to preview branch
 
-public class MainActivity extends AppCompatActivity implements BleManager.BleManagerListener, BleUtils.ResetBluetoothAdapterListener, FirmwareUpdater.FirmwareUpdaterListener {
+public class MainActivity extends AppCompatActivity implements
+
+        // Interfaces
+
+        BleManager.BleManagerListener, // see "ble" package
+        BleUtils.ResetBluetoothAdapterListener, // ble.BleUtils
+        FirmwareUpdater.FirmwareUpdaterListener { // com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
+
     // Constants
     private final static String TAG = MainActivity.class.getSimpleName();
     private final static long kMinDelayToUpdateUI = 200;    // in milliseconds
@@ -92,15 +99,25 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
     private final static String kPreferences = "MainActivity_prefs";
     private final static String kPreferences_filtersPanelOpen = "filtersPanelOpen";
 
-    // Components
+    // Components string IDs are of type int
+    // see showChooseDeviceServiceDialog line 651 (ctr + G in windows)
     private final static int kComponentsNameIds[] = {
-            R.string.scan_connectservice_info,
-            R.string.scan_connectservice_uart,
-            R.string.scan_connectservice_pinio,
-            R.string.scan_connectservice_controller,
-            R.string.scan_connectservice_beacon,
-            R.string.scan_connectservice_neopixel,
+            //R.string.scan_connectservice_info,       // Info
+            R.string.scan_connectservice_uart,       // UART
+            //R.string.scan_connectservice_pinio,      // Pin I/O
+            R.string.scan_connectservice_controller, // Controller
+            //R.string.scan_connectservice_beacon,     // Beacon
+            //R.string.scan_connectservice_neopixel,   // Neopixel
     };
+
+    /**
+     *     <string name="scan_connectservice_info">Info</string>
+     <string name="scan_connectservice_uart">UART</string>
+     <string name="scan_connectservice_pinio">Pin I/O</string>
+     <string name="scan_connectservice_controller">Controller</string>
+     <string name="scan_connectservice_beacon">Beacon</string>
+     <string name="scan_connectservice_neopixel">Neopixel</string>
+     */
 
     // Activity request codes (used for onActivityResult)
     private static final int kActivityRequestCode_EnableBluetooth = 1;
@@ -114,7 +131,9 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
     private long mLastUpdateMillis;
     private TextView mNoDevicesTextView;
     private ScrollView mDevicesScrollView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout; // The SwipeRefreshLayout should be used whenever
+                                                    // the user can refresh the contents of a view via
+                                                    // a vertical swipe gesture.
 
     private AlertDialog mConnectingDialog;
     private View mFiltersPanelView;
@@ -122,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
     private ImageButton mFiltersClearButton;
     private TextView mFiltersTitleTextView;
     private EditText mFiltersNameEditText;
-    private SeekBar mFiltersRssiSeekBar;
+    private SeekBar mFiltersRssiSeekBar; // A SeekBar is an extension of ProgressBar that adds a draggable thumb.
     private TextView mFiltersRssiValueTextView;
     private CheckBox mFiltersUnnamedCheckBox;
     private CheckBox mFiltersUartCheckBox;
@@ -144,8 +163,11 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         // Init variables
         mBleManager = BleManager.getInstance(this);
@@ -171,21 +193,36 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
         mDevicesScrollView.setVisibility(View.GONE);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+
+        // Sets a listener that detects a swipe movement.
         mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
+
+                /**
+                 * mScannedDevices is of type ArrayList<BluetoothDeviceData>
+                 * BluetoothDeviceData is an inner class on line 1324
+                 * GOTO line : command + L
+                 * BluetoothDeviceData is a wrapper class that contains a reference to a bluetooth
+                 * device and it's information such as name, etc...
+                 */
                 mScannedDevices.clear();
+
+
                 startScan(null);
 
+                // Calls postDelayed method and passes it a Runnable.
+                // Runnable is executed 500 milliseconds later.
                 mSwipeRefreshLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        // If the listener determines there should not be a refresh, it must call
+                        // setRefreshing(false) to cancel any visual indication of a refresh
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }, 500);
             }
         });
-
 
         mFiltersPanelView = findViewById(R.id.filtersExpansionView);
         mFiltersExpandImageView = (ImageView) findViewById(R.id.filtersExpandImageView);
@@ -206,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
+
         mFiltersRssiSeekBar = (SeekBar) findViewById(R.id.filtersRssiSeekBar);
         mFiltersRssiSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -226,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
 
             }
         });
+
         mFiltersRssiValueTextView = (TextView) findViewById(R.id.filtersRssiValueTextView);
         mFiltersUnnamedCheckBox = (CheckBox) findViewById(R.id.filtersUnnamedCheckBox);
         mFiltersUnnamedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -235,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
                 updateFilters();
             }
         });
+
         mFiltersUartCheckBox = (CheckBox) findViewById(R.id.filtersUartCheckBox);
         mFiltersUartCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -609,14 +649,27 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
         }
     }
 
+    // We choose one bluetooth device, and then we choose which component we want to connect with
     private void showChooseDeviceServiceDialog(final BluetoothDeviceData deviceData) {
-        // Prepare dialog
+
+        // Get an AlterDialog box builder object
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Get a string to use as a title for the dialog box
         String title = String.format(getString(R.string.scan_connectto_dialog_title_format), deviceData.getNiceName());
+
+        // Creates an array items of length kComponentsNameIds.length
         String[] items = new String[kComponentsNameIds.length];
+
+        // Populates the array with string value corresponding to the string IDs
         for (int i = 0; i < kComponentsNameIds.length; i++)
             items[i] = getString(kComponentsNameIds[i]);
 
+        // Method chain
+        // Set the title on the builder
+        // Set list items
+        // Pass in an event listener to be set on items
+        // Set the component activity to start
         builder.setTitle(title)
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -1090,6 +1143,7 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
     // endregion
 
     private void launchComponentActivity() {
+
         // Enable generic attribute service
         final BluetoothGattService genericAttributeService = mBleManager.getGattService(kGenericAttributeService);
         if (genericAttributeService != null) {
@@ -1214,7 +1268,9 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
 
     // region SoftwareUpdateManagerListener
     @Override
-    public void onFirmwareUpdatesChecked(boolean isUpdateAvailable, final ReleasesParser.FirmwareInfo latestRelease, FirmwareUpdater.DeviceInfoData deviceInfoData, Map<String, ReleasesParser.BoardInfo> allReleases) {
+    public void onFirmwareUpdatesChecked(boolean isUpdateAvailable, final ReleasesParser.FirmwareInfo
+            latestRelease, FirmwareUpdater.DeviceInfoData deviceInfoData, Map<String,
+            ReleasesParser.BoardInfo> allReleases) {
         mBleManager.setBleListener(this);           // Restore listener
 
         if (isUpdateAvailable) {
@@ -1311,8 +1367,25 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
 
     // region Helpers
     private class BluetoothDeviceData {
+
+        /**
+         * BluetoothDevice represents a remote Bluetooth device. A BluetoothDevice lets you create a connection with
+         * the respective device or query information about it, such as the name, address, class,
+         * and bonding state. This class is really just a thin wrapper for a Bluetooth hardware
+         * address. Objects of this class are immutable. Operations on this class are performed on
+         * the remote Bluetooth hardware address, using the BluetoothAdapter that was used to create
+         * this BluetoothDevice. To get a BluetoothDevice, use BluetoothAdapter.getRemoteDevice(String)
+         * to create one representing a device of a known MAC address (which you can get through
+         * device discovery with BluetoothAdapter) or get one from the set of bonded devices
+         * returned by BluetoothAdapter.getBondedDevices(). You can then open a BluetoothSocket for
+         * communication with the remote device, using createRfcommSocketToServiceRecord(UUID).
+         */
         BluetoothDevice device;
-        public int rssi;
+
+        public int rssi; // RSSI (Received Signal Strength Indicator) is a common name for the
+                         // signal strength in a wireless network environment. It is a measure of
+                         // the power level that a RF client device is receiving from an access
+                         // point, for example.
         byte[] scanRecord;
         private String advertisedName;           // Advertised name
         private String cachedNiceName;
@@ -1332,7 +1405,8 @@ public class MainActivity extends AppCompatActivity implements BleManager.BleMan
             if (cachedName == null) {
                 cachedName = device.getName();
                 if (cachedName == null) {
-                    cachedName = advertisedName;      // Try to get a name (but it seems that if device.getName() is null, this is also null)
+                    cachedName = advertisedName;      // Try to get a name (but it seems that if
+                                                    // device.getName() is null, this is also null)
                 }
             }
 
