@@ -103,6 +103,8 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controller);
 
+
+
         //Log.d(TAG, "onCreate");
 
         mBleManager = BleManager.getInstance(this);

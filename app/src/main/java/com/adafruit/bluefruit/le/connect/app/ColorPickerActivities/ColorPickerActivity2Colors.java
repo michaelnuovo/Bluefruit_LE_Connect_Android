@@ -18,47 +18,47 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 public class ColorPickerActivity2Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
+
     // Log
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
 
     // Constants
-//    private final static boolean kPersistValues = true;
-    private final static String kPreferences = "ColorPickerActivity_prefs";
-    private final static String kPreferences_color = "color";
-
-    private final static int kFirstTimeColor = 0x0000ff;
+    private final static String classPrefs = ColorPickerActivity2Colors.class.getName();
     private final static int defaultColor = 0x0000ff;
 
-    // UI
-    private ColorPicker mColorPicker; // The circular hue selector
-    private View mRgbColorView1; // The rectangular color display
-    private View mRgbColorView2;
-    private TextView mRgbTextView1; // Text view displaying RGB values of selected color
-    private TextView mRgbTextView2;
+    // Widgets
+    private ColorPicker mColorPicker; // This is the color wheel widget
+    private ViewHolder viewHolder = new ViewHolder(); // A view holder for the color views
 
-    private int mSelectedColor;
-    private String mySelectedView;
+    // Data
+    int currentSelectedColor; // The current selected color of the color wheel
 
-    private int mSelectedColor1; // The int value of the selected color
-    private int mSelectedColor2;
+    // View holder class
+    private class ViewHolder {
+        private View mRgbColorView1; // This will be the default color view if there is no default
+        private View mRgbColorView2;
+        private TextView mRgbTextView1; // This will be the default text view if there is no default
+        private TextView mRgbTextView2;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker_2colors);
 
         mBleManager = BleManager.getInstance(this);
 
         // UI
-        mRgbColorView1 = findViewById(R.id.rgbColorView1);
-        mRgbColorView2 = findViewById(R.id.rgbColorView2);
+        viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorView1);
+        viewHolder.mRgbColorView2 = findViewById(R.id.rgbColorView2);
 
-
-        mRgbTextView1 = (TextView) findViewById(R.id.rgbTextView1);
-        mRgbTextView2 = (TextView) findViewById(R.id.rgbTextView2);
+        viewHolder.mRgbTextView1 = (TextView) findViewById(R.id.rgbTextView1);
+        viewHolder.mRgbTextView2 = (TextView) findViewById(R.id.rgbTextView2);
 
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
@@ -70,40 +70,137 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
             mColorPicker.setOnColorChangedListener(this);
         }
 
-        // Shared preferences
+        // Sets the defaults the FIRST time the activity opens
+        saveDefaultColor();
+        saveDefaultColorView();
+        saveDefaultText();
+        saveDefaultTextView();
 
-        SharedPreferences preferences = getSharedPreferences(kPreferences, Context.MODE_PRIVATE);
-        mSelectedColor1 = preferences.getInt(kPreferences_color, kFirstTimeColor); // kFirstTimeColor is the default value to return
+        // Sets background colors and text to their defaults EVERY time the activity opens
+        setBackgroundColors();
+        setText();
 
-        mySelectedView = preferences.getString(mySelectedView, ""); // default return value is an empty string
-        mSelectedColor = preferences.getInt(mySelectedView, defaultColor); // if mySelectedView is an empty string, the default color will be returned
+        int defaultColor = returnDefaultColor();
+        mColorPicker.setOldCenterColor(defaultColor);
+        mColorPicker.setColor(defaultColor); // Sets position of color wheel
 
+        Log.v("TAG","default color here is "+String.valueOf(defaultColor));
 
+        onColorChanged(defaultColor); // Sets the text and color in the interface method
 
-        mColorPicker.setOldCenterColor(mSelectedColor);
-        mColorPicker.setColor(mSelectedColor);
-        onColorChanged(mSelectedColor);
+        onServicesDiscovered(); // Start services
 
-        // Start services
-        onServicesDiscovered();
+        setClickListeners();
     }
 
-    private class mView {
-
-        String ID;
-        int color;
-
+    private void setBackgroundColors(){
 
     }
+
+    private void setText(){
+
+    }
+
+    private void setClickListeners(){
+        setListener(viewHolder.mRgbColorView1);
+        setListener(viewHolder.mRgbColorView2);
+    }
+
+    private void setListener(View colorView){
+        colorView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                Log.v("TAG","Click event handled");
+            }
+        });
+    }
+
+    private void saveDefaultColorView(){
+        int viewId = loadFromPreferences("defaultColorView");
+        if(viewId == -1)
+            saveToPreferences("defaultColorView", viewHolder.mRgbColorView1.getId());
+
+    }
+
+    private View returnDefaultColorView(){
+        int viewId = loadFromPreferences("defaultColorView");
+        return findViewById(viewId);
+    }
+
+    private void saveDefaultColor(){
+        int colorVal = loadFromPreferences("defaultColor");
+        if(colorVal == -1)
+            saveToPreferences("defaultColor", 0x0000FF);
+        Log.v("TAG","colorVal is "+String.valueOf(colorVal));
+    }
+
+    private void saveDefaultColor(int color){
+        saveToPreferences("defaultColor", color);
+    }
+
+    private int returnDefaultColor(){
+        int colorVal = loadFromPreferences("defaultColor");
+        return colorVal;
+    }
+
+    private void saveDefaultTextView(){
+        int viewId = loadFromPreferences("defaultTextView");
+        if(viewId == -1)
+            saveToPreferences("defaultTextView", viewHolder.mRgbTextView1.getId());
+    }
+
+    private void saveDefaultText(){
+        int colorVal = loadFromPreferences("defaultText");
+        if(colorVal == -1)
+            saveToPreferences("defaultText", defaultColor);
+    }
+
+    private TextView returnDefaultTextView(){
+        int viewId = loadFromPreferences("defaultTextView");
+        return (TextView) findViewById(viewId);
+    }
+
+    private void saveToPreferences(String stringHandle, int intVal){
+        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(stringHandle, intVal);
+        editor.apply();
+    }
+
+    private int loadFromPreferences(String stringHandle){
+        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
+        return preferences.getInt(stringHandle,-1);
+    }
+
+    // This method is called when the color on the color wheel (color picker) is changed
+    @Override
+    public void onColorChanged(int color) {
+
+        final int r = (color >> 16) & 0xFF;
+        final int g = (color >> 8) & 0xFF;
+        final int b = (color >> 0) & 0xFF;
+
+        final String text = String.format(getString(R.string.colorpicker_rgbformat), r, g, b);
+
+        Log.v("TAG","text is "+text);
+
+        currentSelectedColor = color;
+
+        View colorView = returnDefaultColorView();
+        colorView.setBackgroundColor(color);
+
+        TextView textView = returnDefaultTextView();
+        textView.setText(text);
+    }
+
+
 
     @Override
     public void onStop() {
-        // Preserve values
-
-            SharedPreferences settings = getSharedPreferences(kPreferences, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putInt(kPreferences_color, mSelectedColor1);
-            editor.apply();
+        // If the user selects a new colorView and closes the activity we need to save the
+        // currentSelectedColor as the defaultColor so that when the activity is re-opened
+        // the currentSelectedColor will be set as the default color.
+        saveDefaultColor(currentSelectedColor);
 
         super.onStop();
     }
@@ -147,30 +244,14 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
         finish();
     }
 
-    @Override
-    public void onColorChanged(int color) {
-
-        // Save selected color
-        mSelectedColor1 = color;
-
-        // Update UI
-        mRgbColorView1.setBackgroundColor(color);
-
-        final int r = (color >> 16) & 0xFF;
-        final int g = (color >> 8) & 0xFF;
-        final int b = (color >> 0) & 0xFF;
-        final String text = String.format(getString(R.string.colorpicker_rgbformat), r, g, b);
-        mRgbTextView1.setText(text);
-    }
-
     public void onClickSend(View view) {
         // Set the old color
-        mColorPicker.setOldCenterColor(mSelectedColor1);
+        mColorPicker.setOldCenterColor(currentSelectedColor);
 
         // Send selected color !Crgb
-        byte r = (byte) ((mSelectedColor1 >> 16) & 0xFF);
-        byte g = (byte) ((mSelectedColor1 >> 8) & 0xFF);
-        byte b = (byte) ((mSelectedColor1 >> 0) & 0xFF);
+        byte r = (byte) ((currentSelectedColor >> 16) & 0xFF);
+        byte g = (byte) ((currentSelectedColor >> 8) & 0xFF);
+        byte b = (byte) ((currentSelectedColor >> 0) & 0xFF);
 
         ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 

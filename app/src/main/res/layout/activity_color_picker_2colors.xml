@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#f0ff">
+        >
 
         <com.larswerkman.holocolorpicker.ColorPicker
             android:id="@+id/colorPicker"
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="#f00f">
+            >
 
             <!-- color view 1 -->
             <LinearLayout
@@ -47,7 +47,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#ff0fff">
+                >
 
                 <TextView
                     android:id="@+id/rgbTextView1"
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_margin="5dp"
                     android:layout_height="75dp"
-                    android:background="#ff0000" />
+                    />
 
             </LinearLayout>
 
@@ -73,7 +73,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="#f0ff0f">
+                >
 
                 <TextView
                     android:id="@+id/rgbTextView2"
@@ -89,7 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_margin="5dp"
                     android:layout_height="75dp"
-                    android:background="#00ff0f" />
+                     />
 
             </LinearLayout>
 
