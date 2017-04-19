@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.connect.app;
+package com.adafruit.bluefruit.le.connect.app.ColorPickerActivities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
@@ -18,9 +20,9 @@ import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
 
-public class ColorPickerActivity extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
+public class ColorPickerActivity1Color extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
-    private final static String TAG = ColorPickerActivity.class.getSimpleName();
+    private final static String TAG = ColorPickerActivity1Color.class.getSimpleName();
 
     // Constants
     private final static boolean kPersistValues = true;
@@ -39,7 +41,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_color_picker);
+        setContentView(R.layout.activity_color_picker_1color);
 
         mBleManager = BleManager.getInstance(this);
 
@@ -188,7 +190,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
         // prefix
-        String prefix = "!C"; // C is color
+        String prefix = "!C";
         buffer.put(prefix.getBytes());
 
         // values
@@ -200,5 +202,3 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         sendDataWithCRC(result);
     }
 }
-
-

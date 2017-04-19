@@ -124,6 +124,7 @@
             android:name=".app.BeaconActivity"
             android:label="@string/title_activity_beacon"
             android:windowSoftInputMode="stateVisible|adjustPan" />
+
         <activity
             android:name=".app.ColorPickerActivity"
             android:label="@string/title_activity_color_picker"
@@ -132,6 +133,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.adafruit.bluefruit.le.connect.app.ControllerActivity" />
         </activity>
+
         <activity
             android:name=".app.settings.MqttUartSettingsActivity"
             android:label="@string/title_activity_mqtt"
@@ -174,6 +176,32 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity" />
+        </activity>
+
+        <!-- Michael's Activities -->
+        <activity
+            android:name=".app.ColorPickerActivities.ColorPickerActivity1Color"
+            android:label="@string/title_activity_color_picker"
+            android:parentActivityName=".app.ControllerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.adafruit.bluefruit.le.connect.app.ControllerActivity" />
+        </activity>
+        <activity
+            android:name=".app.ColorPickerActivities.ColorPickerActivity2Colors"
+            android:label="@string/title_activity_color_picker"
+            android:parentActivityName=".app.ControllerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.adafruit.bluefruit.le.connect.app.ControllerActivity" />
+        </activity>
+        <activity
+            android:name=".app.ColorPickerActivities.ColorPickerActivity4Colors"
+            android:label="@string/title_activity_color_picker"
+            android:parentActivityName=".app.ControllerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.adafruit.bluefruit.le.connect.app.ControllerActivity" />
         </activity>
 
     </application>

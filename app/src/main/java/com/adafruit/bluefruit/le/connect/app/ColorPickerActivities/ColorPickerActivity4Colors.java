@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.connect.app;
+package com.adafruit.bluefruit.le.connect.app.ColorPickerActivities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
@@ -18,9 +20,9 @@ import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
 
-public class ColorPickerActivity extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
+public class ColorPickerActivity4Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
-    private final static String TAG = ColorPickerActivity.class.getSimpleName();
+    private final static String TAG = ColorPickerActivity4Colors.class.getSimpleName();
 
     // Constants
     private final static boolean kPersistValues = true;
@@ -31,21 +33,21 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
 
     // UI
     private ColorPicker mColorPicker; // The circular hue selector
-    private View mRgbColorView; // The rectangular color display
-    private TextView mRgbTextView; // Text view displaying RGB values of selected color
+    private View mRgbColorView1; // The rectangular color display
+    private TextView mRgbTextView1; // Text view displaying RGB values of selected color
 
     private int mSelectedColor; // The int value of the selected color
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_color_picker);
+        setContentView(R.layout.activity_color_picker_4colors);
 
         mBleManager = BleManager.getInstance(this);
 
         // UI
-        mRgbColorView = findViewById(R.id.rgbColorView);
-        mRgbTextView = (TextView) findViewById(R.id.rgbTextView);
+        mRgbColorView1 = findViewById(R.id.rgbColorView1);
+        mRgbTextView1 = (TextView) findViewById(R.id.rgbTextView1);
 
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
@@ -167,13 +169,13 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         mSelectedColor = color;
 
         // Update UI
-        mRgbColorView.setBackgroundColor(color);
+        mRgbColorView1.setBackgroundColor(color);
 
         final int r = (color >> 16) & 0xFF;
         final int g = (color >> 8) & 0xFF;
         final int b = (color >> 0) & 0xFF;
         final String text = String.format(getString(R.string.colorpicker_rgbformat), r, g, b);
-        mRgbTextView.setText(text);
+        mRgbTextView1.setText(text);
     }
 
     public void onClickSend(View view) {
@@ -188,7 +190,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
         // prefix
-        String prefix = "!C"; // C is color
+        String prefix = "!C";
         buffer.put(prefix.getBytes());
 
         // values
@@ -200,5 +202,3 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         sendDataWithCRC(result);
     }
 }
-
-

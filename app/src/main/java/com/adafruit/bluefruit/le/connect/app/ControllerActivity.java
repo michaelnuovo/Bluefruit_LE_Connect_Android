@@ -30,6 +30,9 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity1Color;
+import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity4Colors;
 import com.adafruit.bluefruit.le.connect.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.adafruit.bluefruit.le.connect.ui.utils.ExpandableHeightExpandableListView;
@@ -107,25 +110,93 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
 
         // UI
         mControllerListView = (ExpandableHeightExpandableListView) findViewById(R.id.controllerListView);
-        mControllerListAdapter = new ExpandableListAdapter(this, mSensorData);
+
+        mControllerListAdapter = new ExpandableListAdapter(this, mSensorData); // Expandable list adapter takes sensor data as a SensorData[] type array
         mControllerListView.setAdapter(mControllerListAdapter);
         mControllerListView.setExpanded(true);
 
+
+        // Get the interface list view
         ExpandableHeightListView interfaceListView = (ExpandableHeightListView) findViewById(R.id.interfaceListView);
-        ArrayAdapter<String> interfaceListAdapter = new ArrayAdapter<>(this, R.layout.layout_controller_interface_title, R.id.titleTextView, getResources().getStringArray(R.array.controller_interface_items));
+
+        // Get an array adapter to populate the interface list view
+        ArrayAdapter<String> interfaceListAdapter = new ArrayAdapter<>(this,
+                R.layout.layout_controller_interface_title, R.id.titleTextView,
+                //getResources().getStringArray(R.array.controller_interface_items));
+                new String[]{
+                        "One Color",
+                        "Two Colors",
+                        "Four Colors",
+                        "Pad"});
+
+        Log.v("TAG","");
+
+        // Assert that the interface list view is not null
         assert interfaceListView != null;
+
+        // Set the array adapter to the interface list view
         interfaceListView.setAdapter(interfaceListAdapter);
+
+        // Set expanded to true
         interfaceListView.setExpanded(true);
+
+        // Set a click listener on the interface list view
         interfaceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+//                Log.v("TAG","Position is before switch is "+String.valueOf(position));
+//                Intent intent;
+//                switch (position) {
+//                    case 1: position = 0;
+//                        Log.v("TAG","Position is "+String.valueOf(position));
+//                        intent = new Intent(ControllerActivity.this, ColorPickerActivity.class);
+//                        startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+//                        break;
+//                    case 2: position = 1;
+//                        Log.v("TAG","Position is "+String.valueOf(position));
+//                        intent = new Intent(ControllerActivity.this, ColorPickerActivity.class);
+//                        startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+//                        break;
+//                    case 3: position = 2;
+//                        Log.v("TAG","Position is "+String.valueOf(position));
+//                        intent = new Intent(ControllerActivity.this, ColorPickerActivity.class);
+//                        startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+//                        break;
+//                    case 4: position = 3;
+//                        Log.v("TAG","Position is "+String.valueOf(position));
+//                        intent = new Intent(ControllerActivity.this, PadActivity.class);
+//                        startActivityForResult(intent, kActivityRequestCode_PadActivity);
+//                        break;
+//                }
+
+
+//                if (position == 0) {
+//                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity.class);
+//                    startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+//                } else {
+//                    Intent intent = new Intent(ControllerActivity.this, PadActivity.class);
+//                    startActivityForResult(intent, kActivityRequestCode_PadActivity);
+//                }
+
                 if (position == 0) {
-                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity.class);
+                    //Log.v("TAG","Position is "+String.valueOf(position));
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity1Color.class);
+                    startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+                } else if (position == 1) {
+                    //Log.v("TAG","Position is "+String.valueOf(position));
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity2Colors.class);
+                    startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+                } else if (position == 2) {
+                    //Log.v("TAG","Position is "+String.valueOf(position));
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity4Colors.class);
                     startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
                 } else {
+                    //Log.v("TAG","Position is "+String.valueOf(position));
                     Intent intent = new Intent(ControllerActivity.this, PadActivity.class);
                     startActivityForResult(intent, kActivityRequestCode_PadActivity);
                 }
+
             }
         });
 
@@ -232,6 +303,16 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
         @Override
         public void run() {
             final String[] prefixes = {"!Q", "!A", "!G", "!M", "!L"};     // same order that kSensorType
+
+            // G is gyro
+            // A is accelerometer
+            // Q quaternion
+            // B is for buttons
+            // C is for the color
+            // L is for the location
+
+            // Stick another letter in there "T" for text rather than using UART mode
+            // and we can usurp the entire window from UART mode and use it in Controller mode
 
             for (int i = 0; i < mSensorData.length; i++) {
                 SensorData sensorData = mSensorData[i];
