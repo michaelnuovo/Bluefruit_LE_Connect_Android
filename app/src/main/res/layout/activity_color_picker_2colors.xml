@@ -49,14 +49,14 @@
                 android:orientation="vertical"
                 >
 
-                <TextView
-                    android:id="@+id/rgbTextView1"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/colorpicker_rgbformat"
-                    android:textColor="#ffffff" />
+                <!--<TextView-->
+                    <!--android:id="@+id/rgbTextView1"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="10dp"-->
+                    <!--android:text="@string/colorpicker_rgbformat"-->
+                    <!--android:textColor="#ffffff" />-->
 
                 <View
                     android:id="@+id/rgbColorView1"
@@ -75,14 +75,14 @@
                 android:orientation="vertical"
                 >
 
-                <TextView
-                    android:id="@+id/rgbTextView2"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/colorpicker_rgbformat"
-                    android:textColor="#ffffff" />
+                <!--<TextView-->
+                    <!--android:id="@+id/rgbTextView2"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="10dp"-->
+                    <!--android:text="@string/colorpicker_rgbformat"-->
+                    <!--android:textColor="#ffffff" />-->
 
                 <View
                     android:id="@+id/rgbColorView2"
