@@ -54,7 +54,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adafruit.bluefruit.le.connect.R;
-import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(MainActivity.this, ColorPickerActivity2Colors.class);
+        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
         startActivityForResult(intent, 2);
 
         // Init variables

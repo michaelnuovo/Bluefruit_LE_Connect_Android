@@ -30,9 +30,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.adafruit.bluefruit.le.connect.R;
-import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity1Color;
-import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity2Colors;
-import com.adafruit.bluefruit.le.connect.app.ColorPickerActivities.ColorPickerActivity4Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.adafruit.bluefruit.le.connect.ui.utils.ExpandableHeightExpandableListView;
@@ -126,6 +127,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                 R.layout.layout_controller_interface_title, R.id.titleTextView,
                 //getResources().getStringArray(R.array.controller_interface_items));
                 new String[]{
+                        "Terminal",
                         "One Color",
                         "Two Colors",
                         "Four Colors",
@@ -183,13 +185,17 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
 
                 if (position == 0) {
                     //Log.v("TAG","Position is "+String.valueOf(position));
-                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity1Color.class);
+                    Intent intent = new Intent(ControllerActivity.this, TerminalActivity.class);
                     startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
                 } else if (position == 1) {
                     //Log.v("TAG","Position is "+String.valueOf(position));
-                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity2Colors.class);
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity1Color.class);
                     startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
                 } else if (position == 2) {
+                    //Log.v("TAG","Position is "+String.valueOf(position));
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity2Colors.class);
+                    startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+                } else if (position == 3) {
                     //Log.v("TAG","Position is "+String.valueOf(position));
                     Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity4Colors.class);
                     startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
@@ -304,7 +310,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
     private Runnable mPeriodicallySendData = new Runnable() {
         @Override
         public void run() {
-            final String[] prefixes = {"!Q", "!A", "!G", "!M", "!L"};     // same order that kSensorType
+            final String[] prefixes = {"!Q", "!A", "!G", "!M", "!L"};     // same order that kSensorType, G
 
             // G is gyro
             // A is accelerometer
@@ -324,7 +330,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
 
                     // prefix
                     String prefix = prefixes[sensorData.sensorType];
-                    buffer.put(prefix.getBytes());
+                    buffer.put(prefix.getBytes()); // Converts string into bytes, and puts them in the buffer
 
                     // values
                     for (int j = 0; j < sensorData.values.length; j++) {
@@ -333,7 +339,8 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
 
                     byte[] result = buffer.array();
                     Log.d(TAG, "Send data for sensor: " + i);
-                    sendDataWithCRC(result);
+
+                    sendDataWithCRC(result); // CRC means cyclic redundancy code, maybe checks for checksum
                 }
             }
 

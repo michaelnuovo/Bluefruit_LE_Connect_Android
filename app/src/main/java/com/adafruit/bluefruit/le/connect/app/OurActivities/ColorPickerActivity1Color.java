@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.connect.app.ColorPickerActivities;
+package com.adafruit.bluefruit.le.connect.app.OurActivities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +20,9 @@ import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
 
-public class ColorPickerActivity4Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
+public class ColorPickerActivity1Color extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
-    private final static String TAG = ColorPickerActivity4Colors.class.getSimpleName();
+    private final static String TAG = ColorPickerActivity1Color.class.getSimpleName();
 
     // Constants
     private final static boolean kPersistValues = true;
@@ -33,21 +33,21 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
 
     // UI
     private ColorPicker mColorPicker; // The circular hue selector
-    private View mRgbColorView1; // The rectangular color display
-    private TextView mRgbTextView1; // Text view displaying RGB values of selected color
+    private View mRgbColorView; // The rectangular color display
+    private TextView mRgbTextView; // Text view displaying RGB values of selected color
 
     private int mSelectedColor; // The int value of the selected color
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_color_picker_4colors);
+        setContentView(R.layout.activity_color_picker_1color);
 
         mBleManager = BleManager.getInstance(this);
 
         // UI
-        mRgbColorView1 = findViewById(R.id.rgbColorView1);
-        mRgbTextView1 = (TextView) findViewById(R.id.rgbTextView1);
+        mRgbColorView = findViewById(R.id.rgbColorView);
+        mRgbTextView = (TextView) findViewById(R.id.rgbTextView);
 
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
@@ -169,13 +169,13 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         mSelectedColor = color;
 
         // Update UI
-        mRgbColorView1.setBackgroundColor(color);
+        mRgbColorView.setBackgroundColor(color);
 
         final int r = (color >> 16) & 0xFF;
         final int g = (color >> 8) & 0xFF;
         final int b = (color >> 0) & 0xFF;
         final String text = String.format(getString(R.string.colorpicker_rgbformat), r, g, b);
-        mRgbTextView1.setText(text);
+        mRgbTextView.setText(text);
     }
 
     public void onClickSend(View view) {

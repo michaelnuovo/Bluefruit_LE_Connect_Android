@@ -1,15 +1,13 @@
-package com.adafruit.bluefruit.le.connect.app.ColorPickerActivities;
+package com.adafruit.bluefruit.le.connect.app.OurActivities;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
@@ -19,7 +17,6 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 public class ColorPickerActivity2Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
@@ -43,6 +40,15 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
         private View mRgbColorView1; // This will be the default color view if there is no default
         private View mRgbColorView2;
     }
+
+    /**
+     *  Structure of of class preferences
+     *
+     *  String defaultColorView : int id  <-- default color view string handle maps to the view id of type int
+     *  String view_1_id : int colorValue <-- each view has the string value of its id mapped to a color value of type int
+     *  String view_2_id : int colorValue
+     *  ....
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,11 +172,8 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     // This method is called when the color on the color wheel (color picker) is changed
     @Override
     public void onColorChanged(int color) {
-
         currentSelectedColor = color;
         returnDefaultColorView().setBackgroundColor(color);
-        Log.v("TAG","Default view id return is "+String.valueOf(returnDefaultColorView().getId()));
-        Log.v("TAG","Default view id in prefs is "+String.valueOf(loadFromPreferences("defaultColorView")));
     }
 
 
@@ -247,5 +250,6 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
 
         byte[] result = buffer.array();
         sendDataWithCRC(result);
+        Log.v("TAG","result in sendDataWithCRC(result) is "+String.valueOf(result));
     }
 }
