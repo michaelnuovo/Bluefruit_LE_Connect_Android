@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
-        startActivityForResult(intent, 2);
+//        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+//        startActivityForResult(intent, 2);
 
         // Init variables
         mBleManager = BleManager.getInstance(this);
