@@ -59,6 +59,7 @@ import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2C
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity2;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.test;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
@@ -189,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements
 //        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
 //        startActivityForResult(intent, 2);
 
+                Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
+        startActivityForResult(intent, 2);
 
 
     }

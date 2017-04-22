@@ -218,6 +218,10 @@
             android:name=".app.OurActivities.test"
             android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".app.OurActivities.TerminalActivity2"
+            android:label="@string/title_activity_terminal" />
+
     </application>
 
 </manifest>
