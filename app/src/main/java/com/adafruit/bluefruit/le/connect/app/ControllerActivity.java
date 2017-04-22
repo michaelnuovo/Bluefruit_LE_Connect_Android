@@ -341,7 +341,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                     byte[] result = buffer.array();
                     Log.d(TAG, "Send data for sensor: " + i);
 
-                    Log.v("TAG", "!@#E#@E " +PacketUtils.packetToTextString(result));
+                    //Log.v("TAG", "!@#E#@E " +PacketUtils.packetToTextString(result));
 
                     sendDataWithCRC(result); // CRC means cyclic redundancy code, maybe checks for checksum
                 }

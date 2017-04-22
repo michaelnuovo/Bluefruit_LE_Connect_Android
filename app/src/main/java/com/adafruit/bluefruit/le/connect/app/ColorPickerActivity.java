@@ -38,6 +38,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
 

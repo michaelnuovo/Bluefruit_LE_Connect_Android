@@ -3,11 +3,13 @@ package com.adafruit.bluefruit.le.connect.app.OurActivities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
@@ -18,6 +20,8 @@ import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class ColorPickerActivity2Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
 
@@ -36,9 +40,19 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     int currentSelectedColor; // The current selected color of the color wheel
 
     // View holder class
+    // View holder class
     private class ViewHolder {
-        private View mRgbColorView1; // This will be the default color view if there is no default
-        private View mRgbColorView2;
+
+        public ArrayList<View> viewsList = new ArrayList<>();
+
+        public View mRgbColorView1; // This will be the default color view if there is no default
+        public View mRgbColorView2;
+
+        public void pushViewsToList(){
+
+            viewsList.add(mRgbColorView1);
+            viewsList.add(mRgbColorView2);
+        }
     }
 
     /**
@@ -62,6 +76,8 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
         viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorViewOne);
         viewHolder.mRgbColorView2 = findViewById(R.id.rgbColorViewTwo);
 
+        viewHolder.pushViewsToList();
+
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
         mColorPicker = (ColorPicker) findViewById(R.id.colorPicker);
@@ -81,9 +97,35 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
 
         setColorsPickerColors();
 
-        onServicesDiscovered(); // Start services
+
+
+        Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
+        setRandomButtonClickListener(randomizeButton);
 
         setClickListeners();
+
+        onServicesDiscovered(); // Start services
+    }
+
+    private void setRandomButtonClickListener(Button randButton){
+        randButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Random rand = new Random();
+
+                for(View view : viewHolder.viewsList){
+
+                    int r = rand.nextInt(255); // [0,255]
+                    int g = rand.nextInt(255); // [0,255]
+                    int b = rand.nextInt(255); // [0,255]
+
+                    int color = Color.rgb(r,g,b);
+                    saveToPreferences(String.valueOf(view.getId()),color);
+                }
+
+                setBackgroundColors();;
+            }
+        });
     }
 
     private void setColorsPickerColors(){
@@ -229,26 +271,10 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     }
 
     public void onClickSend(View view) {
-
-        //mColorPicker.setOldCenterColor(currentSelectedColor);  // Set the old color
-        Log.v("TAG","currentSelectedColor value is "+String.valueOf(currentSelectedColor));  // Set the old color
-
         int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
         int color2 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
-
-        int numberOfColors = 2;
-
-        byte[] byteArr = new byte[3 * numberOfColors];
-
-        byteArr[0] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-        byteArr[1] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-        byteArr[2] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-
-        byteArr[0] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-        byteArr[1] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-        byteArr[2] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-
-        byte[] packet = PacketUtils.byteArrayToPacket(byteArr,PacketUtils.PacketTypes.PAL_2);
-        sendDataWithCRC(packet);
+        byte[] palettePacket = PacketUtils.palettePacket(color1,color2);
+        PacketUtils.logByteArray(palettePacket);
+        sendDataWithCRC(palettePacket);
     }
 }

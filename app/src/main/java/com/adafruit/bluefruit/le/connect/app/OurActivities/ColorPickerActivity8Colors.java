@@ -3,11 +3,13 @@ package com.adafruit.bluefruit.le.connect.app.OurActivities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
@@ -19,6 +21,7 @@ import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ColorPickerActivity8Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
@@ -113,9 +116,35 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         // Sets background colors and text to their defaults EVERY time the activity opens
         setColorsPickerColors();
 
-        onServicesDiscovered(); // Start services
+
+        Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
+        setRandomButtonClickListener(randomizeButton);
 
         setClickListeners();
+
+
+        onServicesDiscovered(); // Start services
+    }
+
+    private void setRandomButtonClickListener(Button randButton){
+        randButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Random rand = new Random();
+
+                for(View view : viewHolder.viewsList){
+
+                    int r = rand.nextInt(255); // [0,255]
+                    int g = rand.nextInt(255); // [0,255]
+                    int b = rand.nextInt(255); // [0,255]
+
+                    int color = Color.rgb(r,g,b);
+                    saveToPreferences(String.valueOf(view.getId()),color);
+                }
+
+                setBackgroundColors();;
+            }
+        });
     }
 
     private void setColorsPickerColors(){
@@ -261,27 +290,16 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
     }
 
     public void onClickSend(View view) {
-        // Set the old color
-        mColorPicker.setOldCenterColor(currentSelectedColor);
-
-        // Send selected color !Crgb
-        byte r = (byte) ((currentSelectedColor >> 16) & 0xFF);
-        byte g = (byte) ((currentSelectedColor >> 8) & 0xFF);
-        byte b = (byte) ((currentSelectedColor >> 0) & 0xFF);
-
-        ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
-
-        // prefix
-        String prefix = "!C";
-        buffer.put(prefix.getBytes());
-
-        // values
-        buffer.put(r);
-        buffer.put(g);
-        buffer.put(b);
-
-        byte[] result = buffer.array();
-        sendDataWithCRC(result);
-        Log.v("TAG","result in sendDataWithCRC(result) is "+String.valueOf(result));
+        int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
+        int color2 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
+        int color3 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView3.getId()));
+        int color4 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView4.getId()));
+        int color5 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView5.getId()));
+        int color6 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView6.getId()));
+        int color7 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView7.getId()));
+        int color8 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView8.getId()));
+        byte[] palettePacket = PacketUtils.palettePacket(color1,color2,color3,color4,color5,color6,color7,color8);
+        PacketUtils.logByteArray(palettePacket);
+        sendDataWithCRC(palettePacket);
     }
 }

@@ -70,7 +70,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
         Log.d(TAG, "Send to UART: " + BleUtils.bytesToHexWithSpaces(dataCrc));
 
         Log.v("TAG","sendDataWithCRC()");
-        PacketUtils.logByteArray(dataCrc);
+        //PacketUtils.logByteArray(dataCrc);
 
         sendData(dataCrc);
     }
@@ -147,6 +147,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     @Override
     public void onServicesDiscovered() {
         mUartService = mBleManager.getGattService(UUID_SERVICE);
+        //Log.v("TAG","mUartService.toString() "+ mUartService.toString());
     }
 
     protected void enableRxNotifications() {

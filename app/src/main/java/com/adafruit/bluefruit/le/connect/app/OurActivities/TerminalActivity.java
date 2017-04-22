@@ -105,13 +105,13 @@ public class TerminalActivity extends UartInterfaceActivity {
                 String editTextInput = editText.getText().toString();
 
                 // Gets ASCII binary array of editTextInput
-                byte[] byteArrASCII = PacketUtils.stringToBytesASCII(editTextInput);
+                byte[] byteArrASCII = PacketUtils.userCommandPacket(editTextInput);
 
                 // Gets the packet
-                packet = PacketUtils.byteArrayToPacket(byteArrASCII, PacketUtils.PacketTypes.USER_COMMAND);
+                packet = PacketUtils.userCommandPacket(editTextInput);
 
                 // Adds line feed to end of packet if there isn't one already
-                if(packet[packet.length-1] != 10) packet = PacketUtils.addTerminalLineFeed(packet);
+                if(packet[packet.length-1] != 10) packet = addTerminalLineFeed(packet);
 
                 // Gets formatted string of data from package
                 String packetStats = PacketUtils.getPacketStats(packet);
@@ -126,9 +126,17 @@ public class TerminalActivity extends UartInterfaceActivity {
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
             }
+
+            // Adds a line feed at the end of the packet if it's not there already
+            private byte[] addTerminalLineFeed(byte[] packet){
+                if(packet[packet.length] == 10){
+                    return packet;
+                } else {
+                    byte[] newPacket = new byte[1+packet.length];
+                    newPacket[newPacket.length - 1] = 10;
+                    return newPacket;
+                }
+            }
         });
     }
-
-
-
 }

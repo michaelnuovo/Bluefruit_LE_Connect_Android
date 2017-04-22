@@ -1,6 +1,7 @@
 package com.adafruit.bluefruit.le.connect.app.OurActivities;
 
 import android.bluetooth.BluetoothGattService;
+import android.graphics.Color;
 import android.util.Log;
 
 /**
@@ -9,12 +10,8 @@ import android.util.Log;
 
 public class PacketUtils {
 
-    // Constants
-    static private String LINE_FEED = "\n";
-    static private String CARRIAGE_RETURN = "\r";
 
-    static private char LINE_FEED_DUMMY_CHAR = '_';
-    static private char CARRIAGE_RETURN_DUMMY_CHAR = '^';
+    static public final char DELIMETER = '#';
 
     protected BluetoothGattService mUartService;
 
@@ -34,68 +31,104 @@ public class PacketUtils {
         PAL_8//11
     }
 
-    /**
-     * Returns a string as an ASCII byte array
-     * @param str
-     * @return
-     */
-    public static byte[] stringToBytesASCII(String str) {
-
-        // \n becomes _
-        // \r becomes ^
-        str = replaceEscapeChars(str);
-
-        // Splits the string into a character array
-        char[] charArray = str.toCharArray();
-
-        // Initialize a byte array of length size(charArray)
-        byte[] byteArray = new byte[charArray.length];
-
-        // Populates the byte array with the ASCII byte form of each character in charArray
-        for (int i = 0; i < byteArray.length; i++)
-            byteArray[i] = charToByte(charArray[i]);
-
-        return byteArray;
-    }
-
-    private static String replaceEscapeChars(String str){
-        str = str.replace(LINE_FEED, String.valueOf(LINE_FEED_DUMMY_CHAR));
-        str = str.replace(CARRIAGE_RETURN, String.valueOf(CARRIAGE_RETURN_DUMMY_CHAR));
-        return str;
-    }
-
-    private static byte charToByte(char c){
-        if(c == LINE_FEED_DUMMY_CHAR) // We have a line feed
-            return 10;
-        if(c == CARRIAGE_RETURN_DUMMY_CHAR) // We have a carriage return
-            return 13;
-        return (byte) c;
-    }
-
-    public static byte[] byteArrayToPacket(byte[] byteArray, PacketTypes packetType){
-
-        byte[] packet = new byte[3 + byteArray.length + 1];
-        packet[0] = (byte) '#'; // Insert packet header
-        packet[1] = (byte) packetType.ordinal(); // Insert type
-        packet[2] = (byte) (byteArray.length); // Insert size of packet
-
-        for(int i = 0; i < byteArray.length; i++) // Port over the bytes into the packet
-            packet[i + 3] = byteArray[i];
-
-        //byte[] result = addTerminalLineFeed(packet, packetType);
-
-        return packet;
-    }
-
-    // If this packet represent a command, then we need to add a line feed at the end
-    public static byte[] addTerminalLineFeed(byte[] byteArray){
-
-        byteArray[2] += 1;
-        byte[] result = new byte[byteArray.length + 1];
-        result[result.length-1] = (byte) 10;
-
+    // e.g. test,2\n1234,5678,9012\n345.678,abcdefg,9876\n
+    public static byte[] userCommandPacket(String command) {
+        command = command.replace("\n","^").replace("\r","_");
+        char[] commandChars = command.toCharArray();
+        byte[] result = new byte[1 + 1 + 1 + commandChars.length];
+        result[0] = DELIMETER;
+        result[1] = (byte) PacketTypes.USER_COMMAND.ordinal();
+        result[2] = (byte) commandChars.length;
+        for(int i = 0; i < commandChars.length; i++)
+            if(commandChars[i] == '^')
+                result[i+3] = 10;
+            else if(commandChars[i] == '_')
+                result[i+3] = 13;
+            else
+                result[i+3] = (byte) commandChars[i];
         return result;
     }
+
+    public static byte[] palettePacket(int color){
+        byte[] result = new byte[2 + 3 * 1];
+        result[0] = DELIMETER;
+        result[1] = (byte) PacketTypes.PAL_1.ordinal();
+        result[2] = (byte) Color.red(color);
+        result[3] = (byte) Color.blue(color);
+        result[4] = (byte) Color.green(color);
+        return result;
+    }
+
+    public static byte[] palettePacket(int color1, int color2){
+        byte[] result = new byte[2 + 3 * 2];
+        result[0] = DELIMETER;
+        result[1] = (byte) PacketTypes.PAL_2.ordinal();
+        result[2] = (byte) Color.red(color1);
+        result[3] = (byte) Color.blue(color1);
+        result[4] = (byte) Color.green(color1);
+        result[5] = (byte) Color.red(color2);
+        result[6] = (byte) Color.blue(color2);
+        result[7] = (byte) Color.green(color2);
+        return result;
+    }
+
+    public static byte[] palettePacket(int color1, int color2, int color3, int color4){
+        byte[] result = new byte[2 + 3 * 4];
+        result[0] = DELIMETER;
+        result[1] = (byte) PacketTypes.PAL_4.ordinal();
+        result[2] = (byte) Color.red(color1);
+        result[3] = (byte) Color.blue(color1);
+        result[4] = (byte) Color.green(color1);
+        result[5] = (byte) Color.red(color2);
+        result[6] = (byte) Color.blue(color2);
+        result[7] = (byte) Color.green(color2);
+        result[8] = (byte) Color.red(color3);
+        result[9] = (byte) Color.blue(color3);
+        result[10] = (byte) Color.green(color3);
+        result[11] = (byte) Color.red(color4);
+        result[12] = (byte) Color.blue(color4);
+        result[13] = (byte) Color.green(color4);
+        return result;
+    }
+
+    public static byte[] palettePacket(int color1, int color2, int color3, int color4,
+                                        int color5, int color6, int color7, int color8){
+        byte[] result = new byte[2 + 3 * 8];
+        result[0] = DELIMETER;
+        result[1] = (byte) PacketTypes.PAL_8.ordinal();
+        result[2] = (byte) Color.red(color1);
+        result[3] = (byte) Color.blue(color1);
+        result[4] = (byte) Color.green(color1);
+        result[5] = (byte) Color.red(color2);
+        result[6] = (byte) Color.blue(color2);
+        result[7] = (byte) Color.green(color2);
+        result[8] = (byte) Color.red(color3);
+        result[9] = (byte) Color.blue(color3);
+        result[10] = (byte) Color.green(color3);
+        result[11] = (byte) Color.red(color4);
+        result[12] = (byte) Color.blue(color4);
+        result[13] = (byte) Color.green(color4);
+        result[11] = (byte) Color.red(color5);
+        result[12] = (byte) Color.blue(color5);
+        result[13] = (byte) Color.green(color5);
+        result[14] = (byte) Color.red(color6);
+        result[15] = (byte) Color.blue(color6);
+        result[16] = (byte) Color.green(color6);
+        result[17] = (byte) Color.red(color7);
+        result[18] = (byte) Color.blue(color7);
+        result[19] = (byte) Color.green(color7);
+        result[20] = (byte) Color.red(color8);
+        result[21] = (byte) Color.blue(color8);
+        result[22] = (byte) Color.green(color8);
+        return result;
+    }
+
+    public static void logByteArray(byte[] byteArray){
+        Log.v("TAG","---- Byte Array -----");
+        for(Byte b : byteArray) Log.v("TAG","byte : "+String.valueOf(b));
+        Log.v("TAG","---- End ------------");
+    }
+
 
     public static String getPacketStats(byte[] packet){
 
@@ -127,9 +160,5 @@ public class PacketUtils {
         return result;
     }
 
-    public static void logByteArray(byte[] byteArray){
-        Log.v("TAG","---- Byte Array -----");
-        for(Byte b : byteArray) Log.v("TAG","byte : "+String.valueOf(b));
-        Log.v("TAG","---- End ------------");
-    }
+
 }

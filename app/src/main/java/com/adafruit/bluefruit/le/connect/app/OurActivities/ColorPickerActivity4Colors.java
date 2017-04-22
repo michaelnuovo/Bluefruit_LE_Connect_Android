@@ -107,12 +107,14 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         // Sets background colors and text to their defaults EVERY time the activity opens
         setColorsPickerColors();
 
-        onServicesDiscovered(); // Start services
+
 
         setClickListeners();
 
         Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
         setRandomButtonClickListener(randomizeButton);
+
+        onServicesDiscovered(); // Start services
     }
 
     private void setRandomButtonClickListener(Button randButton){
@@ -127,8 +129,11 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
                     int g = rand.nextInt(255); // [0,255]
                     int b = rand.nextInt(255); // [0,255]
 
-
+                    int color = Color.rgb(r,g,b);
+                    saveToPreferences(String.valueOf(view.getId()),color);
                 }
+
+                setBackgroundColors();;
             }
         });
     }
@@ -153,9 +158,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         for( View view : viewHolder.viewsList){
             stringyId = String.valueOf(view.getId());
             colorVal = loadFromPreferences(stringyId);
-            Log.v("TAG","@#ER# "+String.valueOf(colorVal));
             if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
-            Log.v("TAG","@#ER# "+String.valueOf(loadFromPreferences(stringyId)));
         }
     }
 
@@ -267,47 +270,13 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
 
     public void onClickSend(View view) {
 
-        int color;
-        int bitIdx = -1;
-        int numberOfColors = 4;
+        int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
+        int color2 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
+        int color3 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView3.getId()));
+        int color4 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView4.getId()));
 
-        byte[] byteArr = new byte[3 * numberOfColors];
-        color = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
-        bitIdx += 1;
-
-        Log.v("TAG","col val is "+String.valueOf(color));
-
-        byteArr[0 + 3 * bitIdx] = (byte) Color.red(color);
-        byteArr[1 + 3 * bitIdx] = (byte) Color.green(color);
-        byteArr[2 + 3 * bitIdx] = (byte) Color.blue(color);
-
-        Log.v("TAG","@#$" +String.valueOf((byte) Color.blue(-11922228)));
-        Log.v("TAg","String.valeOf()"+ String.valueOf(Color.blue(color)));
-
-        color = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
-        bitIdx += 1;
-
-        byteArr[0 + 3 * bitIdx] = (byte) Color.red(color);
-        byteArr[1 + 3 * bitIdx] = (byte) Color.green(color);
-        byteArr[2 + 3 * bitIdx] = (byte) Color.blue(color);
-
-        color = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView3.getId()));
-        bitIdx += 1;
-
-        byteArr[0 + 3 * bitIdx] = (byte) Color.red(color);
-        byteArr[1 + 3 * bitIdx] = (byte) Color.green(color);
-        byteArr[2 + 3 * bitIdx] = (byte) Color.blue(color);
-
-        color = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView4.getId()));
-        bitIdx += 1;
-
-        byteArr[0 + 3 * bitIdx] = (byte) Color.red(color);
-        byteArr[1 + 3 * bitIdx] = (byte) Color.green(color);
-        byteArr[2 + 3 * bitIdx] = (byte) Color.blue(color);
-
-        for(byte b : byteArr) Log.v("TAG","b is : "+String.valueOf(b));
-
-        byte[] packet = PacketUtils.byteArrayToPacket(byteArr,PacketUtils.PacketTypes.PAL_2);
-        sendDataWithCRC(packet);
+        byte[] palettePacket = PacketUtils.palettePacket(color1,color2,color3,color4);
+        PacketUtils.logByteArray(palettePacket);
+        sendDataWithCRC(palettePacket);
     }
 }

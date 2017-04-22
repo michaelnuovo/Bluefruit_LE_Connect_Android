@@ -168,9 +168,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private void testViews(){
 
-        //        Intent intent = new Intent(MainActivity.this, ControllerActivity.class);
+//                Intent intent = new Intent(MainActivity.this, ControllerActivity.class);
 //        startActivityForResult(intent, 2);
-//
+
 
 
 //        Intent intent = new Intent(MainActivity.this, ColorPickerActivity1Color.class);
@@ -181,13 +181,13 @@ public class MainActivity extends AppCompatActivity implements
 //
 //          Intent intent = new Intent(MainActivity.this, ColorPickerActivity4Colors.class);
 //          startActivityForResult(intent, 2);
-//
+
 //        Intent intent = new Intent(MainActivity.this, ColorPickerActivity8Colors.class);
 //        startActivityForResult(intent, 2);
 
-
-        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
-        startActivityForResult(intent, 2);
+//
+//        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+//        startActivityForResult(intent, 2);
 
 
 
