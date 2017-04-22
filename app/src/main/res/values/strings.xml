@@ -429,7 +429,12 @@
     <string name="dialog_notice">Notice</string>
     <string name="dialog_dontshowagain">Don\'t show again</string>
     <string name="title_activity_terminal">TerminalActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
-    <!-- Debug -->
+    <!-- Michae's Strings -->
+    <string name="send_palette">Send</string>
+    <string name="randomize_palette">Randomize</string>
+
+    randomize_palette
 
 </resources>

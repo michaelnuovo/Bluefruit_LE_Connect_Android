@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketUtils;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.adafruit.bluefruit.le.connect.ble.BleUtils;
 
@@ -51,6 +52,8 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     // Send data to UART and add a byte with a custom CRC
     protected void sendDataWithCRC(byte[] data) {
 
+        Log.v("TAG","data.length is "+data.length);
+
         // Calculate checksum
         byte checksum = 0;
         for (byte aData : data) {
@@ -65,8 +68,13 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
         // Send it
         Log.d(TAG, "Send to UART: " + BleUtils.bytesToHexWithSpaces(dataCrc));
+
+        Log.v("TAG","sendDataWithCRC()");
+        PacketUtils.logByteArray(dataCrc);
+
         sendData(dataCrc);
     }
+
     // endregion
 
     // region SendDataWithCompletionHandler

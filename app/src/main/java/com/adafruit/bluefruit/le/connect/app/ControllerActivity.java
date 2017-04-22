@@ -33,6 +33,7 @@ import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketUtils;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
@@ -340,6 +341,8 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                     byte[] result = buffer.array();
                     Log.d(TAG, "Send data for sensor: " + i);
 
+                    Log.v("TAG", "!@#E#@E " +PacketUtils.packetToTextString(result));
+
                     sendDataWithCRC(result); // CRC means cyclic redundancy code, maybe checks for checksum
                 }
             }
@@ -562,17 +565,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
         }
     }
 
-    // region BleManagerListener
-    /*
-    @Override
-    public void onConnected() {
-    }
 
-    @Override
-    public void onConnecting() {
-
-    }
-*/
     @Override
     public void onDisconnected() {
         super.onDisconnected();

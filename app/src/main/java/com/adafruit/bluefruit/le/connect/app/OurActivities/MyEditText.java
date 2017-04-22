@@ -1,6 +1,7 @@
 package com.adafruit.bluefruit.le.connect.app.OurActivities;
 
 import android.content.Context;
+import android.text.Editable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,11 +27,11 @@ public class MyEditText extends AppCompatEditText {
     @Override
     public boolean onKeyPreIme( int key_code, KeyEvent event )
     {
-        if ( event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP )
-            this.clearFocus();
-
-        //Log.v("TAG","SDFSDF");
+//        if ( event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP )
+//            this.clearFocus();
 
         return super.onKeyPreIme( key_code, event );
     }
+
+
 }

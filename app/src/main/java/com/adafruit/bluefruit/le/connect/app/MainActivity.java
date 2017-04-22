@@ -54,8 +54,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.test;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
@@ -136,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements
     private SwipeRefreshLayout mSwipeRefreshLayout; // The SwipeRefreshLayout should be used whenever
                                                     // the user can refresh the contents of a view via
                                                     // a vertical swipe gesture.
-
     private AlertDialog mConnectingDialog;
     private View mFiltersPanelView;
     private ImageView mFiltersExpandImageView;
@@ -163,14 +166,40 @@ public class MainActivity extends AppCompatActivity implements
 
     private DataFragment mRetainedDataFragment;
 
+    private void testViews(){
+
+        //        Intent intent = new Intent(MainActivity.this, ControllerActivity.class);
+//        startActivityForResult(intent, 2);
+//
+
+
+//        Intent intent = new Intent(MainActivity.this, ColorPickerActivity1Color.class);
+//        startActivityForResult(intent, 2);
+//
+//          Intent intent = new Intent(MainActivity.this, ColorPickerActivity2Colors.class);
+//          startActivityForResult(intent, 2);
+//
+//          Intent intent = new Intent(MainActivity.this, ColorPickerActivity4Colors.class);
+//          startActivityForResult(intent, 2);
+//
+//        Intent intent = new Intent(MainActivity.this, ColorPickerActivity8Colors.class);
+//        startActivityForResult(intent, 2);
+
+
+        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+        startActivityForResult(intent, 2);
+
+
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
-//        startActivityForResult(intent, 2);
+        testViews();
 
         // Init variables
         mBleManager = BleManager.getInstance(this);

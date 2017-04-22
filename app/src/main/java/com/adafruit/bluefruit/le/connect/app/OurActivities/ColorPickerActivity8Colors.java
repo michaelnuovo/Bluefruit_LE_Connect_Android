@@ -18,15 +18,16 @@ import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
-public class ColorPickerActivity2Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
-
+public class ColorPickerActivity8Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
 
     // Constants
     private final static String classPrefs = ColorPickerActivity2Colors.class.getName();
-    private final static int defaultColor = 0xFFF0FF00;
+    //private final static int defaultColor = 0xFFF0FF00;
+    private final static int defaultColor = 0xffffff00;
 
     // Widgets
     private ColorPicker mColorPicker; // This is the color wheel widget
@@ -37,8 +38,31 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
 
     // View holder class
     private class ViewHolder {
-        private View mRgbColorView1; // This will be the default color view if there is no default
-        private View mRgbColorView2;
+
+        public ArrayList<View> viewsList = new ArrayList<>();
+
+        public View mRgbColorView1; // This will be the default color view if there is no default
+        public View mRgbColorView2;
+        public View mRgbColorView3;
+        public View mRgbColorView4;
+
+        public View mRgbColorView5; // This will be the default color view if there is no default
+        public View mRgbColorView6;
+        public View mRgbColorView7;
+        public View mRgbColorView8;
+
+        public void pushViewsToList(){
+
+            viewsList.add(mRgbColorView1);
+            viewsList.add(mRgbColorView2);
+            viewsList.add(mRgbColorView3);
+            viewsList.add(mRgbColorView4);
+
+            viewsList.add(mRgbColorView5);
+            viewsList.add(mRgbColorView6);
+            viewsList.add(mRgbColorView7);
+            viewsList.add(mRgbColorView8);
+        }
     }
 
     /**
@@ -54,13 +78,22 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_color_picker_2colors);
+        setContentView(R.layout.activity_color_picker_8colors);
 
         mBleManager = BleManager.getInstance(this);
 
         // UI
         viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorViewOne);
         viewHolder.mRgbColorView2 = findViewById(R.id.rgbColorViewTwo);
+        viewHolder.mRgbColorView3 = findViewById(R.id.rgbColorViewThree);
+        viewHolder.mRgbColorView4 = findViewById(R.id.rgbColorViewFour);
+
+        viewHolder.mRgbColorView5 = findViewById(R.id.rgbColorViewFive);
+        viewHolder.mRgbColorView6 = findViewById(R.id.rgbColorViewSix);
+        viewHolder.mRgbColorView7 = findViewById(R.id.rgbColorViewSeven);
+        viewHolder.mRgbColorView8 = findViewById(R.id.rgbColorViewEight);
+
+        viewHolder.pushViewsToList();
 
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
@@ -74,11 +107,10 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
 
         // Sets the defaults the FIRST time the activity opens
         saveDefaultColors();
+        setBackgroundColors();
         saveDefaultColorView();
 
         // Sets background colors and text to their defaults EVERY time the activity opens
-        setBackgroundColors();
-
         setColorsPickerColors();
 
         onServicesDiscovered(); // Start services
@@ -94,8 +126,8 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     }
 
     private void setBackgroundColors(){
-        viewHolder.mRgbColorView1.setBackgroundColor(loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId())));
-        viewHolder.mRgbColorView2.setBackgroundColor(loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId())));
+        for( View view : viewHolder.viewsList)
+            view.setBackgroundColor(loadFromPreferences(String.valueOf(view.getId())));
     }
 
     private void saveDefaultColors(){
@@ -103,18 +135,18 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
         String stringyId;
         int colorVal;
 
-        stringyId = String.valueOf(viewHolder.mRgbColorView1.getId());
-        colorVal = loadFromPreferences(stringyId);
-        if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
-
-        stringyId = String.valueOf(viewHolder.mRgbColorView2.getId());
-        colorVal = loadFromPreferences(stringyId);
-        if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
+        for( View view : viewHolder.viewsList){
+            stringyId = String.valueOf(view.getId());
+            colorVal = loadFromPreferences(stringyId);
+            //Log.v("TAG","Color val is "+String.valueOf(colorVal));
+            if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
+            //Log.v("TAG","Color val is "+String.valueOf(loadFromPreferences(stringyId)));
+        }
     }
 
     private void setClickListeners(){
-        setListener(viewHolder.mRgbColorView1);
-        setListener(viewHolder.mRgbColorView2);
+        for( View view : viewHolder.viewsList)
+            setListener(view);
     }
 
     private void setListener(final View colorView){
@@ -229,26 +261,27 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     }
 
     public void onClickSend(View view) {
+        // Set the old color
+        mColorPicker.setOldCenterColor(currentSelectedColor);
 
-        //mColorPicker.setOldCenterColor(currentSelectedColor);  // Set the old color
-        Log.v("TAG","currentSelectedColor value is "+String.valueOf(currentSelectedColor));  // Set the old color
+        // Send selected color !Crgb
+        byte r = (byte) ((currentSelectedColor >> 16) & 0xFF);
+        byte g = (byte) ((currentSelectedColor >> 8) & 0xFF);
+        byte b = (byte) ((currentSelectedColor >> 0) & 0xFF);
 
-        int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
-        int color2 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
+        ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
-        int numberOfColors = 2;
+        // prefix
+        String prefix = "!C";
+        buffer.put(prefix.getBytes());
 
-        byte[] byteArr = new byte[3 * numberOfColors];
+        // values
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
 
-        byteArr[0] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-        byteArr[1] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-        byteArr[2] = (byte) ((color1 >> (16 + 8 * 0)) & 0xFF);
-
-        byteArr[0] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-        byteArr[1] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-        byteArr[2] = (byte) ((color2 >> (16 + 8 * 1)) & 0xFF);
-
-        byte[] packet = PacketUtils.byteArrayToPacket(byteArr,PacketUtils.PacketTypes.PAL_2);
-        sendDataWithCRC(packet);
+        byte[] result = buffer.array();
+        sendDataWithCRC(result);
+        Log.v("TAG","result in sendDataWithCRC(result) is "+String.valueOf(result));
     }
 }
