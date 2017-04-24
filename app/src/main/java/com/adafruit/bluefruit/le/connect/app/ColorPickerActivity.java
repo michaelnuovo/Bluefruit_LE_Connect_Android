@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketUtils;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
@@ -141,6 +142,30 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         mRgbTextView.setText(text);
     }
 
+//    public void onClickSend(View view) {
+//        // Set the old color
+//        mColorPicker.setOldCenterColor(mSelectedColor);
+//
+//        // Send selected color !Crgb
+//        byte r = (byte) ((mSelectedColor >> 16) & 0xFF);
+//        byte g = (byte) ((mSelectedColor >> 8) & 0xFF);
+//        byte b = (byte) ((mSelectedColor >> 0) & 0xFF);
+//
+//        ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+//
+//        // prefix
+//        String prefix = "!C";
+//        buffer.put(prefix.getBytes());
+//
+//        // values
+//        buffer.put(r);
+//        buffer.put(g);
+//        buffer.put(b);
+//
+//        byte[] result = buffer.array();
+//        sendDataWithCRC(result);
+//    }
+
     public void onClickSend(View view) {
 
         // The color we're sending becomes the old color, so let's set the old color to the new color we're sending
@@ -158,27 +183,21 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
 
         // Creates a buffer of size 2 + 3 = 5
         // Each byte in the buffer reads from left to right (big endian), not right to left (little endian)
-        ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(3 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
-        // old prefix
-        String prefix = "!C";
-        buffer.put(prefix.getBytes()); // insert this
+
+        //  PAL_1
+        buffer.put((byte) PacketUtils.DELIMTER_ONE);
+        buffer.put((byte) PacketUtils.DELIMTER_TWO);
+        buffer.put((byte) PacketUtils.PacketTypes.PAL_1.ordinal()); // Pushes bytes to the array
         buffer.put(r);
         buffer.put(g);
         buffer.put(b);
 
-        String DELIMETER = "#";
-
-        //  PAL_1 => 8
-        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
-        buffer.put((byte) 8); // Pushes bytes to the array
-        buffer.put(r);
-        buffer.put(g);
-        buffer.put(b);
-
-        //  PAL_2 => 9
-        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
-        buffer.put((byte) 9); // Pushes bytes to the array
+        //  PAL_2
+        buffer.put((byte) PacketUtils.DELIMTER_ONE);
+        buffer.put((byte) PacketUtils.DELIMTER_TWO);
+        buffer.put((byte) (byte) PacketUtils.PacketTypes.PAL_2.ordinal()); // Pushes bytes to the array
         buffer.put(r);
         buffer.put(g);
         buffer.put(b);
@@ -186,9 +205,10 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         buffer.put(g1);
         buffer.put(b1);
 
-        //  PAL_4 => 10
-        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
-        buffer.put((byte) 10); // Pushes bytes to the array
+        //  PAL_4
+        buffer.put((byte) PacketUtils.DELIMTER_ONE);
+        buffer.put((byte) PacketUtils.DELIMTER_TWO);
+        buffer.put((byte) PacketUtils.PacketTypes.PAL_4.ordinal()); // Pushes bytes to the array
         buffer.put(r);
         buffer.put(g);
         buffer.put(b);
@@ -202,9 +222,10 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         buffer.put(g1);
         buffer.put(b1);
 
-        //  PAL_8 => 11
-        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
-        buffer.put((byte) 11); // Pushes bytes to the array
+        //  PAL_8
+        buffer.put((byte) PacketUtils.DELIMTER_ONE);
+        buffer.put((byte) PacketUtils.DELIMTER_TWO);
+        buffer.put((byte) PacketUtils.PacketTypes.PAL_8.ordinal()); // Pushes bytes to the array
         buffer.put(r);
         buffer.put(g);
         buffer.put(b);

@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        testViews();
+        //testViews();
 
         // Init variables
         mBleManager = BleManager.getInstance(this);

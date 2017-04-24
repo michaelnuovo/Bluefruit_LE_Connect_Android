@@ -308,10 +308,60 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
         super.onDestroy();
     }
 
+//    private Runnable mPeriodicallySendData = new Runnable() {
+//        @Override
+//        public void run() {
+//            final String[] prefixes = {"!Q", "!A", "!G", "!M", "!L"};     // same order that kSensorType, G
+//
+//            // G is gyro
+//            // A is accelerometer
+//            // Q quaternion
+//            // B is for buttons
+//            // C is for the color
+//            // L is for the location
+//
+//            // Stick another letter in there "T" for text rather than using UART mode
+//            // and we can usurp the entire window from UART mode and use it in Controller mode
+//
+//            for (int i = 0; i < mSensorData.length; i++) {
+//                SensorData sensorData = mSensorData[i];
+//
+//                if (sensorData.enabled && sensorData.values != null) {
+//                    ByteBuffer buffer = ByteBuffer.allocate(2 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+//
+//                    // prefix
+//                    String prefix = prefixes[sensorData.sensorType];
+//                    buffer.put(prefix.getBytes()); // Converts string into bytes, and puts them in the buffer
+//
+//                    // values
+//                    for (int j = 0; j < sensorData.values.length; j++) {
+//                        buffer.putFloat(sensorData.values[j]);
+//                    }
+//
+//                    byte[] result = buffer.array();
+//                    Log.d(TAG, "Send data for sensor: " + i);
+//
+//                    //Log.v("TAG", "!@#E#@E " +PacketUtils.packetToTextString(result));
+//
+//                    sendDataWithCRC(result); // CRC means cyclic redundancy code, maybe checks for checksum
+//                }
+//            }
+//
+//            sendDataHandler.postDelayed(this, kSendDataInterval); // Causes the Runnable to be added to the message queue,
+//                                                                  // to be run after the specified amount of time elapses.
+//        }
+//    };
+
     private Runnable mPeriodicallySendData = new Runnable() {
         @Override
         public void run() {
-            final String[] prefixes = {"!Q", "!A", "!G", "!M", "!L"};     // same order that kSensorType, G
+            final byte[] packetType = {
+                    (byte) PacketUtils.PacketTypes.QUAT.ordinal(),
+                    (byte) PacketUtils.PacketTypes.ACCEL.ordinal(),
+                    (byte) PacketUtils.PacketTypes.GYRO.ordinal(),
+                    (byte) PacketUtils.PacketTypes.MAG.ordinal(),
+                    (byte) PacketUtils.PacketTypes.MAG.ordinal(), // We don't have a location enum, so lets use MAG
+            };     // same order that kSensorType, G
 
             // G is gyro
             // A is accelerometer
@@ -327,16 +377,19 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                 SensorData sensorData = mSensorData[i];
 
                 if (sensorData.enabled && sensorData.values != null) {
-                    ByteBuffer buffer = ByteBuffer.allocate(2 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                    // one sensor data value is an int which is four bytes
+                    // 3 = delimeter one + delimeter two + packet type
+                    ByteBuffer buffer = ByteBuffer.allocate(3 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
                     // prefix
-                    String prefix = prefixes[sensorData.sensorType];
-                    buffer.put(prefix.getBytes()); // Converts string into bytes, and puts them in the buffer
+                    int delimeterOne = PacketUtils.DELIMTER_ONE;
+                    int delimeterTwo = PacketUtils.DELIMTER_TWO;
+                    buffer.put((byte) delimeterOne);
+                    buffer.put((byte) delimeterTwo);
 
                     // values
-                    for (int j = 0; j < sensorData.values.length; j++) {
+                    for (int j = 0; j < sensorData.values.length; j++)
                         buffer.putFloat(sensorData.values[j]);
-                    }
 
                     byte[] result = buffer.array();
                     Log.d(TAG, "Send data for sensor: " + i);
@@ -347,7 +400,8 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                 }
             }
 
-            sendDataHandler.postDelayed(this, kSendDataInterval);
+            sendDataHandler.postDelayed(this, kSendDataInterval); // Causes the Runnable to be added to the message queue,
+            // to be run after the specified amount of time elapses.
         }
     };
 

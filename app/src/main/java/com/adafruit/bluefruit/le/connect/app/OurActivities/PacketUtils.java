@@ -4,12 +4,16 @@ import android.bluetooth.BluetoothGattService;
 import android.graphics.Color;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by michael on 4/19/17.
  */
 
 public class PacketUtils {
 
+    static public final int DELIMTER_ONE = 0xAA;
+    static public final int DELIMTER_TWO = 0x55;
 
     static public final char DELIMETER = '#';
 
@@ -50,17 +54,25 @@ public class PacketUtils {
     }
 
     public static byte[] palettePacket(int color){
-        byte[] result = new byte[2 + 3 * 1];
-        result[0] = DELIMETER;
-        result[1] = (byte) PacketTypes.PAL_1.ordinal();
-        result[2] = (byte) Color.red(color);
-        result[3] = (byte) Color.blue(color);
-        result[4] = (byte) Color.green(color);
-        return result;
+
+        ByteBuffer buffer = ByteBuffer.allocate(3 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+
+        int delimeterOne = PacketUtils.DELIMTER_ONE;
+        int delimeterTwo = PacketUtils.DELIMTER_TWO;
+
+        buffer.put((byte) delimeterOne);
+        buffer.put((byte) delimeterTwo);
+        buffer.put((byte) PacketTypes.PAL_1.ordinal());
+
+        buffer.put((byte) Color.red(color));
+        buffer.put((byte) Color.green(color));
+        buffer.put((byte) Color.blue(color));
+
+        return buffer.array();
     }
 
     public static byte[] palettePacket(int color1, int color2){
-        byte[] result = new byte[2 + 3 * 2];
+        byte[] result = new byte[3 + 3 * 2];
         result[0] = DELIMETER;
         result[1] = (byte) PacketTypes.PAL_2.ordinal();
         result[2] = (byte) Color.red(color1);
@@ -73,7 +85,7 @@ public class PacketUtils {
     }
 
     public static byte[] palettePacket(int color1, int color2, int color3, int color4){
-        byte[] result = new byte[2 + 3 * 4];
+        byte[] result = new byte[3 + 3 * 4];
         result[0] = DELIMETER;
         result[1] = (byte) PacketTypes.PAL_4.ordinal();
         result[2] = (byte) Color.red(color1);
@@ -93,7 +105,7 @@ public class PacketUtils {
 
     public static byte[] palettePacket(int color1, int color2, int color3, int color4,
                                         int color5, int color6, int color7, int color8){
-        byte[] result = new byte[2 + 3 * 8];
+        byte[] result = new byte[3 + 3 * 8];
         result[0] = DELIMETER;
         result[1] = (byte) PacketTypes.PAL_8.ordinal();
         result[2] = (byte) Color.red(color1);
