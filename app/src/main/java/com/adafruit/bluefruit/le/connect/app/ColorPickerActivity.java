@@ -3,6 +3,7 @@ package com.adafruit.bluefruit.le.connect.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -167,15 +168,16 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         // Update UI
         mRgbColorView.setBackgroundColor(color);
 
-        final int r = (color >> 16) & 0xFF;
-        final int g = (color >> 8) & 0xFF;
-        final int b = (color >> 0) & 0xFF;
+        final int r = (color >> 16) & 0xFF; // Mask the third byte
+        final int g = (color >> 8) & 0xFF; // Mask the second byte
+        final int b = (color >> 0) & 0xFF; // Mask the first byte
         final String text = String.format(getString(R.string.colorpicker_rgbformat), r, g, b);
         mRgbTextView.setText(text);
     }
 
     public void onClickSend(View view) {
-        // Set the old color
+
+        // The color we're sending becomes the old color, so let's set the old color to the new color we're sending
         mColorPicker.setOldCenterColor(mSelectedColor);
 
         // Send selected color !Crgb
@@ -183,18 +185,91 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         byte g = (byte) ((mSelectedColor >> 8) & 0xFF);
         byte b = (byte) ((mSelectedColor >> 0) & 0xFF);
 
+        // red
+        byte r1 = (byte) 0xFF;
+        byte g1 = (byte) 0x00;
+        byte b1 = (byte) 0x00;
+
+        // Creates a buffer of size 2 + 3 = 5
+        // Each byte in the buffer reads from left to right (big endian), not right to left (little endian)
         ByteBuffer buffer = ByteBuffer.allocate(2 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
-        // prefix
+        // old prefix
         String prefix = "!C";
-        buffer.put(prefix.getBytes());
-
-        // values
+        buffer.put(prefix.getBytes()); // insert this
         buffer.put(r);
         buffer.put(g);
         buffer.put(b);
 
-        byte[] result = buffer.array();
+        String DELIMETER = "#";
+
+        //  PAL_1 => 8
+        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
+        buffer.put((byte) 8); // Pushes bytes to the array
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+
+        //  PAL_2 => 9
+        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
+        buffer.put((byte) 9); // Pushes bytes to the array
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+
+        //  PAL_4 => 10
+        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
+        buffer.put((byte) 10); // Pushes bytes to the array
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+
+        //  PAL_8 => 11
+        buffer.put(DELIMETER.getBytes()); // Pushes bytes to the array
+        buffer.put((byte) 11); // Pushes bytes to the array
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+        buffer.put(r);
+        buffer.put(g);
+        buffer.put(b);
+        buffer.put(r1);
+        buffer.put(g1);
+        buffer.put(b1);
+
+
+        byte[] result = buffer.array(); // Converts the buffer into a byte array
         sendDataWithCRC(result);
     }
+
+    // prefix with !C
+
+    // prefix with ![10]
 }
