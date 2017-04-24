@@ -40,10 +40,6 @@ public class TerminalActivity extends UartInterfaceActivity {
         setSaveButtonListener(saveButton);
         setSendButtonListener(sendButton);
 
-        // Start services
-        onServicesDiscovered();
-
-
         editText.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -67,6 +63,9 @@ public class TerminalActivity extends UartInterfaceActivity {
                 }
             }
         });
+
+        // Start services
+        onServicesDiscovered();
     }
 
     private void setSendButtonListener(final Button sendButton){
