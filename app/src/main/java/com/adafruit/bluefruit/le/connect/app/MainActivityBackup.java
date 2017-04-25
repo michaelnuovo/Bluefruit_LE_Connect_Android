@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.nsd.NsdManager;
-import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -56,14 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adafruit.bluefruit.le.connect.R;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.AndroidClient;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity2;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.test;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
@@ -90,7 +82,7 @@ import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 // Testing our first commit
 // Testing our fist commit to preview branch
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivityBackup extends AppCompatActivity implements
 
         // Interfaces
 
@@ -99,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
         FirmwareUpdater.FirmwareUpdaterListener { // com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
 
     // Constants
-    private final static String TAG = MainActivity.class.getSimpleName();
+    private final static String TAG = MainActivityBackup.class.getSimpleName();
     private final static long kMinDelayToUpdateUI = 200;    // in milliseconds
     private static final String kGenericAttributeService = "00001801-0000-1000-8000-00805F9B34FB";
     private static final String kServiceChangedCharacteristic = "00002A05-0000-1000-8000-00805F9B34FB";
@@ -192,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements
 //        startActivityForResult(intent, 2);
 
 //
-        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+        Intent intent = new Intent(MainActivityBackup.this, TerminalActivity.class);
         startActivityForResult(intent, 2);
 
                 //Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
@@ -450,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent = new Intent();
-            intent.setClass(MainActivity.this, SettingsActivity.class);
+            intent.setClass(MainActivityBackup.this, SettingsActivity.class);
             startActivityForResult(intent, kActivityRequestCode_Settings);
             return true;
         } else if (id == R.id.action_licenses) {
@@ -520,15 +512,15 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Log.d(TAG, "enableNotification wifi");
-                            BleUtils.enableWifi(true, MainActivity.this);
-                            MainActivity.super.onBackPressed();
+                            BleUtils.enableWifi(true, MainActivityBackup.this);
+                            MainActivityBackup.super.onBackPressed();
                         }
 
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.super.onBackPressed();
+                            MainActivityBackup.super.onBackPressed();
                         }
 
                     })
@@ -988,7 +980,7 @@ public class MainActivity extends AppCompatActivity implements
             mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
             BluetoothDevice device = mSelectedDeviceData.device;
 
-            mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
+            mBleManager.setBleListener(MainActivityBackup.this);           // Force set listener (could be still checking for updates...)
 
             if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities
                 showChooseDeviceServiceDialog(mSelectedDeviceData);
@@ -1264,7 +1256,7 @@ public class MainActivity extends AppCompatActivity implements
         showConnectionStatus(false);
         if (mComponentToStartWhenConnected != null) {
             Log.d(TAG, "Start component:" + mComponentToStartWhenConnected);
-            Intent intent = new Intent(MainActivity.this, mComponentToStartWhenConnected);
+            Intent intent = new Intent(MainActivityBackup.this, mComponentToStartWhenConnected);
             if (mComponentToStartWhenConnected == BeaconActivity.class && mSelectedDeviceData != null) {
                 intent.putExtra("rssi", mSelectedDeviceData.rssi);
             }
@@ -1299,7 +1291,7 @@ public class MainActivity extends AppCompatActivity implements
                 public void run() {
                     Log.d(TAG, "Failed installation detected");
                     // Ask user if should update
-                    new AlertDialog.Builder(MainActivity.this)
+                    new AlertDialog.Builder(MainActivityBackup.this)
                             .setTitle(R.string.scan_failedupdatedetected_title)
                             .setMessage(R.string.scan_failedupdatedetected_message)
                             .setPositiveButton(R.string.scan_failedupdatedetected_ok, new DialogInterface.OnClickListener() {
@@ -1308,13 +1300,13 @@ public class MainActivity extends AppCompatActivity implements
                                     showConnectionStatus(false);        // hide current dialogs because software update will display a dialog
                                     stopScanning();
 
-                                    mFirmwareUpdater.startFailedInstallationRecovery(MainActivity.this);
+                                    mFirmwareUpdater.startFailedInstallationRecovery(MainActivityBackup.this);
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    FirmwareUpdater.clearFailedInstallationRecoveryParams(MainActivity.this);
+                                    FirmwareUpdater.clearFailedInstallationRecoveryParams(MainActivityBackup.this);
                                     launchComponentActivity();
                                 }
                             })
@@ -1378,7 +1370,7 @@ public class MainActivity extends AppCompatActivity implements
                 public void run() {
                     // Ask user if should update
                     String message = String.format(getString(R.string.scan_softwareupdate_messageformat), latestRelease.version);
-                    new AlertDialog.Builder(MainActivity.this)
+                    new AlertDialog.Builder(MainActivityBackup.this)
                             .setTitle(R.string.scan_softwareupdate_title)
                             .setMessage(message)
                             .setPositiveButton(R.string.scan_softwareupdate_install, new DialogInterface.OnClickListener() {
@@ -1387,7 +1379,7 @@ public class MainActivity extends AppCompatActivity implements
                                     showConnectionStatus(false);        // hide current dialogs because software update will display a dialog
                                     stopScanning();
                                     //BluetoothDevice device = mBleManager.getConnectedDevice();
-                                    mFirmwareUpdater.downloadAndInstall(MainActivity.this, latestRelease);
+                                    mFirmwareUpdater.downloadAndInstall(MainActivityBackup.this, latestRelease);
                                 }
                             })
                             .setNeutralButton(R.string.scan_softwareupdate_notnow, new DialogInterface.OnClickListener() {
@@ -1812,7 +1804,7 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             Spanned result;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 result = Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY);
             } else {
                 result = Html.fromHtml(text);
@@ -2048,7 +2040,7 @@ public class MainActivity extends AppCompatActivity implements
                         final String packetText = BleUtils.bytesToHexWithSpaces(scanRecord);
                         final String clipboardLabel = getString(R.string.scan_device_advertising_title);
 
-                        new AlertDialog.Builder(MainActivity.this)
+                        new AlertDialog.Builder(MainActivityBackup.this)
                                 .setTitle(R.string.scan_device_advertising_title)
                                 .setMessage(packetText)
                                 .setPositiveButton(android.R.string.ok, null)

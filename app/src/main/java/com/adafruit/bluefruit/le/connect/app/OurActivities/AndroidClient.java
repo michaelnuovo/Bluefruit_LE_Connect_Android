@@ -28,7 +28,6 @@ public class AndroidClient extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_android_client);
-
         textOut = (EditText)findViewById(R.id.textout);
         Button buttonSend = (Button)findViewById(R.id.send);
         textIn = (TextView)findViewById(R.id.textin);
@@ -47,7 +46,6 @@ public class AndroidClient extends Activity {
     // Networking subroutines are performed here
     private static void newThread(){
         Thread thread = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try  {
