@@ -56,6 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.AndroidClient;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
@@ -194,7 +195,10 @@ public class MainActivity extends AppCompatActivity implements
 //        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
 //        startActivityForResult(intent, 2);
 
-                Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
+                //Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
+        //startActivityForResult(intent, 2);
+
+        Intent intent = new Intent(MainActivity.this, AndroidClient.class);
         startActivityForResult(intent, 2);
 
 
@@ -206,9 +210,9 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //wifi testViews();
-        initializeDiscoveryListener();
-        discoverServices();
+        testViews();
+//        initializeDiscoveryListener();
+        //discoverServices();
 
         // Init variables
         mBleManager = BleManager.getInstance(this);
@@ -372,59 +376,59 @@ public class MainActivity extends AppCompatActivity implements
         requestLocationPermissionIfNeeded();
     }
 
-    public void initializeDiscoveryListener() {
-
-        // Instantiate a new DiscoveryListener
-        mDiscoveryListener = new NsdManager.DiscoveryListener() {
-
-            //  Called as soon as service discovery begins.
-            @Override
-            public void onDiscoveryStarted(String regType) {
-                Log.d(TAG, "Service discovery started");
-            }
-
-            @Override
-            public void onServiceFound(NsdServiceInfo service) {
-                // A service was found!  Do something with it.
-                Log.d(TAG, "Service discovery success" + service);
-                if (!service.getServiceType().equals(SERVICE_TYPE)) {
-                    // Service type is the string containing the protocol and
-                    // transport layer for this service.
-                    Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
-                } else if (service.getServiceName().equals(mServiceName)) {
-                    // The name of the service tells the user what they'd be
-                    // connecting to. It could be "Bob's Chat App".
-                    Log.d(TAG, "Same machine: " + mServiceName);
-                } else if (service.getServiceName().contains("NsdChat")){
-                    mNsdManager.resolveService(service, mResolveListener);
-                }
-            }
-
-            @Override
-            public void onServiceLost(NsdServiceInfo service) {
-                // When the network service is no longer available.
-                // Internal bookkeeping code goes here.
-                Log.e(TAG, "service lost" + service);
-            }
-
-            @Override
-            public void onDiscoveryStopped(String serviceType) {
-                Log.i(TAG, "Discovery stopped: " + serviceType);
-            }
-
-            @Override
-            public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
-                mNsdManager.stopServiceDiscovery(this);
-            }
-
-            @Override
-            public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
-                mNsdManager.stopServiceDiscovery(this);
-            }
-        };
-    }
+//    public void initializeDiscoveryListener() {
+//
+//        // Instantiate a new DiscoveryListener
+//        mDiscoveryListener = new NsdManager.DiscoveryListener() {
+//
+//            //  Called as soon as service discovery begins.
+//            @Override
+//            public void onDiscoveryStarted(String regType) {
+//                Log.d(TAG, "Service discovery started");
+//            }
+//
+//            @Override
+//            public void onServiceFound(NsdServiceInfo service) {
+//                // A service was found!  Do something with it.
+//                Log.d(TAG, "Service discovery success" + service);
+//                if (!service.getServiceType().equals(SERVICE_TYPE)) {
+//                    // Service type is the string containing the protocol and
+//                    // transport layer for this service.
+//                    Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
+//                } else if (service.getServiceName().equals(mServiceName)) {
+//                    // The name of the service tells the user what they'd be
+//                    // connecting to. It could be "Bob's Chat App".
+//                    Log.d(TAG, "Same machine: " + mServiceName);
+//                } else if (service.getServiceName().contains("NsdChat")){
+//                    mNsdManager.resolveService(service, mResolveListener);
+//                }
+//            }
+//
+//            @Override
+//            public void onServiceLost(NsdServiceInfo service) {
+//                // When the network service is no longer available.
+//                // Internal bookkeeping code goes here.
+//                Log.e(TAG, "service lost" + service);
+//            }
+//
+//            @Override
+//            public void onDiscoveryStopped(String serviceType) {
+//                Log.i(TAG, "Discovery stopped: " + serviceType);
+//            }
+//
+//            @Override
+//            public void onStartDiscoveryFailed(String serviceType, int errorCode) {
+//                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
+//                mNsdManager.stopServiceDiscovery(this);
+//            }
+//
+//            @Override
+//            public void onStopDiscoveryFailed(String serviceType, int errorCode) {
+//                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
+//                mNsdManager.stopServiceDiscovery(this);
+//            }
+//        };
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

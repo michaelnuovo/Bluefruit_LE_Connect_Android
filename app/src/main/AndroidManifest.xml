@@ -23,6 +23,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
+    <!-- Permissions Michael added -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
@@ -209,19 +213,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.adafruit.bluefruit.le.connect.app.ControllerActivity" />
         </activity>
-
-
         <activity
             android:name=".app.OurActivities.TerminalActivity"
             android:label="@string/title_activity_terminal" />
         <activity
             android:name=".app.OurActivities.test"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".app.OurActivities.TerminalActivity2"
             android:label="@string/title_activity_terminal" />
-
+        <activity
+            android:name=".app.OurActivities.AndroidClient"
+            android:label="@string/title_activity_android_client"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

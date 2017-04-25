@@ -434,6 +434,8 @@
     <!-- Michae's Strings -->
     <string name="send_palette">Send</string>
     <string name="randomize_palette">Randomize</string>
+    <string name="title_activity_anroid_client">AnroidClient</string>
+    <string name="title_activity_android_client">AndroidClient</string>
 
     randomize_palette
 
