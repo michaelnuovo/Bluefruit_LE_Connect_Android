@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.connect.app.OurActivities;
+package com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers;
 
 import java.util.ArrayList;
 
@@ -46,20 +46,22 @@ public class UserCommand {
         return result.replace("\n","\\n");
     }
 
+    // TODO refactor this method using ByteBuffer
     public byte[] toPacket(){
         String command = toString().replace("\n","^").replace("\r","_");
         char[] commandChars = command.toCharArray();
-        byte[] result = new byte[1 + 1 + 1 + commandChars.length];
-        result[0] = Constants.DELIMITER;
-        result[1] = (byte) Constants.PacketTypes.USER_COMMAND.ordinal();
-        result[2] = (byte) commandChars.length;
+        byte[] result = new byte[2 + 1 + 1 + commandChars.length];
+        result[0] = (byte) Constants.DELIMTER_ONE;
+        result[1] = (byte) Constants.DELIMTER_TWO;
+        result[2] = (byte) Constants.PacketTypes.USER_COMMAND.ordinal();
+        result[3] = (byte) commandChars.length;
         for(int i = 0; i < commandChars.length; i++)
             if(commandChars[i] == '^')
-                result[i+3] = 10;
+                result[i+4] = 10;
             else if(commandChars[i] == '_')
-                result[i+3] = 13;
+                result[i+4] = 13;
             else
-                result[i+3] = (byte) commandChars[i];
+                result[i+4] = (byte) commandChars[i];
         return result;
     }
 }

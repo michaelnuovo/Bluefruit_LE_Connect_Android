@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 
@@ -103,14 +104,11 @@ public class TerminalActivity extends UartInterfaceActivity {
                 // Gets edit text input
                 String editTextInput = editText.getText().toString();
 
-                // Gets ASCII binary array of editTextInput
-                byte[] byteArrASCII = PacketUtils.userCommandPacket(editTextInput);
-
                 // Gets the packet
                 packet = PacketUtils.userCommandPacket(editTextInput);
 
                 // Adds line feed to end of packet if there isn't one already
-                if(packet[packet.length-1] != 10) packet = addTerminalLineFeed(packet);
+                packet = addTerminalLineFeed(packet);
 
                 // Gets formatted string of data from package
                 String packetStats = PacketUtils.getPacketStats(packet);
@@ -124,14 +122,18 @@ public class TerminalActivity extends UartInterfaceActivity {
                 // Closes soft keyboard
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+
+                PacketUtils.logByteArray(packet);
             }
 
             // Adds a line feed at the end of the packet if it's not there already
             private byte[] addTerminalLineFeed(byte[] packet){
-                if(packet[packet.length] == 10){
+                if(packet[packet.length-1] == 10){
                     return packet;
                 } else {
                     byte[] newPacket = new byte[1+packet.length];
+                    for(int i = 0; i < packet.length; i++) newPacket[i] = packet[i];
+                    newPacket[3]++; // increment the byte denote the number of subsequent bytes
                     newPacket[newPacket.length - 1] = 10;
                     return newPacket;
                 }

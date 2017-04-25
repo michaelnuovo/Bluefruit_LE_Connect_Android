@@ -33,7 +33,8 @@ import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1Color;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketUtils;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
@@ -132,6 +133,7 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                         "One Color",
                         "Two Colors",
                         "Four Colors",
+                        "Eight Colors",
                         "Pad"});
 
         Log.v("TAG","");
@@ -199,6 +201,9 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                 } else if (position == 3) {
                     //Log.v("TAG","Position is "+String.valueOf(position));
                     Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity4Colors.class);
+                    startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
+                } else if (position == 4) {
+                    Intent intent = new Intent(ControllerActivity.this, ColorPickerActivity8Colors.class);
                     startActivityForResult(intent, kActivityRequestCode_ColorPickerActivity);
                 } else {
                     //Log.v("TAG","Position is "+String.valueOf(position));
@@ -381,11 +386,18 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                     // 3 = delimeter one + delimeter two + packet type
                     ByteBuffer buffer = ByteBuffer.allocate(3 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
-                    // prefix
+                    // Add the delimeters
                     int delimeterOne = PacketUtils.DELIMTER_ONE;
                     int delimeterTwo = PacketUtils.DELIMTER_TWO;
                     buffer.put((byte) delimeterOne);
                     buffer.put((byte) delimeterTwo);
+
+                    // Add the ID
+                    if(i == 0) buffer.put((byte) PacketUtils.PacketTypes.QUAT.ordinal());
+                    if(i == 1) buffer.put((byte) PacketUtils.PacketTypes.ACCEL.ordinal());
+                    if(i == 2) buffer.put((byte) PacketUtils.PacketTypes.GYRO.ordinal());
+                    if(i == 3) buffer.put((byte) PacketUtils.PacketTypes.MAG.ordinal());
+                    if(i == 4) buffer.put((byte) PacketUtils.PacketTypes.MAG.ordinal());
 
                     // values
                     for (int j = 0; j < sensorData.values.length; j++)

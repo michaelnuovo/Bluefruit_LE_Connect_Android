@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.connect.app.OurActivities;
+package com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers;
 
 /**
  * Created by michael on 4/20/17.
@@ -7,6 +7,9 @@ package com.adafruit.bluefruit.le.connect.app.OurActivities;
 public class Constants {
 
     public static final char DELIMITER = '#';
+
+    static public final int DELIMTER_ONE = 0xAA;
+    static public final int DELIMTER_TWO = 0x55;
 
     public enum PacketTypes {
         NONE,//0

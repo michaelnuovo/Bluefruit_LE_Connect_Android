@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketUtils;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.adafruit.bluefruit.le.connect.ble.BleUtils;
 
@@ -58,6 +57,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
         byte checksum = 0;
         for (byte aData : data) {
             checksum += aData;
+            Log.v("TAG","checksum is "+String.valueOf(unsigned((int)checksum)));
         }
         checksum = (byte) (~checksum);       // Invert
 
@@ -68,11 +68,23 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
         // Send it
         Log.d(TAG, "Send to UART: " + BleUtils.bytesToHexWithSpaces(dataCrc));
+        Log.d(TAG, "Send to UART: " + bytesToDecimal(dataCrc));
 
         Log.v("TAG","sendDataWithCRC()");
         //PacketUtils.logByteArray(dataCrc);
 
         sendData(dataCrc);
+    }
+
+    private String bytesToDecimal(byte[] ba){
+        String result = "";
+        for(byte b : ba) result += String.valueOf(unsigned((int)b)) + " ";
+        return result;
+    }
+
+    private int unsigned(int i){
+        if(i < 0) return i + 256;
+        return i;
     }
 
     // endregion

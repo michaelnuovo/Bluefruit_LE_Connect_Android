@@ -10,17 +10,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette1;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -29,7 +29,7 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
 
     // Constants
-    private final static String classPrefs = ColorPickerActivity2Colors.class.getName();
+    private final static String classPrefs = ColorPickerActivity1Color.class.getName();
     //private final static int defaultColor = 0xFFF0FF00;
     //private final static int defaultColor = 0xffffff00;
     private final static int defaultColor = 0xff4A14CC;
@@ -257,7 +257,7 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
 
     public void onClickSend(View view) {
         int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
-        byte[] palettePacket = PacketUtils.palettePacket(color1);
+        byte[] palettePacket = new Palette1(color1).packet;
         PacketUtils.logByteArray(palettePacket);
         sendDataWithCRC(palettePacket);
     }

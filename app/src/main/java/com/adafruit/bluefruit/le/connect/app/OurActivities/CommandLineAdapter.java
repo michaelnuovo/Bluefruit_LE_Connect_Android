@@ -8,10 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.UserCommand;
 
 import java.util.ArrayList;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by michael on 4/22/17.

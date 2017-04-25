@@ -13,13 +13,15 @@ import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette4;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette8;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -28,7 +30,7 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
 
     // Constants
-    private final static String classPrefs = ColorPickerActivity2Colors.class.getName();
+    private final static String classPrefs = ColorPickerActivity8Colors.class.getName();
     //private final static int defaultColor = 0xFFF0FF00;
     private final static int defaultColor = 0xffffff00;
 
@@ -233,11 +235,11 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
     // This method is called when the color on the color wheel (color picker) is changed
     @Override
     public void onColorChanged(int color) {
-        currentSelectedColor = color;
-        returnDefaultColorView().setBackgroundColor(color);
+        //currentSelectedColor = color;
+        View defaultColorView = returnDefaultColorView();
+        defaultColorView.setBackgroundColor(color);
+        saveToPreferences(String.valueOf(defaultColorView.getId()),color);
     }
-
-
 
     @Override
     public void onStop() {
@@ -298,7 +300,7 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         int color6 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView6.getId()));
         int color7 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView7.getId()));
         int color8 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView8.getId()));
-        byte[] palettePacket = PacketUtils.palettePacket(color1,color2,color3,color4,color5,color6,color7,color8);
+        byte[] palettePacket = new Palette8(color1,color2,color3,color4,color5,color6,color7,color8).packet;
         PacketUtils.logByteArray(palettePacket);
         sendDataWithCRC(palettePacket);
     }

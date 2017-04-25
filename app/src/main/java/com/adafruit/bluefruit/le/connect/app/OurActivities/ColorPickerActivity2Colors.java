@@ -13,13 +13,15 @@ import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette1;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette2;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -214,8 +216,10 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     // This method is called when the color on the color wheel (color picker) is changed
     @Override
     public void onColorChanged(int color) {
-        currentSelectedColor = color;
-        returnDefaultColorView().setBackgroundColor(color);
+        //currentSelectedColor = color;
+        View defaultColorView = returnDefaultColorView();
+        defaultColorView.setBackgroundColor(color);
+        saveToPreferences(String.valueOf(defaultColorView.getId()),color);
     }
 
 
@@ -273,7 +277,7 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
     public void onClickSend(View view) {
         int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
         int color2 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView2.getId()));
-        byte[] palettePacket = PacketUtils.palettePacket(color1,color2);
+        byte[] palettePacket = new Palette2(color1, color2).packet;
         PacketUtils.logByteArray(palettePacket);
         sendDataWithCRC(palettePacket);
     }

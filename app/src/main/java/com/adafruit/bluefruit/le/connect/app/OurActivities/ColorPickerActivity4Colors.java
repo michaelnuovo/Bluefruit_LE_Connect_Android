@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,25 +13,24 @@ import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette2;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette4;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
-import org.apache.commons.codec.binary.Hex;
-
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 public class ColorPickerActivity4Colors extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
     // Log
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
 
     // Constants
-    private final static String classPrefs = ColorPickerActivity2Colors.class.getName();
+    private final static String classPrefs = ColorPickerActivity4Colors.class.getName();
     //private final static int defaultColor = 0xFFF0FF00;
     //private final static int defaultColor = 0xffffff00;
     private final static int defaultColor = 0xff4A14CC;
@@ -275,8 +273,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         int color3 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView3.getId()));
         int color4 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView4.getId()));
 
-        byte[] palettePacket = PacketUtils.palettePacket(color1,color2,color3,color4);
-        PacketUtils.logByteArray(palettePacket);
+        byte[] palettePacket = new Palette4(color1, color2, color3, color4).packet;
         sendDataWithCRC(palettePacket);
     }
 }

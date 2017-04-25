@@ -1,23 +1,26 @@
 package com.adafruit.bluefruit.le.connect.app.OurActivities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.connect.R;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.UserCommand;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 
 import java.util.ArrayList;
 
 public class TerminalActivity2 extends UartInterfaceActivity {
+
+    private final static String classPrefs = ColorPickerActivity8Colors.class.getName();
 
     TextView textView;
 
@@ -43,14 +46,17 @@ public class TerminalActivity2 extends UartInterfaceActivity {
         editText4 = (EditText) findViewById(R.id.editText4);
         saveButton = (Button) findViewById(R.id.saveButton);
 
+
+  // TODO learn how to save an array list of type UserCommand as a json object and save it and load it to prefs
+
         // Adapt the command line history to the list view
         ListView listView = (ListView) findViewById(R.id.history);
-        ArrayList<UserCommand> history = loadFromPreferences("userCommandHistory");
-        ArrayAdapter<UserCommand> arrayAdapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.activity_list_item,
-                history );
-        listView.setAdapter(arrayAdapter);
+//        ArrayList<UserCommand> history = loadFromPreferences("userCommandHistory");
+//        ArrayAdapter<UserCommand> arrayAdapter = new ArrayAdapter<>(
+//                this,
+//                android.R.layout.activity_list_item,
+//                history );
+//        listView.setAdapter(arrayAdapter);
 
         // On enter key event, shifts focus to next edit text
         setEnterKeyKeyListener(editText1);
@@ -65,6 +71,23 @@ public class TerminalActivity2 extends UartInterfaceActivity {
         onServicesDiscovered();
     }
 
+    //http://stackoverflow.com/questions/28439003/use-parcelable-to-store-item-as-sharedpreferences
+    //private void saveJson
+
+    private void saveToPreferences(String stringHandle, int intVal){
+        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(stringHandle, intVal);
+        editor.apply();
+    }
+
+    private int loadFromPreferences(String stringHandle){
+
+        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
+        return preferences.getInt(stringHandle,-1);
+    }
+
+
     // Listens for when save button is pressed and performs routines
     private void setSaveButtonListener(Button button){
         button.setOnClickListener(new View.OnClickListener() {
@@ -78,14 +101,11 @@ public class TerminalActivity2 extends UartInterfaceActivity {
                 String text = command.toStringShowLineFeeds();
                 Log.v("TAG","text is "+text);
                 textView.setText(text);
-                refreshHistory();
+                //refreshHistory();
             }
         });
     }
 
-    private static void refreshHistory(){
-        history.
-    }
 
     private void setEnterKeyKeyListener(final EditText editText){
         editText.setOnKeyListener(new View.OnKeyListener() {
