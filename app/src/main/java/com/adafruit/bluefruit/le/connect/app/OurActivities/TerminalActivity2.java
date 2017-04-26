@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -15,21 +17,28 @@ import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.UserCommand;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TerminalActivity2 extends UartInterfaceActivity {
 
     private final static String classPrefs = ColorPickerActivity8Colors.class.getName();
 
-    TextView textView;
+    //TextView textView;
+    ListView listView;
 
     EditText editText1;
     EditText editText2;
     EditText editText3;
     EditText editText4;
 
-    Button saveButton;
+    TextView saveButton;
+
+    ArrayList<UserCommand> history;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +48,27 @@ public class TerminalActivity2 extends UartInterfaceActivity {
 
         mBleManager = BleManager.getInstance(this);
 
-        textView = (TextView) findViewById(R.id.textView);
+        //textView = (TextView) findViewById(R.id.textView);
         editText1 = (EditText) findViewById(R.id.editText1);
         editText2 = (EditText) findViewById(R.id.editText2);
         editText3 = (EditText) findViewById(R.id.editText3);
         editText4 = (EditText) findViewById(R.id.editText4);
-        saveButton = (Button) findViewById(R.id.saveButton);
+        saveButton = (TextView) findViewById(R.id.saveButton);
+        listView = (ListView) findViewById(R.id.history);
 
+        // Return the history
+        history = getHistory();
 
-  // TODO learn how to save an array list of type UserCommand as a json object and save it and load it to prefs
+        // TODO learn how to save an array list of type UserCommand as a json object and save it and load it to prefs
 
         // Adapt the command line history to the list view
-        ListView listView = (ListView) findViewById(R.id.history);
-//        ArrayList<UserCommand> history = loadFromPreferences("userCommandHistory");
-//        ArrayAdapter<UserCommand> arrayAdapter = new ArrayAdapter<>(
-//                this,
-//                android.R.layout.activity_list_item,
-//                history );
-//        listView.setAdapter(arrayAdapter);
+
+        CommandLineAdapter adapter = new CommandLineAdapter(
+                this,
+                R.layout.history_list_item,
+                history);
+
+        listView.setAdapter(adapter);
 
         // On enter key event, shifts focus to next edit text
         setEnterKeyKeyListener(editText1);
@@ -66,9 +78,35 @@ public class TerminalActivity2 extends UartInterfaceActivity {
         setSaveButtonListener(saveButton);
 
 
-
         // Start services
         onServicesDiscovered();
+    }
+
+    // Returns an array list of UserCommand objects (the command line history)
+    private ArrayList<UserCommand> getHistory(){
+        SharedPreferences preferences = getPrefs();
+        String jsonString = preferences.getString("history","");
+        Type type = new TypeToken<ArrayList<UserCommand>>(){}.getType();
+        ArrayList<UserCommand> userCommands;
+        // If the json string is empty initialize to default history
+        if(jsonString.equals(""))
+            userCommands = getDefaultHistory();
+        // else initialize to deserialized json string
+        else
+            userCommands = new Gson().fromJson(jsonString, type);
+        return userCommands;
+    }
+
+    private ArrayList<UserCommand> getDefaultHistory(){
+        //UserCommand defaultCommand = new UserCommand("xyz","","","");
+        UserCommand defaultCommand = UserCommand.testCommand1();
+        ArrayList<UserCommand> defaultHistory = new ArrayList<>();
+        defaultHistory.add(defaultCommand);
+        return defaultHistory;
+    }
+
+    private SharedPreferences getPrefs(){
+        return getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
     }
 
     //http://stackoverflow.com/questions/28439003/use-parcelable-to-store-item-as-sharedpreferences
@@ -81,15 +119,15 @@ public class TerminalActivity2 extends UartInterfaceActivity {
         editor.apply();
     }
 
+    //
     private int loadFromPreferences(String stringHandle){
-
         SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
         return preferences.getInt(stringHandle,-1);
     }
 
 
     // Listens for when save button is pressed and performs routines
-    private void setSaveButtonListener(Button button){
+    private void setSaveButtonListener(TextView button){
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,12 +136,49 @@ public class TerminalActivity2 extends UartInterfaceActivity {
                         editText2.getText().toString(),
                         editText3.getText().toString(),
                         editText4.getText().toString());
-                String text = command.toStringShowLineFeeds();
-                Log.v("TAG","text is "+text);
-                textView.setText(text);
-                //refreshHistory();
+                history.add(command);
+                saveHistory();
+                clearEditTexts();
+                collapseEditTexts();
+                hideSoftKeyboard();
             }
         });
+    }
+
+    private void clearEditTexts(){
+        editText1.setText("");
+        editText2.setText("");
+        editText3.setText("");
+        editText4.setText("");
+    }
+
+    private void collapseEditTexts(){
+        //editText1.setVisibility(View.GONE);
+        editText2.setVisibility(View.GONE);
+        editText3.setVisibility(View.GONE);
+        editText4.setVisibility(View.GONE);
+    }
+
+    //http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+    private void hideSoftKeyboard(){
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private void saveHistory(){
+        String jsonString = new Gson().toJson(history);
+        saveStringToPreferences("history", jsonString);
+    }
+
+    private void saveStringToPreferences(String handle, String string){
+        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(handle, string);
+        editor.apply();
     }
 
 
@@ -149,5 +224,9 @@ public class TerminalActivity2 extends UartInterfaceActivity {
                 return false; // return false if you don't want the widget host to handle the key
             }
         });
+    }
+
+    private static void sendData(){
+
     }
 }

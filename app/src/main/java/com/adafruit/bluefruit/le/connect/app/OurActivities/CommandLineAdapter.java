@@ -18,27 +18,48 @@ import java.util.ArrayList;
 
 public class CommandLineAdapter extends ArrayAdapter<UserCommand> {
 
+    public CommandLineAdapter(Context context, int textViewResourceId) {
+        super(context, textViewResourceId);
+    }
 
-    public CommandLineAdapter(Context context, ArrayList<UserCommand> users) {
-        super(context, 0, users);
+    public CommandLineAdapter(Context context, int resource, ArrayList<UserCommand> items) {
+        super(context, resource, items);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        UserCommand command = getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.commandline_history_list_item, parent, false);
+
+        View v = convertView;
+
+        if (v == null) {
+            LayoutInflater vi;
+            vi = LayoutInflater.from(getContext());
+            v = vi.inflate(R.layout.history_list_item, null);
+
         }
-        // Lookup view for data population
-        TextView text = (TextView) convertView.findViewById(R.id.sendButton);
-        TextView send = (TextView) convertView.findViewById(R.id.sendButton);
-        TextView edit = (TextView) convertView.findViewById(R.id.editButton);
-        // Populate the data into the template view using the data object
-        text.setText(command.toStringShowLineFeeds());
-        // Return the completed view to render on screen
-        return convertView;
+
+        UserCommand userCommand = getItem(position);
+
+        if (userCommand != null) {
+
+            TextView textView = (TextView) v.findViewById(R.id.text);
+            TextView sendButton = (TextView) v.findViewById(R.id.sendButton);
+
+            if (textView != null) textView.setText(userCommand.toStringShowLineFeeds());
+            if (sendButton != null) setSendButtonListener(sendButton, userCommand);
+
+        }
+
+        return v;
+    }
+
+    private void setSendButtonListener(TextView sendButton, final UserCommand userCommand){
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TerminalActivity2.sendDataWithCRC(userCommand.toPacket());
+            }
+        });
     }
 
 }

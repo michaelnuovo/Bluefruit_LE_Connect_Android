@@ -1,14 +1,6 @@
 package com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers;
 
-import java.util.ArrayList;
-
-/**
- * Created by michael on 4/22/17.
- */
-
 public class UserCommand {
-
-    static ArrayList<UserCommand> history = new ArrayList<>();
 
     public String line1;
     public String line2;
@@ -22,23 +14,22 @@ public class UserCommand {
         this.line4 = line4;
     }
 
-    public void commitToMemory(){
-        history.add(this);
-    }
-
     public String toString(){
 
-        String one = new String(line1);
-        String two = new String(line2);
-        String three = new String(line3);
-        String four = new String(line4);
+        // Convert null values to empty string
+        if(line1 == null) line1 = "";
+        if(line2 == null) line2 = "";
+        if(line3 == null) line3 = "";
+        if(line4 == null) line4 = "";
 
-        if(!line1.equals("")) one += "\n"; // if the line is not empty, add a line feed character
-        if(!line2.equals("")) two += "\n"; // if the line is not empty, add a line feed character
-        if(!line3.equals("")) three += "\n"; // if the line is not empty, add a line feed character
-        if(!line4.equals("")) four += "\n"; // if the line is not empty, add a line feed character
+        // Adds line feed characters at end of non empty lines
+        if(!line1.equals("")) line1 += "\n";
+        if(!line2.equals("")) line2 += "\n";
+        if(!line3.equals("")) line3 += "\n";
+        if(!line4.equals("")) line4 += "\n";
 
-        return one + two + three + four;
+        // Return the lines in concatenation
+        return line1 + line2 + line3 + line4;
     }
 
     public String toStringShowLineFeeds(){
@@ -63,5 +54,10 @@ public class UserCommand {
             else
                 result[i+4] = (byte) commandChars[i];
         return result;
+    }
+
+    public static UserCommand testCommand1(){
+        //private static String myString = "test,2\n1234,5678,9012\n345.678,abcdefg,9876\n";
+        return new UserCommand("test,2","1234,5678,9012","345.678,abcdefg,9876",null);
     }
 }

@@ -227,6 +227,10 @@
             android:name=".app.OurActivities.AndroidClient"
             android:label="@string/title_activity_android_client"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".app.OurActivities.SensorDataActivity"
+            android:label="@string/title_activity_android_client"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

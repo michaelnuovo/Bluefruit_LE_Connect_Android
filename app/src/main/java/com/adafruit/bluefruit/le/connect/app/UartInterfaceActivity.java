@@ -25,8 +25,8 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     public static final int kTxMaxCharacters = 20;
 
     // Data
-    protected BleManager mBleManager;
-    protected BluetoothGattService mUartService;
+    protected static BleManager mBleManager;
+    protected static BluetoothGattService mUartService;
     private boolean isRxNotificationEnabled = false;
 
 
@@ -36,7 +36,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
         sendData(value);
     }
 
-    protected void sendData(byte[] data) {
+    protected static void sendData(byte[] data) {
         if (mUartService != null) {
             // Split the value into chunks (UART service has a maximum number of characters that can be written )
             for (int i = 0; i < data.length; i += kTxMaxCharacters) {
@@ -49,7 +49,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     }
 
     // Send data to UART and add a byte with a custom CRC
-    protected void sendDataWithCRC(byte[] data) {
+    public static void sendDataWithCRC(byte[] data) {
 
         Log.v("TAG","data.length is "+data.length);
 
@@ -76,13 +76,13 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
         sendData(dataCrc);
     }
 
-    private String bytesToDecimal(byte[] ba){
+    private static String bytesToDecimal(byte[] ba){
         String result = "";
         for(byte b : ba) result += String.valueOf(unsigned((int)b)) + " ";
         return result;
     }
 
-    private int unsigned(int i){
+    private static int unsigned(int i){
         if(i < 0) return i + 256;
         return i;
     }

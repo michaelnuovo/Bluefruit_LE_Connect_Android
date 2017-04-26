@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="0dp"
+        android:layout_weight="2"
+        android:layout_height="wrap_content"
+        android:background="#ff00ff"
+        android:textSize="25dp"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/sendButton"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:background="#00ff00"
+        android:textSize="25dp"
+        android:text="SEND"
+        android:padding="10dp"/>
+
+</LinearLayout>

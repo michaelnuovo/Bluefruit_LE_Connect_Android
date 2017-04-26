@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.nsd.NsdManager;
-import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -61,9 +60,9 @@ import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity1C
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.SensorDataActivity;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity2;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.test;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.connect.app.update.FirmwareUpdater;
@@ -155,6 +154,14 @@ public class MainActivity extends AppCompatActivity implements
     private CheckBox mFiltersUnnamedCheckBox;
     private CheckBox mFiltersUartCheckBox;
 
+    private Button p1;
+    private Button p2;
+    private Button p4;
+    private Button p8;
+    private Button userCommands;
+    private Button androidClient;
+    private Button sensorData;
+
     // Data
     private BleManager mBleManager;
     private boolean mIsScanPaused = true;
@@ -192,11 +199,11 @@ public class MainActivity extends AppCompatActivity implements
 //        startActivityForResult(intent, 2);
 
 //
-        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
-        startActivityForResult(intent, 2);
+//        Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+//        startActivityForResult(intent, 2);
 
-                //Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
-        //startActivityForResult(intent, 2);
+                Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
+        startActivityForResult(intent, 2);
 //
 //        Intent intent = new Intent(MainActivity.this, AndroidClient.class);
 //        startActivityForResult(intent, 2);
@@ -220,6 +227,70 @@ public class MainActivity extends AppCompatActivity implements
         mPeripheralList = new PeripheralList();
 
         // UI
+        p1 = (Button) findViewById(R.id.p1);
+        p2 = (Button) findViewById(R.id.p2);
+        p4 = (Button) findViewById(R.id.p4);
+        p8 = (Button) findViewById(R.id.p8);
+        userCommands = (Button) findViewById(R.id.userCommands);
+        androidClient = (Button) findViewById(R.id.androidClient);
+        sensorData = (Button) findViewById(R.id.sensorData);
+
+        p1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ColorPickerActivity1Color.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        p2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ColorPickerActivity2Colors.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        p4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ColorPickerActivity4Colors.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        p8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ColorPickerActivity8Colors.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        userCommands.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        androidClient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AndroidClient.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        sensorData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SensorDataActivity.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
         mScannedDevicesListView = (ExpandableHeightExpandableListView) findViewById(R.id.scannedDevicesListView);
         mScannedDevicesAdapter = new ExpandableListAdapter();
         mScannedDevicesListView.setAdapter(mScannedDevicesAdapter);
@@ -376,59 +447,20 @@ public class MainActivity extends AppCompatActivity implements
         requestLocationPermissionIfNeeded();
     }
 
-//    public void initializeDiscoveryListener() {
-//
-//        // Instantiate a new DiscoveryListener
-//        mDiscoveryListener = new NsdManager.DiscoveryListener() {
-//
-//            //  Called as soon as service discovery begins.
-//            @Override
-//            public void onDiscoveryStarted(String regType) {
-//                Log.d(TAG, "Service discovery started");
-//            }
-//
-//            @Override
-//            public void onServiceFound(NsdServiceInfo service) {
-//                // A service was found!  Do something with it.
-//                Log.d(TAG, "Service discovery success" + service);
-//                if (!service.getServiceType().equals(SERVICE_TYPE)) {
-//                    // Service type is the string containing the protocol and
-//                    // transport layer for this service.
-//                    Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
-//                } else if (service.getServiceName().equals(mServiceName)) {
-//                    // The name of the service tells the user what they'd be
-//                    // connecting to. It could be "Bob's Chat App".
-//                    Log.d(TAG, "Same machine: " + mServiceName);
-//                } else if (service.getServiceName().contains("NsdChat")){
-//                    mNsdManager.resolveService(service, mResolveListener);
-//                }
-//            }
-//
-//            @Override
-//            public void onServiceLost(NsdServiceInfo service) {
-//                // When the network service is no longer available.
-//                // Internal bookkeeping code goes here.
-//                Log.e(TAG, "service lost" + service);
-//            }
-//
-//            @Override
-//            public void onDiscoveryStopped(String serviceType) {
-//                Log.i(TAG, "Discovery stopped: " + serviceType);
-//            }
-//
-//            @Override
-//            public void onStartDiscoveryFailed(String serviceType, int errorCode) {
-//                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
-//                mNsdManager.stopServiceDiscovery(this);
-//            }
-//
-//            @Override
-//            public void onStopDiscoveryFailed(String serviceType, int errorCode) {
-//                Log.e(TAG, "Discovery failed: Error code:" + errorCode);
-//                mNsdManager.stopServiceDiscovery(this);
-//            }
-//        };
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Set listener
+        mBleManager.setBleListener(this);
+
+        // Autostart scan
+        autostartScan();
+
+        // Update UI
+        updateUI();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -462,19 +494,7 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
 
-        // Set listener
-        mBleManager.setBleListener(this);
-
-        // Autostart scan
-        autostartScan();
-
-        // Update UI
-        updateUI();
-    }
 
     private void autostartScan() {
         if (BleUtils.getBleStatus(this) == BleUtils.STATUS_BLE_ENABLED) {
@@ -640,29 +660,6 @@ public class MainActivity extends AppCompatActivity implements
                 });
 
     }
-/*
-    public class HeightAnimation extends Animation {
-        protected final int originalHeight;
-        protected final View view;
-        protected float perValue;
-
-        public HeightAnimation(View view, int fromHeight, int toHeight) {
-            this.view = view;
-            this.originalHeight = fromHeight;
-            this.perValue = (toHeight - fromHeight);
-        }
-
-        @Override
-        protected void applyTransformation(float interpolatedTime, Transformation t) {
-            view.getLayoutParams().height = (int) (originalHeight + perValue * interpolatedTime);
-            view.requestLayout();
-        }
-
-        @Override
-        public boolean willChangeBounds() {
-            return true;
-        }
-    }*/
 
     public void onClickExpandFilters(View view) {
         SharedPreferences preferences = getSharedPreferences(kPreferences, MODE_PRIVATE);
@@ -748,67 +745,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    // We choose one bluetooth device, and then we choose which component we want to connect with
-    private void showChooseDeviceServiceDialog(final BluetoothDeviceData deviceData) {
 
-        // Get an AlterDialog box builder object
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        // Get a string to use as a title for the dialog box
-        String title = String.format(getString(R.string.scan_connectto_dialog_title_format), deviceData.getNiceName());
-
-        // Creates an array items of length kComponentsNameIds.length
-        String[] items = new String[kComponentsNameIds.length];
-
-        // Populates the array with string value corresponding to the string IDs
-        for (int i = 0; i < kComponentsNameIds.length; i++)
-            items[i] = getString(kComponentsNameIds[i]);
-
-        // Method chain
-        // Set the title on the builder
-        // Set list items
-        // Pass in an event listener to be set on items
-        // Set the component activity to start
-        builder.setTitle(title)
-                .setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (kComponentsNameIds[which]) {
-                            case R.string.scan_connectservice_info: {          // Info
-                                mComponentToStartWhenConnected = InfoActivity.class;
-                                break;
-                            }
-                            case R.string.scan_connectservice_uart: {           // Uart
-                                mComponentToStartWhenConnected = UartActivity.class;
-                                break;
-                            }
-                            case R.string.scan_connectservice_pinio: {        // PinIO
-                                mComponentToStartWhenConnected = PinIOActivity.class;
-                                break;
-                            }
-                            case R.string.scan_connectservice_controller: {    // Controller
-                                mComponentToStartWhenConnected = ControllerActivity.class;
-                                break;
-                            }
-                            case R.string.scan_connectservice_beacon: {        // Beacon
-                                mComponentToStartWhenConnected = BeaconActivity.class;
-                                break;
-                            }
-                            case R.string.scan_connectservice_neopixel: {       // Neopixel
-                                mComponentToStartWhenConnected = NeopixelActivity.class;
-                                break;
-                            }
-                        }
-
-                        if (mComponentToStartWhenConnected != null) {
-                            connect(deviceData.device);            // First connect to the device, and when connected go to selected activity
-                        }
-                    }
-                });
-
-        // Show dialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
     private boolean manageBluetoothAvailability() {
         boolean isEnabled = true;
@@ -873,12 +810,6 @@ public class MainActivity extends AppCompatActivity implements
         return areLocationServiceReady;
     }
 
-    private void connect(BluetoothDevice device) {
-        boolean isConnecting = mBleManager.connect(this, device.getAddress());
-        if (isConnecting) {
-            showConnectionStatus(true);
-        }
-    }
 
     private void startHelp() {
         // Launch app help activity
@@ -919,13 +850,68 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void showConnectionStatus(boolean enable) {
-        showStatusDialog(enable, R.string.scan_connecting);
-    }
+
 
     private void showGettingUpdateInfoState() {
         showConnectionStatus(false);
         showStatusDialog(true, R.string.scan_gettingupdateinfo);
+    }
+
+
+
+    // region Actions
+    public void onClickScannedDevice(final View view) {
+        final int groupPosition = (Integer) view.getTag();
+
+        if (mScannedDevicesListView.isGroupExpanded(groupPosition)) {
+            mScannedDevicesListView.collapseGroup(groupPosition);
+        } else {
+            mScannedDevicesListView.expandGroup(groupPosition, true);
+
+            // Force scrolling to view the children
+            mDevicesScrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mScannedDevicesListView.scrollToGroup(groupPosition, view, mDevicesScrollView);
+                }
+            });
+        }
+    }
+
+    // TODO onClickDeviceConnect
+    public void onClickDeviceConnect(int scannedDeviceIndex) {
+        stopScanning();
+
+        ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
+        if (scannedDeviceIndex < filteredPeripherals.size()) {
+            mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
+            BluetoothDevice device = mSelectedDeviceData.device;
+
+            mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
+
+            if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities
+                //showChooseDeviceServiceDialog(mSelectedDeviceData);
+                Log.v("TAG","ASDASD");
+                connect(mSelectedDeviceData.device);
+            } else {                          // if no uart, then go directly to info
+                Log.d(TAG, "No UART service found. Go to InfoActivity");
+                mComponentToStartWhenConnected = InfoActivity.class;
+                connect(device);
+            }
+        } else {
+            Log.w(TAG, "onClickDeviceConnect index does not exist: " + scannedDeviceIndex);
+        }
+    }
+
+    private void connect(BluetoothDevice device) {
+        boolean isConnecting = mBleManager.connect(this, device.getAddress());
+        if (isConnecting) {
+            showConnectionStatus(true);
+        }
+    }
+
+    private void showConnectionStatus(boolean enable) {
+        showStatusDialog(enable, R.string.scan_connecting);
     }
 
     private void showStatusDialog(boolean show, int stringId) {
@@ -961,45 +947,69 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    // region Actions
-    public void onClickScannedDevice(final View view) {
-        final int groupPosition = (Integer) view.getTag();
 
-        if (mScannedDevicesListView.isGroupExpanded(groupPosition)) {
-            mScannedDevicesListView.collapseGroup(groupPosition);
-        } else {
-            mScannedDevicesListView.expandGroup(groupPosition, true);
 
-            // Force scrolling to view the children
-            mDevicesScrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mScannedDevicesListView.scrollToGroup(groupPosition, view, mDevicesScrollView);
-                }
-            });
-        }
-    }
 
-    public void onClickDeviceConnect(int scannedDeviceIndex) {
-        stopScanning();
+    // We choose one bluetooth device, and then we choose which component we want to connect with
+    private void showChooseDeviceServiceDialog(final BluetoothDeviceData deviceData) {
 
-        ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
-        if (scannedDeviceIndex < filteredPeripherals.size()) {
-            mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
-            BluetoothDevice device = mSelectedDeviceData.device;
+        // Get an AlterDialog box builder object
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-            mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
+        // Get a string to use as a title for the dialog box
+        String title = String.format(getString(R.string.scan_connectto_dialog_title_format), deviceData.getNiceName());
 
-            if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities
-                showChooseDeviceServiceDialog(mSelectedDeviceData);
-            } else {                          // if no uart, then go directly to info
-                Log.d(TAG, "No UART service found. Go to InfoActivity");
-                mComponentToStartWhenConnected = InfoActivity.class;
-                connect(device);
-            }
-        } else {
-            Log.w(TAG, "onClickDeviceConnect index does not exist: " + scannedDeviceIndex);
-        }
+        // Creates an array items of length kComponentsNameIds.length
+        String[] items = new String[kComponentsNameIds.length];
+
+        // Populates the array with string value corresponding to the string IDs
+        for (int i = 0; i < kComponentsNameIds.length; i++)
+            items[i] = getString(kComponentsNameIds[i]);
+
+        // Method chain
+        // Set the title on the builder
+        // Set list items
+        // Pass in an event listener to be set on items
+        // Set the component activity to start
+        builder.setTitle(title)
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (kComponentsNameIds[which]) {
+                            case R.string.scan_connectservice_info: {          // Info
+                                mComponentToStartWhenConnected = InfoActivity.class;
+                                break;
+                            }
+                            case R.string.scan_connectservice_uart: {           // Uart
+                                mComponentToStartWhenConnected = UartActivity.class;
+                                break;
+                            }
+                            case R.string.scan_connectservice_pinio: {        // PinIO
+                                mComponentToStartWhenConnected = PinIOActivity.class;
+                                break;
+                            }
+                            case R.string.scan_connectservice_controller: {    // Controller
+                                mComponentToStartWhenConnected = ControllerActivity.class;
+                                break;
+                            }
+                            case R.string.scan_connectservice_beacon: {        // Beacon
+                                mComponentToStartWhenConnected = BeaconActivity.class;
+                                break;
+                            }
+                            case R.string.scan_connectservice_neopixel: {       // Neopixel
+                                mComponentToStartWhenConnected = NeopixelActivity.class;
+                                break;
+                            }
+                        }
+
+                        if (mComponentToStartWhenConnected != null) {
+                            connect(deviceData.device);            // First connect to the device, and when connected go to selected activity
+                        }
+                    }
+                });
+
+        // Show dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void onClickScan(View view) {

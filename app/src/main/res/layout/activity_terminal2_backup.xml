@@ -13,7 +13,6 @@
         android:background="#00ffff"
         android:stackFromBottom="true"/>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,8 +22,8 @@
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp">
-
+            android:paddingBottom="8dp"
+            android:paddingLeft="20dp">
             <EditText
                 android:id="@+id/editText1"
                 android:layout_width="match_parent"
@@ -34,6 +33,9 @@
                 android:textSize="25dp"
                 android:textColor="#ffffff"
                 android:inputType="textWebEmailAddress"
+                android:paddingTop="10dp"
+                android:paddingLeft="10dp"
+                android:paddingBottom="5dp"
                 android:background="#ff0000"
                 android:cursorVisible="true" />
             <EditText
@@ -45,6 +47,9 @@
                 android:textColor="#ffffff"
                 android:inputType="textEmailAddress"
                 android:visibility="gone"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:paddingBottom="5dp"
                 android:background="#00ff00"
                 android:cursorVisible="true"/>
             <EditText
@@ -55,6 +60,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:visibility="gone"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:paddingBottom="5dp"
                 android:background="#0000ff"
                 android:cursorVisible="true"/>
             <EditText
@@ -65,20 +73,23 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:visibility="gone"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:paddingBottom="10dp"
                 android:background="#ffff00"
                 android:cursorVisible="true"/>
         </LinearLayout>
 
-        <TextView
+        <Button
             android:id="@+id/saveButton"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="[SAVE]"
-            android:textSize="25dp"
-            android:textColor="#ffffff"
-            android:background="#f0f000"
-            android:layout_margin="10dp"/>
+            android:textSize="20dp"
+            android:background="#00000000"
+            android:padding="5dp"
+            android:textColor="#42f442"/>
 
     </LinearLayout>
 </LinearLayout>

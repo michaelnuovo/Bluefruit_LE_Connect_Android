@@ -80,7 +80,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
      * Connects to the GATT server hosted on the Bluetooth LE device.
      *
      * @param address The device address of the destination device.
-     * @return Return true if the connection is initiated successfully. The connection result is reported asynchronously through the {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)} callback.
+     * @return Return true if the connection is initiated successfully. The connection result is
+     * reported asynchronously through the {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)} callback.
      */
     public boolean connect(Context context, String address) {
         if (mAdapter == null || address == null) {
