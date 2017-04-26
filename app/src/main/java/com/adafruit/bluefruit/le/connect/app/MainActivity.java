@@ -223,6 +223,9 @@ public class MainActivity extends UartInterfaceActivity implements
 
         // Init variables
         mBleManager = BleManager.getInstance(this);
+        mBleManager.setBleListener(this);
+        //onServicesDiscovered();
+
         restoreRetainedDataFragment();
         mPeripheralList = new PeripheralList();
 
@@ -456,13 +459,17 @@ public class MainActivity extends UartInterfaceActivity implements
         super.onResume();
 
         // Set listener
-        mBleManager.setBleListener(this);
+        //mBleManager.setBleListener(this);
 
         // Autostart scan
         autostartScan();
 
         // Update UI
         updateUI();
+
+        Log.v("TAG","On Resume");
+
+        Log.v("TAG","BleManager.getInstance(this).mDeviceAddress is "+BleManager.getInstance(this).mDeviceAddress);
     }
 
 
@@ -884,6 +891,9 @@ public class MainActivity extends UartInterfaceActivity implements
 
     // TODO onClickDeviceConnect
     public void onClickDeviceConnect(int scannedDeviceIndex) {
+        boolean printFlag = true;
+        if(printFlag) Log.v("TAG","onClickDeviceConnect()");
+
         stopScanning();
 
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
@@ -891,27 +901,29 @@ public class MainActivity extends UartInterfaceActivity implements
         // scannedDeviceIndex corresponds to the list index on the devices list drop down
         // this comparison just makes sure it's not out of bounds for some reason
         if (scannedDeviceIndex < filteredPeripherals.size()) {
-            mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
+            if(printFlag) Log.v("TAG","scannedDeviceIndex < filteredPeripherals.size() is true");
+            mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex); // BluetoothDeviceData wraps a device of type BluetoothDevice device
             BluetoothDevice device = mSelectedDeviceData.device; // BluetoothDevice is defined in the Android API
 
             mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
 
             if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
                 //showChooseDeviceServiceDialog(mSelectedDeviceData);
-                Log.v("TAG","Connecting to UART device...");
+                if(printFlag) Log.v("TAG","Connecting to UART device...");
                 connect(mSelectedDeviceData.device);
             } else {                          // if no uart, then go directly to info
-                Log.d(TAG, "No UART service found. Go to InfoActivity");
+                if(printFlag) Log.d(TAG, "No UART service found. Go to InfoActivity");
                 mComponentToStartWhenConnected = InfoActivity.class;
                 connect(device);
             }
         } else {
-            Log.w(TAG, "onClickDeviceConnect index does not exist: " + scannedDeviceIndex);
+            if(printFlag) Log.w(TAG, "onClickDeviceConnect index does not exist: " + scannedDeviceIndex);
         }
     }
 
     private void connect(BluetoothDevice device) {
-        boolean isConnecting = mBleManager.connect(this, device.getAddress());
+        boolean isConnecting = mBleManager.connect(this, device.getAddress()); //  device.getAddress() returns a string a string
+        Log.d(TAG, "device.getAddress() is"+device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
             //onServicesDiscovered();
@@ -1485,6 +1497,7 @@ public class MainActivity extends UartInterfaceActivity implements
     // endregion
 
     // region Helpers
+    // TODO BluetoothDeviceData class
     private class BluetoothDeviceData {
 
         /**

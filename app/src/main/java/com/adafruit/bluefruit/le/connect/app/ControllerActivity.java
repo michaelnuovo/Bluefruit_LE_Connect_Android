@@ -100,6 +100,8 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
 
     private boolean isSensorPollingEnabled = false;
 
+    private static int packetCounter = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -384,7 +386,10 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                 if (sensorData.enabled && sensorData.values != null) {
                     // one sensor data value is an int which is four bytes
                     // 3 = delimeter one + delimeter two + packet type
-                    ByteBuffer buffer = ByteBuffer.allocate(3 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+
+                    ByteBuffer buffer;
+                    if(i == 1) buffer = ByteBuffer.allocate(4 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
+                    else buffer = ByteBuffer.allocate(3 + sensorData.values.length * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
                     // Add the delimeters
                     int delimeterOne = PacketUtils.DELIMTER_ONE;
@@ -402,6 +407,12 @@ public class ControllerActivity extends UartInterfaceActivity implements SensorE
                     // values
                     for (int j = 0; j < sensorData.values.length; j++)
                         buffer.putFloat(sensorData.values[j]);
+
+                    if(i == 1){
+                        buffer.put((byte) packetCounter);
+                        packetCounter++;
+                    }
+
 
                     byte[] result = buffer.array();
                     Log.d(TAG, "Send data for sensor: " + i);

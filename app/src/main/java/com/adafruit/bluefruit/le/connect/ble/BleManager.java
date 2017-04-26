@@ -37,7 +37,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 //    private Context mContext;
 
     private BluetoothDevice mDevice;
-    private String mDeviceAddress; // TODO use a hash set to contain multiple device addresses, amd broadcast to all of them
+    public String mDeviceAddress; // TODO use a hash set to contain multiple device addresses, amd broadcast to all of them
     private int mConnectionState = STATE_DISCONNECTED;
 
     private BleManagerListener mBleListener;
@@ -45,7 +45,10 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     public static BleManager getInstance(Context context) {
         if(mInstance == null)
         {
+            Log.v("TAG","instance is null");
             mInstance = new BleManager(context);
+        } else {
+            Log.v("TAG","instance is not null");
         }
         return mInstance;
     }
@@ -83,7 +86,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
      * @return Return true if the connection is initiated successfully. The connection result is
      * reported asynchronously through the {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)} callback.
      */
-    // TODO connect(Context context, String address)
+    // TODO connect()
     public boolean connect(Context context, String address) {
         if (mAdapter == null || address == null) {
             Log.w(TAG, "connect: BluetoothAdapter not initialized or unspecified address.");
@@ -335,6 +338,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
     }
 
+    // TODO getGattService
     public BluetoothGattService getGattService(String uuid) {
         if (mGatt != null) {
             final UUID serviceUuid = UUID.fromString(uuid);
@@ -344,6 +348,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
     }
 
+    // TODO getGattService
     public BluetoothGattService getGattService(String uuid, int instanceId) {
         if (mGatt != null) {
             List<BluetoothGattService> services = getSupportedGattServices();

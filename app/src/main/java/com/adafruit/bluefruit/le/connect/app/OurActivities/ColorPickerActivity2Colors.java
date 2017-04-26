@@ -72,7 +72,7 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker_2colors);
 
-        //mBleManager = BleManager.getInstance(this);
+        mBleManager = BleManager.getInstance(this);
 
         // UI
         viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorViewOne);
@@ -106,7 +106,7 @@ public class ColorPickerActivity2Colors extends UartInterfaceActivity implements
 
         setClickListeners();
 
-        //onServicesDiscovered(); // Start services
+        onServicesDiscovered(); // Start services
     }
 
     private void setRandomButtonClickListener(Button randButton){

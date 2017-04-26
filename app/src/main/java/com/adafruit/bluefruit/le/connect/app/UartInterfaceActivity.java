@@ -156,9 +156,10 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
     }
 
+    // TODO onServicesDiscovered()
     @Override
     public void onServicesDiscovered() {
-        mUartService = mBleManager.getGattService(UUID_SERVICE);
+        mUartService = mBleManager.getGattService(UUID_SERVICE); // "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
         //Log.v("TAG","mUartService.toString() "+ mUartService.toString());
     }
 
