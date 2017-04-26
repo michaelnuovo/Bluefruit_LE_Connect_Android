@@ -922,12 +922,14 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
     private void connect(BluetoothDevice device) {
+
         boolean isConnecting = mBleManager.connect(this, device.getAddress()); //  device.getAddress() returns a string a string
         Log.d(TAG, "device.getAddress() is"+device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
-            //onServicesDiscovered();
+
         }
+
     }
 
     // Shows status dialog

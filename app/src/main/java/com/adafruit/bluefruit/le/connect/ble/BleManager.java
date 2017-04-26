@@ -33,7 +33,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     // Data
     private final BleGattExecutor mExecutor = BleGattExecutor.createExecutor(this);
     private BluetoothAdapter mAdapter;
-    private BluetoothGatt mGatt;
+    public BluetoothGatt mGatt;
 //    private Context mContext;
 
     private BluetoothDevice mDevice;
@@ -134,6 +134,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
         final boolean gattAutoconnect = sharedPreferences.getBoolean("pref_gattautoconnect", false);
         mGatt = mDevice.connectGatt(context, gattAutoconnect, mExecutor);
+
+        //mGatt.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e"));
 
         return true;
     }
@@ -342,7 +344,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     public BluetoothGattService getGattService(String uuid) {
         if (mGatt != null) {
             final UUID serviceUuid = UUID.fromString(uuid);
-            return mGatt.getService(serviceUuid);
+            return mGatt.getService(serviceUuid); // 6e400001-b5a3-f393-e0a9-e50e24dcca9e
         } else {
             return null;
         }
