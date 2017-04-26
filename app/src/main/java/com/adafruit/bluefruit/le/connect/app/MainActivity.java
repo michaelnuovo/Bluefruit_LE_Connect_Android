@@ -89,7 +89,7 @@ import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 // Testing our first commit
 // Testing our fist commit to preview branch
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends UartInterfaceActivity implements
 
         // Interfaces
 
@@ -225,6 +225,9 @@ public class MainActivity extends AppCompatActivity implements
         mBleManager = BleManager.getInstance(this);
         restoreRetainedDataFragment();
         mPeripheralList = new PeripheralList();
+
+
+
 
         // UI
         p1 = (Button) findViewById(R.id.p1);
@@ -445,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Request Bluetooth scanning permissions
         requestLocationPermissionIfNeeded();
+
     }
 
     @Override
@@ -907,12 +911,15 @@ public class MainActivity extends AppCompatActivity implements
         boolean isConnecting = mBleManager.connect(this, device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
+            onServicesDiscovered();
         }
     }
 
+    // Shows status dialog
     private void showConnectionStatus(boolean enable) {
         showStatusDialog(enable, R.string.scan_connecting);
     }
+
 
     private void showStatusDialog(boolean show, int stringId) {
         if (show) {

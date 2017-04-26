@@ -102,7 +102,7 @@ public class SensorDataActivity extends UartInterfaceActivity implements SensorE
 
         //Log.d(TAG, "onCreate");
 
-        mBleManager = BleManager.getInstance(this);
+        //mBleManager = BleManager.getInstance(this);
         restoreRetainedDataFragment();
 
         // UI
@@ -131,7 +131,7 @@ public class SensorDataActivity extends UartInterfaceActivity implements SensorE
         buildGoogleApiClient();
 
         // Start services
-        onServicesDiscovered();
+        //onServicesDiscovered();
     }
 
     @Override

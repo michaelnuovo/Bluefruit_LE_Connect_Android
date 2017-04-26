@@ -77,7 +77,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker_4colors);
 
-        mBleManager = BleManager.getInstance(this);
+        //mBleManager = BleManager.getInstance(this);
 
         // UI
         viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorViewOne);
@@ -112,7 +112,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
         setRandomButtonClickListener(randomizeButton);
 
-        onServicesDiscovered(); // Start services
+        //onServicesDiscovered(); // Start services
     }
 
     private void setRandomButtonClickListener(Button randButton){

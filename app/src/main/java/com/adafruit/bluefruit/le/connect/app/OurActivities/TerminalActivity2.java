@@ -46,7 +46,7 @@ public class TerminalActivity2 extends UartInterfaceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_terminal2);
 
-        mBleManager = BleManager.getInstance(this);
+        //mBleManager = BleManager.getInstance(this);
 
         //textView = (TextView) findViewById(R.id.textView);
         editText1 = (EditText) findViewById(R.id.editText1);
@@ -79,7 +79,7 @@ public class TerminalActivity2 extends UartInterfaceActivity {
 
 
         // Start services
-        onServicesDiscovered();
+        //onServicesDiscovered();
     }
 
     // Returns an array list of UserCommand objects (the command line history)
