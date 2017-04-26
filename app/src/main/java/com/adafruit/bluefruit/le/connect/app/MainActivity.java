@@ -887,15 +887,18 @@ public class MainActivity extends UartInterfaceActivity implements
         stopScanning();
 
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
+
+        // scannedDeviceIndex corresponds to the list index on the devices list drop down
+        // this comparison just makes sure it's not out of bounds for some reason
         if (scannedDeviceIndex < filteredPeripherals.size()) {
             mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
-            BluetoothDevice device = mSelectedDeviceData.device;
+            BluetoothDevice device = mSelectedDeviceData.device; // BluetoothDevice is defined in the Android API
 
             mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
 
-            if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities
+            if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
                 //showChooseDeviceServiceDialog(mSelectedDeviceData);
-                Log.v("TAG","ASDASD");
+                Log.v("TAG","Connecting to UART device...");
                 connect(mSelectedDeviceData.device);
             } else {                          // if no uart, then go directly to info
                 Log.d(TAG, "No UART service found. Go to InfoActivity");
@@ -911,7 +914,7 @@ public class MainActivity extends UartInterfaceActivity implements
         boolean isConnecting = mBleManager.connect(this, device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
-            onServicesDiscovered();
+            //onServicesDiscovered();
         }
     }
 
@@ -1944,6 +1947,7 @@ public class MainActivity extends UartInterfaceActivity implements
             return true;
         }
 
+        // TODO getGroupView()
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
             GroupViewHolder holder;
@@ -1974,26 +1978,6 @@ public class MainActivity extends UartInterfaceActivity implements
                     onClickScannedDevice(v);
                 }
             });
-
-            /*
-            holder.connectButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickDeviceConnect(groupPosition);
-                }
-            });
-
-            convertView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN ) {
-                        onClickScannedDevice(v);
-                        return true;
-                    }
-                    return false;
-                }
-            });
-            */
 
             holder.connectButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override

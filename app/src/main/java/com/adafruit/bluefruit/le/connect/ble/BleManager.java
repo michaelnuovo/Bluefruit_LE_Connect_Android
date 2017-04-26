@@ -37,7 +37,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 //    private Context mContext;
 
     private BluetoothDevice mDevice;
-    private String mDeviceAddress;
+    private String mDeviceAddress; // TODO use a hash set to contain multiple device addresses, amd broadcast to all of them
     private int mConnectionState = STATE_DISCONNECTED;
 
     private BleManagerListener mBleListener;
@@ -83,6 +83,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
      * @return Return true if the connection is initiated successfully. The connection result is
      * reported asynchronously through the {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)} callback.
      */
+    // TODO connect(Context context, String address)
     public boolean connect(Context context, String address) {
         if (mAdapter == null || address == null) {
             Log.w(TAG, "connect: BluetoothAdapter not initialized or unspecified address.");
@@ -110,6 +111,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
             final boolean forceCloseBeforeNewConnection = sharedPreferences.getBoolean("pref_forcecloseconnection", true);
 
             if (forceCloseBeforeNewConnection) {
+                Log.d(TAG, "Closing old connection.");
                 close();
             }
         }
@@ -119,16 +121,6 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-
-
-
-/*
-        // Refresh device cache
-        final boolean refreshDeviceCache = sharedPreferences.getBoolean("pref_refreshdevicecache", true);
-        if (refreshDeviceCache) {
-            refreshDeviceCache();          // hack to force refresh the device cache and avoid problems with characteristic services read from cache and not updated
-        }
-*/
 
         Log.d(TAG, "Trying to create a new connection.");
         mDeviceAddress = address;
@@ -141,6 +133,18 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         mGatt = mDevice.connectGatt(context, gattAutoconnect, mExecutor);
 
         return true;
+    }
+
+    /**
+     * After using a given BLE device, the app must call this method to ensure resources are  released properly.
+     */
+    private void close() {
+        if (mGatt != null) {
+            mGatt.close();
+            mGatt = null;
+            mDeviceAddress = null;
+            mDevice = null;
+        }
     }
 
     public void clearExecutor() {
@@ -196,17 +200,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         mGatt.disconnect();
     }
 
-    /**
-     * After using a given BLE device, the app must call this method to ensure resources are  released properly.
-     */
-    private void close() {
-        if (mGatt != null) {
-            mGatt.close();
-            mGatt = null;
-            mDeviceAddress = null;
-            mDevice = null;
-        }
-    }
+
 
 
     public boolean readRssi() {
