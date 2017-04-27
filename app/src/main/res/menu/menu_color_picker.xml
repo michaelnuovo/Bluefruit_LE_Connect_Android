@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom"
         app:actionViewClass="android.support.v7.widget.SwitchCompat" />
 
-    <item android:id="@+id/command"
+    <item android:id="@+id/button"
         android:title="toggle_lights"
         app:showAsAction="ifRoom"
         app:actionViewClass="android.support.v7.widget.AppCompatButton"

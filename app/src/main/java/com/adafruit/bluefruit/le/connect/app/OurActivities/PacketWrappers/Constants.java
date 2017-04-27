@@ -12,7 +12,7 @@ public class Constants {
     static public final int DELIMTER_TWO = 0x55;
 
 
-    static public final boolean turnLEDSOffAfterSendingPallet = false;
+    static public boolean turnLEDSOffAfterSendingPallet = false;
 
     public enum PacketTypes {
         NONE,//0

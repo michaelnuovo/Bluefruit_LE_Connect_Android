@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -232,22 +233,13 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_color_picker, menu);
-        MenuItem mySwitch = menu.findItem(R.id.toggle_lights);
-        MenuItem myButton = menu.findItem(R.id.toggle_lights);
-        mySwitch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
+        MenuItem myButton = menu.findItem(R.id.button);
+        AppCompatButton button = (AppCompatButton) myButton.getActionView();
+        button.setText("OFF");
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                return true;
-            }
-        });
-        mySwitch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+            public void onClick(View v) {
                 Commands.turnLightsOff();
-                return true;
             }
         });
         return true;

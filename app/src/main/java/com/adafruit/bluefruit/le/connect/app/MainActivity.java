@@ -163,7 +163,7 @@ public class MainActivity extends UartInterfaceActivity implements
     private Button sensorData;
 
     // Data
-    private BleManager mBleManager;
+    private BleManager xmBleManager;
     private boolean mIsScanPaused = true;
     private BleDevicesScanner mScanner;
     private FirmwareUpdater mFirmwareUpdater;
@@ -321,13 +321,6 @@ public class MainActivity extends UartInterfaceActivity implements
             @Override
             public void onRefresh() {
 
-                /**
-                 * mScannedDevices is of type ArrayList<BluetoothDeviceData>
-                 * BluetoothDeviceData is an inner class on line 1324
-                 * GOTO line : command + L
-                 * BluetoothDeviceData is a wrapper class that contains a reference to a bluetooth
-                 * device and it's information such as name, etc...
-                 */
                 mScannedDevices.clear();
 
 
@@ -454,6 +447,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     }
 
+    // TODO onResume()
     @Override
     public void onResume() {
         super.onResume();
@@ -470,6 +464,19 @@ public class MainActivity extends UartInterfaceActivity implements
         Log.v("TAG","On Resume");
 
         Log.v("TAG","BleManager.getInstance(this).mDeviceAddress is "+BleManager.getInstance(this).mDeviceAddress);
+    }
+
+    private void autostartScan() {
+        if (BleUtils.getBleStatus(this) == BleUtils.STATUS_BLE_ENABLED) {
+            // If was connected, disconnect
+            //mBleManager.disconnect(); // Disconnects the gatt service
+
+            // Force restart scanning
+            if (mScannedDevices != null) {      // Fixed a weird bug when resuming the app (this was null on very rare occasions even if it should not be)
+                mScannedDevices.clear();
+            }
+            startScan(null);
+        }
     }
 
 
@@ -506,19 +513,6 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
 
-
-    private void autostartScan() {
-        if (BleUtils.getBleStatus(this) == BleUtils.STATUS_BLE_ENABLED) {
-            // If was connected, disconnect
-            mBleManager.disconnect();
-
-            // Force restart scanning
-            if (mScannedDevices != null) {      // Fixed a weird bug when resuming the app (this was null on very rare occasions even if it should not be)
-                mScannedDevices.clear();
-            }
-            startScan(null);
-        }
-    }
 
     @Override
     public void onPause() {
@@ -605,6 +599,8 @@ public class MainActivity extends UartInterfaceActivity implements
         }
     }
 
+    // ActivityCompat.OnRequestPermissionsResultCallback
+    // https://developer.android.com/reference/android/support/v4/app/ActivityCompat.OnRequestPermissionsResultCallback.html
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -1046,6 +1042,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
     // endregion
 
+    // TODO startScan()
     // region Scan
     private void startScan(final UUID[] servicesToScan) {
         Log.d(TAG, "startScan");
