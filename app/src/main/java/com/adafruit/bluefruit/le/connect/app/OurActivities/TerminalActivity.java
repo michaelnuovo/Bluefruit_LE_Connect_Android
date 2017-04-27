@@ -66,7 +66,7 @@ public class TerminalActivity extends UartInterfaceActivity {
         });
 
         // Start services
-        onServicesDiscovered();
+        //onServicesDiscovered();
     }
 
     private void setSendButtonListener(final Button sendButton){

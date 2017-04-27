@@ -114,7 +114,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
         setRandomButtonClickListener(randomizeButton);
 
-        onServicesDiscovered(); // Start services
+        //onServicesDiscovered(); // Start services
     }
 
     private void setRandomButtonClickListener(Button randButton){

@@ -36,6 +36,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     }
 
     protected static void sendData(byte[] data) {
+        mUartService = mBleManager.getGattService(UUID_SERVICE);
         if (mUartService != null) {
             // Split the value into chunks (UART service has a maximum number of characters that can be written )
             for (int i = 0; i < data.length; i += kTxMaxCharacters) {

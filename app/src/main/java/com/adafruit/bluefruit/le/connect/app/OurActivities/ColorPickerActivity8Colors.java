@@ -127,7 +127,7 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         setClickListeners();
 
 
-        onServicesDiscovered(); // Start services
+        //onServicesDiscovered(); // Start services
     }
 
     private void setRandomButtonClickListener(Button randButton){
