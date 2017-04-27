@@ -136,7 +136,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
 
         final boolean gattAutoconnect = sharedPreferences.getBoolean("pref_gattautoconnect", false);
-        BluetoothGatt mGatt = mDevice.connectGatt(context, false, mExecutor); //boolean: Whether to directly connect to the remote device (false) or to automatically connect as soon as the remote device becomes available (true).
+        mGatt = mDevice.connectGatt(context, false, mExecutor); //boolean: Whether to directly connect to the remote device (false) or to automatically connect as soon as the remote device becomes available (true).
         // this is the connection right here, the gatt server object!
 
         //mGatt.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e"));
