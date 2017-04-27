@@ -245,6 +245,7 @@ class BleGattExecutor extends BluetoothGattCallback {
 
 
     // Helper function to create a Gatt Executor with a custom listener
+    // https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback.html
     static BleGattExecutor createExecutor(final BleExecutorListener listener) {
         return new BleGattExecutor() {
             @Override

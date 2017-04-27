@@ -43,11 +43,25 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     private BleManagerListener mBleListener;
 
+    // Michael's variables
+    public HashSet<BluetoothGatt> myGattConnections = new HashSet<>();
+
     public static BleManager getInstance(Context context) {
         if(mInstance == null)
         {
             Log.v("TAG","instance is null");
             mInstance = new BleManager(context);
+        } else {
+            Log.v("TAG","instance is not null");
+        }
+        return mInstance;
+    }
+
+
+    public static BleManager getInstance() {
+        if(mInstance == null)
+        {
+            Log.v("TAG","instance is null");
         } else {
             Log.v("TAG","instance is not null");
         }
@@ -117,7 +131,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
             if (forceCloseBeforeNewConnection) {
                 Log.d(TAG, "Closing old connection.");
-                close();
+                close(); // We don't want to close old connections. We want to maintain multiple open connections.
             }
         }
 
@@ -136,10 +150,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
 
         final boolean gattAutoconnect = sharedPreferences.getBoolean("pref_gattautoconnect", false);
-        mGatt = mDevice.connectGatt(context, false, mExecutor); //boolean: Whether to directly connect to the remote device (false) or to automatically connect as soon as the remote device becomes available (true).
-        // this is the connection right here, the gatt server object!
+        mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
+        // BleGattExecutor extends BluetoothGattCallback
 
-        //mGatt.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e"));
+        // After connecting to the gat service, add it to the has services has set
+        myGattConnections.add(mGatt);
 
         return true;
     }

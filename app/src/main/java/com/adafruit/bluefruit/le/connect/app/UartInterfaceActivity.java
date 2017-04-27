@@ -1,5 +1,6 @@
 package com.adafruit.bluefruit.le.connect.app;
 
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -12,6 +13,7 @@ import com.adafruit.bluefruit.le.connect.ble.BleUtils;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class UartInterfaceActivity extends AppCompatActivity implements BleManager.BleManagerListener {
     // Log
@@ -36,16 +38,31 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     }
 
     protected static void sendData(byte[] data) {
-        mUartService = mBleManager.getGattService(UUID_SERVICE);
-        if (mUartService != null) {
-            // Split the value into chunks (UART service has a maximum number of characters that can be written )
-            for (int i = 0; i < data.length; i += kTxMaxCharacters) {
-                final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
-                mBleManager.writeService(mUartService, UUID_TX, chunk);
+
+        for(BluetoothGatt connection : BleManager.getInstance().myGattConnections){
+            UUID serviceUuid = UUID.fromString(UUID_SERVICE);
+            mUartService = connection.getService(serviceUuid);
+            if (mUartService != null) {
+                // Split the value into chunks (UART service has a maximum number of characters that can be written )
+                for (int i = 0; i < data.length; i += kTxMaxCharacters) {
+                    final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
+                    mBleManager.writeService(mUartService, UUID_TX, chunk);
+                }
+            } else {
+                Log.w(TAG, "Uart Service not discovered. Unable to send data");
             }
-        } else {
-            Log.w(TAG, "Uart Service not discovered. Unable to send data");
         }
+
+//        mUartService = mBleManager.getGattService(UUID_SERVICE);
+//        if (mUartService != null) {
+//            // Split the value into chunks (UART service has a maximum number of characters that can be written )
+//            for (int i = 0; i < data.length; i += kTxMaxCharacters) {
+//                final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
+//                mBleManager.writeService(mUartService, UUID_TX, chunk);
+//            }
+//        } else {
+//            Log.w(TAG, "Uart Service not discovered. Unable to send data");
+//        }
     }
 
     // Send data to UART and add a byte with a custom CRC
