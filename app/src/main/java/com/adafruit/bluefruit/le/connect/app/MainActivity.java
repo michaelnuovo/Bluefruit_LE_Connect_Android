@@ -86,8 +86,7 @@ import java.util.UUID;
 import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 
-// Testing our first commit
-// Testing our fist commit to preview branch
+//// Testing branch checkout
 
 public class MainActivity extends UartInterfaceActivity implements
 
