@@ -1,12 +1,19 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.adafruit.bluefruit.le.connect.app.ColorPickerActivity">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <item
-        android:id="@+id/action_help"
-        android:icon="@drawable/ic_info_outline_menu"
-        android:title="@string/action_info"
-        app:showAsAction="always"/>
+    <item android:id="@+id/toggle_lights"
+        android:title="toggle_lights"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.support.v7.widget.SwitchCompat" />
+
+    <item android:id="@+id/command"
+        android:title="toggle_lights"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.support.v7.widget.AppCompatButton"
+        tools:text="OFF"
+        android:textColor="@android:color/white"/>
+
 
 </menu>

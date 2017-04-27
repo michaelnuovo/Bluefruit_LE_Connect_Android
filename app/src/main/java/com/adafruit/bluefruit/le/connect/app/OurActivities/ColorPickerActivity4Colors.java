@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Commands;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Constants;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette2;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette4;
@@ -229,26 +231,28 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_color_picker, menu);
+        MenuItem mySwitch = menu.findItem(R.id.toggle_lights);
+        MenuItem myButton = menu.findItem(R.id.toggle_lights);
+        mySwitch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                return true;
+            }
+        });
+        mySwitch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Commands.turnLightsOff();
+                return true;
+            }
+        });
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_help) {
-            startHelp();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     private void startHelp() {
         // Launch help activity
@@ -275,5 +279,6 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
 
         byte[] palettePacket = new Palette4(color1, color2, color3, color4).packet;
         sendDataWithCRC(palettePacket);
+        if(Constants.turnLEDSOffAfterSendingPallet == true) Commands.turnLightsOff();
     }
 }

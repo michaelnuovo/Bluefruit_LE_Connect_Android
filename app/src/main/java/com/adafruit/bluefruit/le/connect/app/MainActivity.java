@@ -462,7 +462,7 @@ public class MainActivity extends UartInterfaceActivity implements
         //mBleManager.setBleListener(this);
 
         // Autostart scan
-        autostartScan();
+        //autostartScan();
 
         // Update UI
         updateUI();

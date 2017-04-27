@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 import java.nio.ByteBuffer;
 
-public class Palette8 {
+public class Palette8 extends PaletteBaseClass {
 
     public byte[] packet;
 

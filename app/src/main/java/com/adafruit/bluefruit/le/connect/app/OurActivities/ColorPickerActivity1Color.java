@@ -13,6 +13,8 @@ import android.widget.Button;
 
 import com.adafruit.bluefruit.le.connect.R;
 import com.adafruit.bluefruit.le.connect.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Commands;
+import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Constants;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.PacketUtils;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.PacketWrappers.Palette1;
 import com.adafruit.bluefruit.le.connect.app.UartInterfaceActivity;
@@ -260,5 +262,6 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
         byte[] palettePacket = new Palette1(color1).packet;
         PacketUtils.logByteArray(palettePacket);
         sendDataWithCRC(palettePacket);
+        if(Constants.turnLEDSOffAfterSendingPallet == true) Commands.turnLightsOff();
     }
 }
