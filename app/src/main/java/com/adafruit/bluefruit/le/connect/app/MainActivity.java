@@ -10,9 +10,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -79,6 +81,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -180,8 +183,10 @@ public class MainActivity extends UartInterfaceActivity implements
 
     NsdManager.DiscoveryListener mDiscoveryListener;
 
+
     // Michael's variables
     public static Context ctx;
+    public static ArrayList<BluetoothDeviceData> connectedDeviceData = new ArrayList<>();
 
     private void testViews(){
 
@@ -300,6 +305,7 @@ public class MainActivity extends UartInterfaceActivity implements
             }
         });
 
+        // TODO setting the adapter to the expandable list view
         mScannedDevicesListView = (ExpandableHeightExpandableListView) findViewById(R.id.scannedDevicesListView);
         mScannedDevicesAdapter = new ExpandableListAdapter();
         mScannedDevicesListView.setAdapter(mScannedDevicesAdapter);
@@ -909,6 +915,7 @@ public class MainActivity extends UartInterfaceActivity implements
             if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
                 //showChooseDeviceServiceDialog(mSelectedDeviceData);
                 if(printFlag) Log.v("TAG","Connecting to UART device...");
+                connectedDeviceData.add(mSelectedDeviceData);
                 connect(mSelectedDeviceData.device);
             } else {                          // if no uart, then go directly to info
                 if(printFlag) Log.d(TAG, "No UART service found. Go to InfoActivity");
@@ -1090,6 +1097,8 @@ public class MainActivity extends UartInterfaceActivity implements
                     deviceData.scanRecord = scanRecord;
                     decodeScanRecords(deviceData);
 
+
+
                     // Update device data
                     long currentMillis = SystemClock.uptimeMillis();
                     if (previouslyScannedDeviceData == null || currentMillis - mLastUpdateMillis > kMinDelayToUpdateUI) {          // Avoid updating when not a new device has been found and the time from the last update is really short to avoid updating UI so fast that it will become unresponsive
@@ -1110,9 +1119,30 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner.start();
         }
 
+        //for(BluetoothDeviceData datum : connectedDeviceData) mScannedDevices.add(datum);
+
         // Update UI
         updateUI();
     }
+
+
+    private void addConnectedDeviceToScannedDevicesList(int rssi, byte[] scanRecord){
+        // We need to add the connected devices to the list.
+        // As soon as a peripheral connects to a central device, it will stop
+        // advertising itself and other devices will no longer be able to see it or
+        // connect to it until the existing connection is broken.
+        HashSet<BluetoothDevice> devices = BleManager.getInstance().myConnectedDevices;
+        for(BluetoothDevice device : devices) {
+
+            BluetoothDeviceData deviceData = new BluetoothDeviceData();
+            deviceData.device = device;
+            deviceData.rssi = rssi;
+            deviceData.scanRecord = scanRecord;
+            decodeScanRecords(deviceData);
+            mScannedDevices.add(deviceData);
+        }
+    }
+
 
     private void stopScanning() {
         // Stop scanning
@@ -1125,6 +1155,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
     // endregion
 
+    // TODO decodeScanRecords()
     private void decodeScanRecords(BluetoothDeviceData deviceData) {
         // based on http://stackoverflow.com/questions/24003777/read-advertisement-packet-in-android
         final byte[] scanRecord = deviceData.scanRecord;
@@ -1799,6 +1830,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
 
     // region adapters
+    // TODO ExpandableListAdapter
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
         // Data
         private ArrayList<BluetoothDeviceData> mFilteredPeripherals;
