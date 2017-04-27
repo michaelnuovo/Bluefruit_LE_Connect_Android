@@ -29,7 +29,6 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     protected static BluetoothGattService mUartService;
     private boolean isRxNotificationEnabled = false;
 
-
     // region Send Data to UART
     protected void sendData(String text) {
         final byte[] value = text.getBytes(Charset.forName("UTF-8"));

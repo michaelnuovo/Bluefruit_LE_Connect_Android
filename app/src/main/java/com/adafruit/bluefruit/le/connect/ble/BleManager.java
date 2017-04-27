@@ -15,12 +15,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 public class BleManager implements BleGattExecutor.BleExecutorListener {
     // Log
-    private final static String TAG = BleManager.class.getSimpleName();
+    private final static String TAG = BleManagerBackup.class.getSimpleName();
 
     // Enumerations
     private static final int STATE_DISCONNECTED = 0;
@@ -67,6 +68,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         mBleListener = listener;
     }
 
+    // The adapter is initialized in the constructor
     public BleManager(Context context) {
         // Init Adapter
         //mContext = context.getApplicationContext();
@@ -119,7 +121,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
             }
         }
 
-        mDevice = mAdapter.getRemoteDevice(address);
+        mDevice = mAdapter.getRemoteDevice(address); // pass the address to the adapter and return the device we are "connecting to"
+
         if (mDevice == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
@@ -133,7 +136,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
 
         final boolean gattAutoconnect = sharedPreferences.getBoolean("pref_gattautoconnect", false);
-        mGatt = mDevice.connectGatt(context, gattAutoconnect, mExecutor);
+        BluetoothGatt mGatt = mDevice.connectGatt(context, false, mExecutor); //boolean: Whether to directly connect to the remote device (false) or to automatically connect as soon as the remote device becomes available (true).
+        // this is the connection right here, the gatt server object!
 
         //mGatt.getService(UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e"));
 
@@ -144,6 +148,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
      * After using a given BLE device, the app must call this method to ensure resources are  released properly.
      */
     private void close() {
+
         if (mGatt != null) {
             mGatt.close();
             mGatt = null;
@@ -159,10 +164,10 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     }
 
     /**
-    * Call to private Android method 'refresh'
-    * This method does actually clear the cache from a bluetooth device. But the problem is that we don't have access to it. But in java we have reflection, so we can access this method.
-    * http://stackoverflow.com/questions/22596951/how-to-programmatically-force-bluetooth-low-energy-service-discovery-on-android
-    */
+     * Call to private Android method 'refresh'
+     * This method does actually clear the cache from a bluetooth device. But the problem is that we don't have access to it. But in java we have reflection, so we can access this method.
+     * http://stackoverflow.com/questions/22596951/how-to-programmatically-force-bluetooth-low-energy-service-discovery-on-android
+     */
     public boolean refreshDeviceCache(){
         try {
             BluetoothGatt localBluetoothGatt = mGatt;
@@ -411,11 +416,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     // region BleExecutorListener
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-       // if (status == BluetoothGatt.GATT_SUCCESS) {
-            // Call listener
-            if (mBleListener != null)
-                mBleListener.onServicesDiscovered();
-       // }
+        // if (status == BluetoothGatt.GATT_SUCCESS) {
+        // Call listener
+        if (mBleListener != null)
+            mBleListener.onServicesDiscovered();
+        // }
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
             Log.d(TAG, "onServicesDiscovered status: "+status);
@@ -424,11 +429,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-       // if (status == BluetoothGatt.GATT_SUCCESS) {
-            if (mBleListener != null) {
-                mBleListener.onDataAvailable(characteristic);
-            }
-       // }
+        // if (status == BluetoothGatt.GATT_SUCCESS) {
+        if (mBleListener != null) {
+            mBleListener.onDataAvailable(characteristic);
+        }
+        // }
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
             Log.d(TAG, "onCharacteristicRead status: "+status);
@@ -444,11 +449,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     @Override
     public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-     //   if (status == BluetoothGatt.GATT_SUCCESS) {
-            if (mBleListener != null) {
-                mBleListener.onDataAvailable(descriptor);
-            }
-     //   }
+        //   if (status == BluetoothGatt.GATT_SUCCESS) {
+        if (mBleListener != null) {
+            mBleListener.onDataAvailable(descriptor);
+        }
+        //   }
 
         if (status != BluetoothGatt.GATT_SUCCESS) {
             Log.d(TAG, "onDescriptorRead status: "+status);
