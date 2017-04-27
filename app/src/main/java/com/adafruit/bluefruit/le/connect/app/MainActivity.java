@@ -15,6 +15,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -179,6 +180,9 @@ public class MainActivity extends UartInterfaceActivity implements
 
     NsdManager.DiscoveryListener mDiscoveryListener;
 
+    // Michael's variables
+    public static Context ctx;
+
     private void testViews(){
 
 //                Intent intent = new Intent(MainActivity.this, ControllerActivity.class);
@@ -217,6 +221,8 @@ public class MainActivity extends UartInterfaceActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ctx = this;
+
         //testViews();
 //        initializeDiscoveryListener();
         //discoverServices();
@@ -228,9 +234,6 @@ public class MainActivity extends UartInterfaceActivity implements
 
         restoreRetainedDataFragment();
         mPeripheralList = new PeripheralList();
-
-
-
 
         // UI
         p1 = (Button) findViewById(R.id.p1);
@@ -919,7 +922,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     private void connect(BluetoothDevice device) {
 
-        boolean isConnecting = mBleManager.connect(this, device.getAddress()); //  device.getAddress() returns a string a string
+        boolean isConnecting = mBleManager.connect(this, device.getAddress());
         Log.d(TAG, "device.getAddress() is"+device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
@@ -1077,7 +1080,7 @@ public class MainActivity extends UartInterfaceActivity implements
                     if (previouslyScannedDeviceData == null) {
                         // Add it to the mScannedDevice list
                         deviceData = new BluetoothDeviceData();
-                        mScannedDevices.add(deviceData);
+                        mScannedDevices.add(deviceData); // <--- adding the device to the list
                     } else {
                         deviceData = previouslyScannedDeviceData;
                     }

@@ -1,5 +1,6 @@
 package com.adafruit.bluefruit.le.connect.app;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.adafruit.bluefruit.le.connect.ble.BleGattExecutor;
 import com.adafruit.bluefruit.le.connect.ble.BleManager;
 import com.adafruit.bluefruit.le.connect.ble.BleUtils;
 
@@ -16,6 +18,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class UartInterfaceActivity extends AppCompatActivity implements BleManager.BleManagerListener {
+
+    //String TAG = UartInterfaceActivity.class.getSimpleName();
+
     // Log
     private final static String TAG = UartInterfaceActivity.class.getSimpleName();
 
@@ -39,7 +44,30 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
     protected static void sendData(byte[] data) {
 
+//        for(BluetoothDevice device : BleManager.getInstance().myConnectedDevices){
+//
+//            BluetoothGatt gatt = device.connectGatt(MainActivity.ctx,false, BleGattExecutor.createExecutor(BleManager.getInstance()));
+//            UUID serviceUuid = UUID.fromString(UUID_SERVICE);
+//            mUartService = gatt.getService(serviceUuid);
+//
+//            if (mUartService != null) {
+//                // Split the value into chunks (UART service has a maximum number of characters that can be written )
+//                for (int i = 0; i < data.length; i += kTxMaxCharacters) {
+//                    final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
+//                    mBleManager.writeService(mUartService, UUID_TX, chunk);
+//                }
+//            } else {
+//                Log.w(TAG, "Uart Service not discovered. Unable to send data");
+//            }
+//        }
+
         for(BluetoothGatt connection : BleManager.getInstance().myGattConnections){
+
+            BleManager.getInstance().mGatt = connection;
+
+            Log.v(TAG,"BluetoothGatt connections size is "+String.valueOf(BleManager.getInstance().myGattConnections.size()));
+            Log.v(TAG,"BluetoothGatt connection is "+String.valueOf(connection));
+            Log.v(TAG,"BluetoothGatt connection name is "+String.valueOf(connection.getDevice().getName()));
             UUID serviceUuid = UUID.fromString(UUID_SERVICE);
             mUartService = connection.getService(serviceUuid);
             if (mUartService != null) {

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BleManager implements BleGattExecutor.BleExecutorListener {
+
     // Log
     private final static String TAG = BleManagerBackup.class.getSimpleName();
 
@@ -45,6 +46,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     // Michael's variables
     public HashSet<BluetoothGatt> myGattConnections = new HashSet<>();
+    public HashSet<BluetoothDevice> myConnectedDevices = new HashSet<>();
+    static private Context ctx;
 
     public static BleManager getInstance(Context context) {
         if(mInstance == null)
@@ -54,6 +57,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         } else {
             Log.v("TAG","instance is not null");
         }
+        ctx = context;
         return mInstance;
     }
 
@@ -131,7 +135,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
             if (forceCloseBeforeNewConnection) {
                 Log.d(TAG, "Closing old connection.");
-                close(); // We don't want to close old connections. We want to maintain multiple open connections.
+                //close(); // We don't want to close old connections. We want to maintain multiple open connections.
             }
         }
 
@@ -150,11 +154,13 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
 
         final boolean gattAutoconnect = sharedPreferences.getBoolean("pref_gattautoconnect", false);
+        //mGatt = mDevice.connectGatt(context, false, BleGattExecutor.createExecutor(this)); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         // BleGattExecutor extends BluetoothGattCallback
 
-        // After connecting to the gat service, add it to the has services has set
+        // After connecting to the gat service, add it to the GATT connections hash set
         myGattConnections.add(mGatt);
+        myConnectedDevices.add(mDevice);
 
         return true;
     }
@@ -264,7 +270,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
                 Log.w(TAG, "writeService: BluetoothAdapter not initialized");
                 return;
             }
-
+            Log.v(TAG,"Service is not null");
             mExecutor.write(service, uuid, value);
             mExecutor.execute(mGatt);
         }
@@ -398,6 +404,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         }
     }
 
+    // TODO onConnectionStateChange
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 

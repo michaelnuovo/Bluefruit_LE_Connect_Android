@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 // Encapsulate a list of actions to execute. Actions should be queued and executed sequentially to avoid problems
-class BleGattExecutor extends BluetoothGattCallback {
+public class BleGattExecutor extends BluetoothGattCallback {
     // Log
     private final static String TAG = BleGattExecutor.class.getSimpleName();
 
@@ -246,7 +246,7 @@ class BleGattExecutor extends BluetoothGattCallback {
 
     // Helper function to create a Gatt Executor with a custom listener
     // https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback.html
-    static BleGattExecutor createExecutor(final BleExecutorListener listener) {
+    public static BleGattExecutor createExecutor(final BleExecutorListener listener) {
         return new BleGattExecutor() {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
