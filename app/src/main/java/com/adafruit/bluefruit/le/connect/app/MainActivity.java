@@ -912,7 +912,7 @@ public class MainActivity extends UartInterfaceActivity implements
             if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
                 //showChooseDeviceServiceDialog(mSelectedDeviceData);
                 if(printFlag) Log.v("TAG","Connecting to UART device...");
-                connectedDeviceData.add(mSelectedDeviceData);
+                //mSelectedDeviceData.isConnected = true;
                 connect(mSelectedDeviceData.device);
             } else {                          // if no uart, then go directly to info
                 if(printFlag) Log.d(TAG, "No UART service found. Go to InfoActivity");
@@ -924,7 +924,8 @@ public class MainActivity extends UartInterfaceActivity implements
         }
     }
 
-    public void onClickDeviceDisonnect(int scannedDeviceIndex){
+    public void onClickDeviceDisconnect(int scannedDeviceIndex){
+        Log.v(TAG,"Disconnecting device");
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
         BluetoothDeviceData mDeselectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
         BluetoothDevice device = mDeselectedDeviceData.device;
@@ -943,7 +944,6 @@ public class MainActivity extends UartInterfaceActivity implements
             showConnectionStatus(true);
 
         }
-
     }
 
     // Shows status dialog
@@ -1127,12 +1127,14 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner.start();
         }
 
-        // Add devices that are already connected to
+        // Add devices that are already connected to scanned devices list
         for(BluetoothDeviceData datum : connectedDeviceData)
             if(!mScannedDevices.contains(datum)){
                 // We should only add the old connection once
                 datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
                 mScannedDevices.add(datum);
+                Log.v(TAG,"Added connected device to scanned devices list");
+                Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
             }
 
         // Update UI
@@ -1737,18 +1739,20 @@ public class MainActivity extends UartInterfaceActivity implements
                 mCachedFilteredPeripheralList = calculateFilteredPeripherals();
                 mIsFilterDirty = false;
             }
-
             return mCachedFilteredPeripheralList;
         }
 
+        // returns the filtered list
         private ArrayList<BluetoothDeviceData> calculateFilteredPeripherals() {
 
+            // Clones the original list and filters it by removing its elements
             ArrayList<BluetoothDeviceData> peripherals = (ArrayList<BluetoothDeviceData>) mScannedDevices.clone();
 
             // Sort devices alphabetically
             Collections.sort(peripherals, new Comparator<BluetoothDeviceData>() {
                 @Override
                 public int compare(BluetoothDeviceData o1, BluetoothDeviceData o2) {
+                    // This routine returns -1, 0, or 1 as values
                     return o1.getNiceName().compareToIgnoreCase(o2.getNiceName());
                 }
             });
@@ -2054,16 +2058,30 @@ public class MainActivity extends UartInterfaceActivity implements
 //                }
 //            });
 
+            //ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
+            mSelectedDeviceData = mFilteredPeripherals.get(groupPosition);
+            holder.connectButton.setChecked(mSelectedDeviceData.isConnected);
             holder.connectButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     // do something, the isChecked will be
                     // true if the switch is in the On position
-                    Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
-                    //if(isChecked == true) onClickDeviceConnect(groupPosition);
-                    //if(isChecked == true) onClickDeviceDisonnect(groupPosition);
+
+                    if(isChecked == true) {
+                        Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
+                        mSelectedDeviceData.isConnected = true; // Set toggle state to true
+                        connectedDeviceData.add(mSelectedDeviceData); // Add device data to list of connected device data
+                        Log.v(TAG,"Adding connected device from connected devices list");
+                        Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
+                        onClickDeviceConnect(groupPosition); // Connect to the device
+                    } else {
+                        Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
+                        connectedDeviceData.remove(mSelectedDeviceData); // Remove device data from the list of connected devices data
+                        Log.v(TAG,"Removing connected device from connected devices list");
+                        Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
+                        onClickDeviceDisconnect(groupPosition); // Close the connection
+                    }
                 }
             });
-
 
             BluetoothDeviceData deviceData = mFilteredPeripherals.get(groupPosition);
             holder.nameTextView.setText(deviceData.getNiceName());
