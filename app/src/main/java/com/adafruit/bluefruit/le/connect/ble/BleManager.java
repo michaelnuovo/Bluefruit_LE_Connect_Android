@@ -159,10 +159,22 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         // BleGattExecutor extends BluetoothGattCallback
 
         // After connecting to the gat service, add it to the GATT connections hash set
-        myGattConnections.add(mGatt);
-        myConnectedDevices.add(mDevice);
+        Log.v(TAG,"was that gatt service already added");
+        boolean alreadyAdded = alreadyAdded(mGatt, myGattConnections);
+        if (!alreadyAdded) myGattConnections.add(mGatt); // Add it only if it's not already contained in the set
+        //myGattConnections.add(mGatt);
+        //myConnectedDevices.add(mDevice);
 
         return true;
+    }
+
+    // If we have a gatt service associated with a device with the same address, then we don't connect to it
+    private boolean alreadyAdded(BluetoothGatt gatt, HashSet<BluetoothGatt> set){
+        for(BluetoothGatt gat_in_set : set)
+            if(gat_in_set.getDevice().getAddress() == gatt.getDevice().getAddress())
+                return true;
+        Log.v(TAG,"gatt service was not already added");
+        return false;
     }
 
     /**

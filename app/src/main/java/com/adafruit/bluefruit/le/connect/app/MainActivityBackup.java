@@ -1932,7 +1932,7 @@ public class MainActivityBackup extends AppCompatActivity implements
                 holder.descriptionTextView = (TextView) convertView.findViewById(R.id.descriptionTextView);
                 holder.rssiImageView = (ImageView) convertView.findViewById(R.id.rssiImageView);
                 holder.rssiTextView = (TextView) convertView.findViewById(R.id.rssiTextView);
-                holder.connectButton = (Button) convertView.findViewById(R.id.connectButton);
+                holder.connectButton = (Button) convertView.findViewById(R.id.connectionSwitch);
 
                 convertView.setTag(R.string.scan_tag_id, holder);
 

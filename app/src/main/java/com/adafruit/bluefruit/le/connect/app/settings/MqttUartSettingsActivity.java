@@ -2,7 +2,6 @@ package com.adafruit.bluefruit.le.connect.app.settings;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -237,7 +236,7 @@ public class MqttUartSettingsActivity extends AppCompatActivity implements MqttM
         });
 
         // UI - Connect
-        mConnectButton = (Button) findViewById(R.id.connectButton);
+        mConnectButton = (Button) findViewById(R.id.connectionSwitch);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -56,10 +56,10 @@
 
     </LinearLayout>
 
-    <Switch
+    <Button
         android:id="@+id/connectionSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical" />
-
+        android:layout_gravity="center_vertical"
+        android:text="@string/scan_device_connect" />
 </LinearLayout>

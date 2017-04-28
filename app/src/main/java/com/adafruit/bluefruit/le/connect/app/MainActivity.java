@@ -14,7 +14,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -30,7 +29,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.Html;
@@ -41,7 +39,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -54,6 +51,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,7 +62,6 @@ import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity2C
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity4Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.ColorPickerActivity8Colors;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.SensorDataActivity;
-import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity;
 import com.adafruit.bluefruit.le.connect.app.OurActivities.TerminalActivity2;
 import com.adafruit.bluefruit.le.connect.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.connect.app.settings.SettingsActivity;
@@ -927,6 +924,17 @@ public class MainActivity extends UartInterfaceActivity implements
         }
     }
 
+    public void onClickDeviceDisonnect(int scannedDeviceIndex){
+        ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
+        BluetoothDeviceData mDeselectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
+        BluetoothDevice device = mDeselectedDeviceData.device;
+        for(BluetoothGatt gatt : BleManager.getInstance().myGattConnections)
+            if(device.getAddress() == gatt.getDevice().getAddress()){
+                gatt.close();
+                BleManager.getInstance().myGattConnections.remove(gatt);
+            }
+    }
+
     private void connect(BluetoothDevice device) {
 
         boolean isConnecting = mBleManager.connect(this, device.getAddress());
@@ -1119,12 +1127,17 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner.start();
         }
 
-        //for(BluetoothDeviceData datum : connectedDeviceData) mScannedDevices.add(datum);
+        // Add devices that are already connected to
+        for(BluetoothDeviceData datum : connectedDeviceData)
+            if(!mScannedDevices.contains(datum)){
+                // We should only add the old connection once
+                datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
+                mScannedDevices.add(datum);
+            }
 
         // Update UI
         updateUI();
     }
-
 
     private void addConnectedDeviceToScannedDevicesList(int rssi, byte[] scanRecord){
         // We need to add the connected devices to the list.
@@ -1562,6 +1575,9 @@ public class MainActivity extends UartInterfaceActivity implements
         static final int kType_Beacon = 2;
         static final int kType_UriBeacon = 3;
 
+        // Michael's variables
+        boolean isConnected = false;
+
         public int type;
         int txPower;
         ArrayList<UUID> uuids;
@@ -1840,7 +1856,7 @@ public class MainActivity extends UartInterfaceActivity implements
             TextView descriptionTextView;
             ImageView rssiImageView;
             TextView rssiTextView;
-            Button connectButton;
+            Switch connectButton;
         }
 
         @Override
@@ -1994,7 +2010,7 @@ public class MainActivity extends UartInterfaceActivity implements
             return true;
         }
 
-        // TODO getGroupView()
+        // TODO list item layout_scan_item_title
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
             GroupViewHolder holder;
@@ -2008,7 +2024,7 @@ public class MainActivity extends UartInterfaceActivity implements
                 holder.descriptionTextView = (TextView) convertView.findViewById(R.id.descriptionTextView);
                 holder.rssiImageView = (ImageView) convertView.findViewById(R.id.rssiImageView);
                 holder.rssiTextView = (TextView) convertView.findViewById(R.id.rssiTextView);
-                holder.connectButton = (Button) convertView.findViewById(R.id.connectButton);
+                holder.connectButton = (Switch) convertView.findViewById(R.id.connectionSwitch);
 
                 convertView.setTag(R.string.scan_tag_id, holder);
 
@@ -2026,14 +2042,25 @@ public class MainActivity extends UartInterfaceActivity implements
                 }
             });
 
-            holder.connectButton.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        onClickDeviceConnect(groupPosition);
-                        return true;
-                    }
-                    return false;
+//            holder.connectButton.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//
+//                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                        onClickDeviceConnect(groupPosition);
+//                        return true;
+//                    }
+//                    return false;
+//                }
+//            });
+
+            holder.connectButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    // do something, the isChecked will be
+                    // true if the switch is in the On position
+                    Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
+                    //if(isChecked == true) onClickDeviceConnect(groupPosition);
+                    //if(isChecked == true) onClickDeviceDisonnect(groupPosition);
                 }
             });
 

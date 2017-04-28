@@ -118,7 +118,7 @@ public class NeopixelActivity extends UartInterfaceActivity {
 
         // UI
         mStatusTextView = (TextView) findViewById(R.id.statusTextView);
-        mConnectButton = (Button) findViewById(R.id.connectButton);
+        mConnectButton = (Button) findViewById(R.id.connectionSwitch);
         mBoardContentView = (ViewGroup) findViewById(R.id.boardContentView);
         RecyclerView paletteRecyclerView = (RecyclerView) findViewById(R.id.paletteRecyclerView);
         if (paletteRecyclerView != null) {
