@@ -28,6 +28,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
@@ -904,20 +905,18 @@ public class MainActivity extends UartInterfaceActivity implements
         // this comparison just makes sure it's not out of bounds for some reason
         if (scannedDeviceIndex < filteredPeripherals.size()) {
             if(printFlag) Log.v("TAG","scannedDeviceIndex < filteredPeripherals.size() is true");
-            mSelectedDeviceData = filteredPeripherals.get(scannedDeviceIndex); // BluetoothDeviceData wraps a device of type BluetoothDevice device
-            BluetoothDevice device = mSelectedDeviceData.device; // BluetoothDevice is defined in the Android API
+            BluetoothDeviceData datum = filteredPeripherals.get(scannedDeviceIndex); // BluetoothDeviceData wraps a device of type BluetoothDevice device
+            //BluetoothDevice device = datum.device; // BluetoothDevice is defined in the Android API
 
             mBleManager.setBleListener(MainActivity.this);           // Force set listener (could be still checking for updates...)
 
-            if (mSelectedDeviceData.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
-                //showChooseDeviceServiceDialog(mSelectedDeviceData);
+            if (datum.type == BluetoothDeviceData.kType_Uart) {      // if is uart, show all the available activities (universal asynchronous receiver/transmitter)
                 if(printFlag) Log.v("TAG","Connecting to UART device...");
-                //mSelectedDeviceData.isConnected = true;
-                connect(mSelectedDeviceData);
+                connect(datum);
             } else {                          // if no uart, then go directly to info
                 if(printFlag) Log.d(TAG, "No UART service found. Go to InfoActivity");
                 mComponentToStartWhenConnected = InfoActivity.class;
-                connect(mSelectedDeviceData);
+                connect(datum);
             }
         } else {
             if(printFlag) Log.w(TAG, "onClickDeviceConnect index does not exist: " + scannedDeviceIndex);
@@ -929,30 +928,42 @@ public class MainActivity extends UartInterfaceActivity implements
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
         BluetoothDeviceData mDeselectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
         BluetoothDevice device = mDeselectedDeviceData.device;
-        for(BluetoothGatt gatt : BleManager.getInstance().myGattConnections)
-            if(device.getAddress() == gatt.getDevice().getAddress()){
+//        for(BluetoothGatt gatt : BleManager.getInstance().myGattConnections)
+//            if(device.getAddress() == gatt.getDevice().getAddress()){
+//                gatt.close();
+//                BleManager.getInstance().myGattConnections.remove(gatt);
+//            }
+        Iterator<BluetoothGatt> it = BleManager.getInstance().myGattConnections.iterator();
+        while (it.hasNext()) {
+            BluetoothGatt gatt = it.next();
+            if(gatt.getDevice().getAddress() == device.getAddress()){
                 gatt.close();
-                BleManager.getInstance().myGattConnections.remove(gatt);
+                it.remove();
+                Log.v(TAG,"GATT connection closed");
             }
+        }
+        mDeselectedDeviceData.isConnected = false;
+        connectedDeviceData.remove(mDeselectedDeviceData); // Remove device data from the list of connected devices data
     }
 
-    private void connect(BluetoothDeviceData mSelectedDeviceData) {
+    private void connect(BluetoothDeviceData datum) {
 
-        BluetoothDevice device = mSelectedDeviceData.device;
+        BluetoothDevice device = datum.device;
         boolean isConnecting = mBleManager.connect(this, device.getAddress());
         Log.d(TAG, "device.getAddress() is"+device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
 
         }
-        addConnectedDeviceData(mSelectedDeviceData);
+        addConnectedDeviceData(datum);
     }
 
-    private void addConnectedDeviceData(BluetoothDeviceData mSelectedDeviceData){
-        mSelectedDeviceData.isConnected = true; // Set toggle state to true
-        connectedDeviceData.add(mSelectedDeviceData); // Add device data to list of connected device data
+    private void addConnectedDeviceData(BluetoothDeviceData datum){
+        datum.isConnected = true; // Set toggle state to true
+        connectedDeviceData.add(datum); // Add device data to list of connected device data
         Log.v(TAG,"Adding connected device from connected devices list");
         Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
+
     }
 
     // Shows status dialog
@@ -1085,6 +1096,8 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner = new BleDevicesScanner(bluetoothAdapter, servicesToScan, new BluetoothAdapter.LeScanCallback() {
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
+
+
                     //final String deviceName = device.getName();
                     //Log.d(TAG, "Discovered device: " + (deviceName != null ? deviceName : "<unknown>"));
 
@@ -1145,6 +1158,33 @@ public class MainActivity extends UartInterfaceActivity implements
                 Log.v(TAG,"Added connected device to scanned devices list");
                 Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
             }
+
+        // Remove devices from scanned devices data list that have disconnected GATT servers, maybe device went out of range ect.
+        // We might as well remove the GATT server from the gat server list
+        // We have to use an iterator to remove elements or we can get a concurrent modification error.
+        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
+        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        while(itData.hasNext()){
+            BluetoothDeviceData data = itData.next();
+            while(itGatt.hasNext()){
+                BluetoothGatt gatt = itGatt.next();
+                if(data.device.getAddress() == gatt.getDevice().getAddress())
+                    Log.v(TAG,"Name of device hosting GATT server is "+gatt.getDevice().getName());
+                    Log.v(TAG,"Does the gat server provide services?");
+                    if(gatt.discoverServices() == false){
+                        Log.v(TAG,"No it doesn't");
+                        itData.remove();
+                        itGatt.remove();
+                        data.isConnected = false;
+                    } else {
+                        Log.v(TAG,"Yes it does");
+                    }
+
+            }
+        }
+
+
+        Log.v(TAG,"Updating UI");
 
         // Update UI
         updateUI();
@@ -2026,34 +2066,38 @@ public class MainActivity extends UartInterfaceActivity implements
         // TODO list item layout_scan_item_title
         @Override
         public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
             GroupViewHolder holder;
 
-            if (convertView == null) {
-                convertView = getLayoutInflater().inflate(R.layout.layout_scan_item_title, parent, false);
+            View myView = getLayoutInflater().inflate(R.layout.layout_scan_item_title, parent, false);
+//
+//            if (convertView == null) {
+//                convertView = getLayoutInflater().inflate(R.layout.layout_scan_item_title, parent, false);
+
 
                 holder = new GroupViewHolder();
 
-                holder.nameTextView = (TextView) convertView.findViewById(R.id.nameTextView);
-                holder.descriptionTextView = (TextView) convertView.findViewById(R.id.descriptionTextView);
-                holder.rssiImageView = (ImageView) convertView.findViewById(R.id.rssiImageView);
-                holder.rssiTextView = (TextView) convertView.findViewById(R.id.rssiTextView);
-                holder.connectButton = (Switch) convertView.findViewById(R.id.connectionSwitch);
-
-                convertView.setTag(R.string.scan_tag_id, holder);
-
-            } else {
-                holder = (GroupViewHolder) convertView.getTag(R.string.scan_tag_id);
-            }
-
-            convertView.setTag(groupPosition);
-            holder.connectButton.setTag(groupPosition);
-
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickScannedDevice(v);
-                }
-            });
+                holder.nameTextView = (TextView) myView.findViewById(R.id.nameTextView);
+                holder.descriptionTextView = (TextView) myView.findViewById(R.id.descriptionTextView);
+                holder.rssiImageView = (ImageView) myView.findViewById(R.id.rssiImageView);
+                holder.rssiTextView = (TextView) myView.findViewById(R.id.rssiTextView);
+                holder.connectButton = (Switch) myView.findViewById(R.id.connectionSwitch);
+//
+//                convertView.setTag(R.string.scan_tag_id, holder);
+//
+//            } else {
+//                holder = (GroupViewHolder) convertView.getTag(R.string.scan_tag_id);
+//            }
+//
+//            convertView.setTag(groupPosition);
+//            holder.connectButton.setTag(groupPosition);
+//
+//            convertView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onClickScannedDevice(v);
+//                }
+//            });
 
 //            holder.connectButton.setOnTouchListener(new View.OnTouchListener() {
 //                @Override
@@ -2086,7 +2130,7 @@ public class MainActivity extends UartInterfaceActivity implements
                         onClickDeviceConnect(groupPosition); // Connect to the device
                     } else {
                         Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
-                        connectedDeviceData.remove(deviceData); // Remove device data from the list of connected devices data
+
                         Log.v(TAG,"Removing connected device from connected devices list");
                         Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
                         onClickDeviceDisconnect(groupPosition); // Close the connection
@@ -2104,7 +2148,7 @@ public class MainActivity extends UartInterfaceActivity implements
             int rrsiDrawableResource = getDrawableIdForRssi(deviceData.rssi);
             holder.rssiImageView.setImageResource(rrsiDrawableResource);
 
-            return convertView;
+            return myView;
         }
 
         private int getDrawableIdForRssi(int rssi) {
