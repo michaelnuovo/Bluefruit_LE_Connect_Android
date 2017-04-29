@@ -14,6 +14,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -864,8 +865,6 @@ public class MainActivity extends UartInterfaceActivity implements
         }
     }
 
-
-
     private void showGettingUpdateInfoState() {
         showConnectionStatus(false);
         showStatusDialog(true, R.string.scan_gettingupdateinfo);
@@ -943,11 +942,11 @@ public class MainActivity extends UartInterfaceActivity implements
             }
         }
         mDeselectedDeviceData.isConnected = false;
+
         connectedDeviceData.remove(mDeselectedDeviceData); // Remove device data from the list of connected devices data
     }
 
     private void connect(BluetoothDeviceData datum) {
-
         BluetoothDevice device = datum.device;
         boolean isConnecting = mBleManager.connect(this, device.getAddress());
         Log.d(TAG, "device.getAddress() is"+device.getAddress());
@@ -955,7 +954,10 @@ public class MainActivity extends UartInterfaceActivity implements
             showConnectionStatus(true);
 
         }
-        addConnectedDeviceData(datum);
+        //while(BleManager.getConnectionState() > 0) { // Do this if it's connecting or connected
+            if(BleManager.getConnectionState() == 1) addConnectedDeviceData(datum); // Add it when it's connected
+        //}
+        Log.v("TAG","Connection state should be 2. It is ... "+BleManager.getConnectionState());
     }
 
     private void addConnectedDeviceData(BluetoothDeviceData datum){
@@ -1162,32 +1164,44 @@ public class MainActivity extends UartInterfaceActivity implements
         // Remove devices from scanned devices data list that have disconnected GATT servers, maybe device went out of range ect.
         // We might as well remove the GATT server from the gat server list
         // We have to use an iterator to remove elements or we can get a concurrent modification error.
-        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
-        while(itData.hasNext()){
-            BluetoothDeviceData data = itData.next();
-            while(itGatt.hasNext()){
-                BluetoothGatt gatt = itGatt.next();
-                if(data.device.getAddress() == gatt.getDevice().getAddress())
-                    Log.v(TAG,"Name of device hosting GATT server is "+gatt.getDevice().getName());
-                    Log.v(TAG,"Does the gat server provide services?");
-                    if(gatt.discoverServices() == false){
-                        Log.v(TAG,"No it doesn't");
-                        itData.remove();
-                        itGatt.remove();
-                        data.isConnected = false;
-                    } else {
-                        Log.v(TAG,"Yes it does");
-                    }
-
-            }
-        }
+//        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
+//        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
+//        while(itData.hasNext()){
+//            BluetoothDeviceData data = itData.next();
+//            while(itGatt.hasNext()){
+//                BluetoothGatt gatt = itGatt.next();
+//                Log.v(TAG,"data.device.getAddress() is "+data.device.getAddress().toString());
+//                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
+//                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
+//                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+//                    BleManager.getInstance().mGatt = gatt;
+//                    if(BleManager.getConnectionState() == 0){
+//                        itData.remove();
+//                        itGatt.remove();
+//                        removeDataFromList(data.device.getAddress(),mScannedDevices);
+//                        data.isConnected = false;
+//                    }
+//                    BleManager.getInstance().mGatt = oldGatt;
+//                } else {
+//                    Log.v(TAG,"Addresses do not match");
+//                }
+//
+//            }
+//        }
 
 
         Log.v(TAG,"Updating UI");
 
         // Update UI
         updateUI();
+    }
+
+    private void removeDataFromList(String address, ArrayList<BluetoothDeviceData> arrayList){
+        Iterator<BluetoothDeviceData> it = arrayList.iterator();
+        while(it.hasNext()) {
+            BluetoothDeviceData mData = it.next();
+            if(mData.device.getAddress() == address) it.remove();
+        }
     }
 
     private void addConnectedDeviceToScannedDevicesList(int rssi, byte[] scanRecord){
@@ -2122,18 +2136,9 @@ public class MainActivity extends UartInterfaceActivity implements
                     // true if the switch is in the On position
 
                     if(isChecked == true) {
-                        Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
-//                        deviceData.isConnected = true; // Set toggle state to true
-//                        connectedDeviceData.add(deviceData); // Add device data to list of connected device data
-//                        Log.v(TAG,"Adding connected device from connected devices list");
-//                        Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
-                        onClickDeviceConnect(groupPosition); // Connect to the device
+                        onClickDeviceConnect(groupPosition); // Connect to the ble device
                     } else {
-                        Log.v(TAG,"Check changed, isChecked is "+String.valueOf(isChecked));
-
-                        Log.v(TAG,"Removing connected device from connected devices list");
-                        Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
-                        onClickDeviceDisconnect(groupPosition); // Close the connection
+                        onClickDeviceDisconnect(groupPosition); // Disconnect from the ble device
                     }
                 }
             });

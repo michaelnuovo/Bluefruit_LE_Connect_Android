@@ -244,6 +244,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     }
 
 
+    // Static factory method returns an instance of this class (which extends the GATT BluetoothGattCallback)
     // Helper function to create a Gatt Executor with a custom listener
     // https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback.html
     public static BleGattExecutor createExecutor(final BleExecutorListener listener) {

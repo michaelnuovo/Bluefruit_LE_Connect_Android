@@ -40,7 +40,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     private BluetoothDevice mDevice;
     public String mDeviceAddress; // TODO use a hash set to contain multiple device addresses, amd broadcast to all of them
-    private int mConnectionState = STATE_DISCONNECTED;
+    private static int mConnectionState = STATE_DISCONNECTED;
+    public static int getConnectionState(){return mConnectionState;}
 
     private BleManagerListener mBleListener;
 
