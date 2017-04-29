@@ -954,9 +954,8 @@ public class MainActivity extends UartInterfaceActivity implements
             showConnectionStatus(true);
 
         }
-        //while(BleManager.getConnectionState() > 0) { // Do this if it's connecting or connected
-            if(BleManager.getConnectionState() == 1) addConnectedDeviceData(datum); // Add it when it's connected
-        //}
+
+        if(BleManager.getConnectionState() == 1) addConnectedDeviceData(datum); // Add it if it's connecting
         Log.v("TAG","Connection state should be 2. It is ... "+BleManager.getConnectionState());
     }
 
