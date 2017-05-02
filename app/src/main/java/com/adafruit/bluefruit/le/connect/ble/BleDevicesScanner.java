@@ -3,17 +3,24 @@ package com.adafruit.bluefruit.le.connect.ble;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.adafruit.bluefruit.le.connect.app.MainActivity;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import static com.adafruit.bluefruit.le.connect.app.MainActivity.connectedDeviceData;
 
 public class BleDevicesScanner {
     private static final String TAG = BleDevicesScanner.class.getSimpleName();
@@ -50,7 +57,9 @@ public class BleDevicesScanner {
         mHandler = new Handler();
     }
 
-    public void start() {
+    public void start(final MainActivity main) {
+
+        // Re-scans every 20 seconds
         if (kScanPeriod > 0) {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed(new Runnable() {
@@ -58,17 +67,54 @@ public class BleDevicesScanner {
                 public void run() {
                     if (mIsScanning) {
                         Log.d(TAG, "Scan timer expired. Restart scan");
-                        stop();
-                        start();
+                        //ifDisconnected(main);
+                        stop(); // Stops itself from scanning
+                        start(main); // and then calls its self recursively to start again
                     }
                 }
-            }, kScanPeriod);
+            }, 20000);
         }
 
         mIsScanning = true;
         Log.d(TAG, "start scanning");
         mBluetoothAdapter.startLeScan(mLeScanCallback);
 
+    }
+
+    private void ifDisconnected(MainActivity main){
+        Log.v(TAG,"ifDisconnected");
+        // Remove devices from scanned devices data list that have disconnected GATT servers, maybe device went out of range ect.
+        // We might as well remove the GATT server from the gat server list
+        // We have to use an iterator to remove elements or we can get a concurrent modification error.
+
+        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
+        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        while(itData.hasNext()){
+            MainActivity.BluetoothDeviceData data = itData.next();
+            while(itGatt.hasNext()){
+                BluetoothGatt gatt = itGatt.next();
+                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
+                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
+                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
+                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+                    BleManager.getInstance().mGatt = gatt;
+                    Log.v(TAG,"Addresses match");
+                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
+                    if(BleManager.getConnectionState() == 0){
+                        itData.remove();
+                        itGatt.remove();
+                        Log.v(TAG,"Removed device data and gat server");
+                        main.removeDataFromList(data.device.getAddress(),main.mScannedDevices);
+                        data.isConnected = false;
+                        main.updateUI();
+                    }
+                    BleManager.getInstance().mGatt = oldGatt;
+                } else {
+                    Log.v(TAG,"Addresses do not match");
+                }
+
+            }
+        }
     }
 
     public void stop() {

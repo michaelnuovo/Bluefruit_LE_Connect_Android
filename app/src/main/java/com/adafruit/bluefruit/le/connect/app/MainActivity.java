@@ -172,7 +172,7 @@ public class MainActivity extends UartInterfaceActivity implements
     private FirmwareUpdater mFirmwareUpdater;
     private PeripheralList mPeripheralList;
 
-    private ArrayList<BluetoothDeviceData> mScannedDevices;
+    public ArrayList<BluetoothDeviceData> mScannedDevices;
     private BluetoothDeviceData mSelectedDeviceData;
     private Class<?> mComponentToStartWhenConnected;
     private boolean mShouldEnableWifiOnQuit = false;
@@ -464,7 +464,8 @@ public class MainActivity extends UartInterfaceActivity implements
         //mBleManager.setBleListener(this);
 
         // Autostart scan
-        //autostartScan();
+        Log.v(TAG,"onResume()");
+        autostartScan();
 
         // Update UI
         updateUI();
@@ -475,6 +476,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
     private void autostartScan() {
+        Log.v(TAG,"autostartScan() ");
         if (BleUtils.getBleStatus(this) == BleUtils.STATUS_BLE_ENABLED) {
             // If was connected, disconnect
             //mBleManager.disconnect(); // Disconnects the gatt service
@@ -896,7 +898,7 @@ public class MainActivity extends UartInterfaceActivity implements
         boolean printFlag = true;
         if(printFlag) Log.v("TAG","onClickDeviceConnect()");
 
-        stopScanning();
+        //stopScanning();// Stop scanning once connected to a device
 
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
 
@@ -944,6 +946,7 @@ public class MainActivity extends UartInterfaceActivity implements
         mDeselectedDeviceData.isConnected = false;
 
         connectedDeviceData.remove(mDeselectedDeviceData); // Remove device data from the list of connected devices data
+        //startScan(null); // Scanning will stop once a device is connected i think
     }
 
     private void connect(BluetoothDeviceData datum) {
@@ -1094,9 +1097,17 @@ public class MainActivity extends UartInterfaceActivity implements
         if (BleUtils.getBleStatus(this) != BleUtils.STATUS_BLE_ENABLED) {
             Log.w(TAG, "startScan: BluetoothAdapter not initialized or unspecified address.");
         } else {
+
+            
             mScanner = new BleDevicesScanner(bluetoothAdapter, servicesToScan, new BluetoothAdapter.LeScanCallback() {
+
+                // As long as a device can be pinged, this called back will constantly be called for the device.
+                // It returns information like signal intensity for example.
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
+
+                    // We need to check if a previously connected device has been disconnected.
+                    // We need to update the UI immediately if it has.
 
 
                     //final String deviceName = device.getName();
@@ -1128,8 +1139,6 @@ public class MainActivity extends UartInterfaceActivity implements
                     deviceData.scanRecord = scanRecord;
                     decodeScanRecords(deviceData);
 
-
-
                     // Update device data
                     long currentMillis = SystemClock.uptimeMillis();
                     if (previouslyScannedDeviceData == null || currentMillis - mLastUpdateMillis > kMinDelayToUpdateUI) {          // Avoid updating when not a new device has been found and the time from the last update is really short to avoid updating UI so fast that it will become unresponsive
@@ -1147,10 +1156,11 @@ public class MainActivity extends UartInterfaceActivity implements
             });
 
             // Start scanning
-            mScanner.start();
+            Log.v(TAG,"mScanner.start()");
+            mScanner.start(this);
         }
 
-        // Add devices that are already connected to scanned devices list
+        // Adds devices that are not broad cast but that are connected to the display list
         for(BluetoothDeviceData datum : connectedDeviceData)
             if(!mScannedDevices.contains(datum)){
                 // We should only add the old connection once
@@ -1160,34 +1170,6 @@ public class MainActivity extends UartInterfaceActivity implements
                 Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
             }
 
-        // Remove devices from scanned devices data list that have disconnected GATT servers, maybe device went out of range ect.
-        // We might as well remove the GATT server from the gat server list
-        // We have to use an iterator to remove elements or we can get a concurrent modification error.
-//        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-//        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
-//        while(itData.hasNext()){
-//            BluetoothDeviceData data = itData.next();
-//            while(itGatt.hasNext()){
-//                BluetoothGatt gatt = itGatt.next();
-//                Log.v(TAG,"data.device.getAddress() is "+data.device.getAddress().toString());
-//                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
-//                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
-//                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
-//                    BleManager.getInstance().mGatt = gatt;
-//                    if(BleManager.getConnectionState() == 0){
-//                        itData.remove();
-//                        itGatt.remove();
-//                        removeDataFromList(data.device.getAddress(),mScannedDevices);
-//                        data.isConnected = false;
-//                    }
-//                    BleManager.getInstance().mGatt = oldGatt;
-//                } else {
-//                    Log.v(TAG,"Addresses do not match");
-//                }
-//
-//            }
-//        }
-
 
         Log.v(TAG,"Updating UI");
 
@@ -1195,7 +1177,9 @@ public class MainActivity extends UartInterfaceActivity implements
         updateUI();
     }
 
-    private void removeDataFromList(String address, ArrayList<BluetoothDeviceData> arrayList){
+
+
+    public void removeDataFromList(String address, ArrayList<BluetoothDeviceData> arrayList){
         Iterator<BluetoothDeviceData> it = arrayList.iterator();
         while(it.hasNext()) {
             BluetoothDeviceData mData = it.next();
@@ -1221,7 +1205,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
 
-    private void stopScanning() {
+    public void stopScanning() {
         // Stop scanning
         if (mScanner != null) {
             mScanner.stop();
@@ -1361,7 +1345,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
 
-    private void updateUI() {
+    public void updateUI() {
         // Scan button
         boolean isScanning = mScanner != null && mScanner.isScanning();
         mScanButton.setText(getString(isScanning ? R.string.scan_scanbutton_scanning : R.string.scan_scanbutton_scan));
@@ -1372,6 +1356,7 @@ public class MainActivity extends UartInterfaceActivity implements
         mDevicesScrollView.setVisibility(isListEmpty ? View.GONE : View.VISIBLE);
 
         // devices list
+        Log.v(TAG,"Notifying data set changed");
         mScannedDevicesAdapter.notifyDataSetChanged();
     }
 
@@ -1608,7 +1593,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     // region Helpers
     // TODO BluetoothDeviceData class
-    private class BluetoothDeviceData {
+    public class BluetoothDeviceData {
 
         /**
          * BluetoothDevice represents a remote Bluetooth device. A BluetoothDevice lets you create a connection with
@@ -1622,7 +1607,7 @@ public class MainActivity extends UartInterfaceActivity implements
          * returned by BluetoothAdapter.getBondedDevices(). You can then open a BluetoothSocket for
          * communication with the remote device, using createRfcommSocketToServiceRecord(UUID).
          */
-        BluetoothDevice device;
+        public BluetoothDevice device;
 
         public int rssi; // RSSI (Received Signal Strength Indicator) is a common name for the
                          // signal strength in a wireless network environment. It is a measure of
@@ -1640,7 +1625,7 @@ public class MainActivity extends UartInterfaceActivity implements
         static final int kType_UriBeacon = 3;
 
         // Michael's variables
-        boolean isConnected = false;
+        public boolean isConnected = false;
 
         public int type;
         int txPower;
@@ -1706,7 +1691,7 @@ public class MainActivity extends UartInterfaceActivity implements
             mIsFilterNameCaseInsensitive = preferences.getBoolean(kPreferences_filtersIsNameCaseInsensitive, true);
             mRssiFilterValue = preferences.getInt(kPreferences_filtersRssi, kMaxRssiValue);
             mIsUnnamedEnabled = preferences.getBoolean(kPreferences_filtersUnnamedEnabled, true);
-            mIsOnlyUartEnabled = preferences.getBoolean(kPreferences_filtersUartEnabled, false);
+            mIsOnlyUartEnabled = preferences.getBoolean(kPreferences_filtersUartEnabled, true); // TODO mIsOnlyUartEnabled
         }
 
         String getFilterName() {
