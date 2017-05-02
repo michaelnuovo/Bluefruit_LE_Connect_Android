@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "com.adafruit.bluefruit.le.connect"
+        applicationId "com.adafruit.bluefruit.le.BLEcom"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 18

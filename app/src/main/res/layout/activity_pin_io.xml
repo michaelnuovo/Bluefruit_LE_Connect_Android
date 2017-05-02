@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.adafruit.bluefruit.le.TalkingToEachOther.app.PinIOActivity">
+    tools:context="com.adafruit.bluefruit.le.BlEcom.app.PinIOActivity">
 
     <ScrollView
         android:id="@+id/pinScrollView"
@@ -27,7 +27,7 @@
                 android:textColor="@drawable/default_textcolor"
                 android:text="@string/pinio_sectiontitle" />
 
-            <com.adafruit.bluefruit.le.TalkingToEachOther.ui.utils.ExpandableHeightExpandableListView
+            <com.adafruit.bluefruit.le.BlEcom.ui.utils.ExpandableHeightExpandableListView
                 android:id="@+id/pinListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

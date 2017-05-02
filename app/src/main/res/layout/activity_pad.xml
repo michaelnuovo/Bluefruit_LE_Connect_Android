@@ -5,7 +5,7 @@
               android:layout_height="match_parent"
               android:background="@drawable/default_background"
               android:orientation="vertical"
-              tools:context="com.adafruit.bluefruit.le.TalkingToEachOther.app.PadActivity">
+              tools:context="com.adafruit.bluefruit.le.BlEcom.app.PadActivity">
 
     <View
         android:id="@+id/topSpacerView"

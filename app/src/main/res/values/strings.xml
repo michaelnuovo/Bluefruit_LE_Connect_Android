@@ -2,7 +2,7 @@
 <resources>
 
     <!-- General -->
-    <string name="app_name">BlEcom</string>
+    <string name="app_name">BLEcom</string>
     <string name="app_full_name">Bluefruit LE Connect</string>
     <string name="action_info">Info</string>
     <string name="action_mqttsettings">MQTT</string>
