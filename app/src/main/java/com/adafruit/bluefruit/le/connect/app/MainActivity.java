@@ -1092,13 +1092,15 @@ public class MainActivity extends UartInterfaceActivity implements
         // Stop current scanning (if needed)
         stopScanning();
 
+        Log.v(TAG,"mScannedDevices.size is null is "+String.valueOf(mScannedDevices==null));
+
         // Configure scanning
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(getApplicationContext());
         if (BleUtils.getBleStatus(this) != BleUtils.STATUS_BLE_ENABLED) {
             Log.w(TAG, "startScan: BluetoothAdapter not initialized or unspecified address.");
         } else {
 
-            
+            // Adds devices to the list that are not connected but are pingable or maybe broadcasting
             mScanner = new BleDevicesScanner(bluetoothAdapter, servicesToScan, new BluetoothAdapter.LeScanCallback() {
 
                 // As long as a device can be pinged, this called back will constantly be called for the device.
@@ -1129,11 +1131,12 @@ public class MainActivity extends UartInterfaceActivity implements
                     if (previouslyScannedDeviceData == null) {
                         // Add it to the mScannedDevice list
                         deviceData = new BluetoothDeviceData();
-                        mScannedDevices.add(deviceData); // <--- adding the device to the list
+                        mScannedDevices.add(deviceData); // <--- add the device the device data to the list
                     } else {
                         deviceData = previouslyScannedDeviceData;
                     }
 
+                    // Update the device data in the list
                     deviceData.device = device;
                     deviceData.rssi = rssi;
                     deviceData.scanRecord = scanRecord;
@@ -1147,7 +1150,7 @@ public class MainActivity extends UartInterfaceActivity implements
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                updateUI();
+                                updateUI(); // should update every 200 milliseconds
                             }
                         });
                     }
@@ -1160,15 +1163,16 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner.start(this);
         }
 
-        // Adds devices that are not broad cast but that are connected to the display list
-        for(BluetoothDeviceData datum : connectedDeviceData)
-            if(!mScannedDevices.contains(datum)){
-                // We should only add the old connection once
-                datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
-                mScannedDevices.add(datum);
-                Log.v(TAG,"Added connected device to scanned devices list");
-                Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
-            }
+//        // Adds to the display list devices that are connected (not broadcast)
+//        for(BluetoothDeviceData datum : connectedDeviceData) {
+//            //if(!mScannedDevices.contains(datum)){
+//            // We should only add the old connection once
+//            //datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
+//            mScannedDevices.add(datum);
+//            Log.v(TAG, "Added connected device to scanned devices list");
+//            Log.v(TAG, "Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
+//            //}
+//        }
 
 
         Log.v(TAG,"Updating UI");
@@ -1177,7 +1181,35 @@ public class MainActivity extends UartInterfaceActivity implements
         updateUI();
     }
 
+    private void ifDisconnectedRemove(){
+        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
+        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        while(itData.hasNext()){
+            BluetoothDeviceData data = itData.next();
+            while(itGatt.hasNext()){
+                BluetoothGatt gatt = itGatt.next();
+                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
+                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
+                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
+                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+                    BleManager.getInstance().mGatt = gatt;
+                    Log.v(TAG,"Addresses match");
+                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
+                    if(BleManager.getConnectionState() == 0){
+                        itData.remove();
+                        itGatt.remove();
+                        Log.v(TAG,"Removed device data and gat server");
+                        removeDataFromList(data.device.getAddress(),mScannedDevices);
+                        data.isConnected = false;
+                    }
+                    BleManager.getInstance().mGatt = oldGatt;
+                } else {
+                    Log.v(TAG,"Addresses do not match");
+                }
 
+            }
+        }
+    }
 
     public void removeDataFromList(String address, ArrayList<BluetoothDeviceData> arrayList){
         Iterator<BluetoothDeviceData> it = arrayList.iterator();

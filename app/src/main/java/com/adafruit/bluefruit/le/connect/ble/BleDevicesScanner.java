@@ -32,7 +32,7 @@ public class BleDevicesScanner {
     private Handler mHandler;
     private List<UUID> mServicesToDiscover;
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
-    private final LeScansPoster mLeScansPoster;
+    private final LeScansPoster mLeScansPoster; // imlplements runnable
 
     //
     private BluetoothAdapter.LeScanCallback mLeScanCallback =
@@ -41,14 +41,17 @@ public class BleDevicesScanner {
                 @Override
                 public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
                     synchronized (mLeScansPoster) {
+                        // disjoint Returns true if the two specified collections have no elements in common.
+                        // if there are no services, or if there are no overlapping services
                         if (mServicesToDiscover == null || !Collections.disjoint(parseUuids(scanRecord), mServicesToDiscover)) {       // only process the devices with uuids in mServicesToDiscover
                             mLeScansPoster.set(device, rssi, scanRecord);
-                            mMainThreadHandler.post(mLeScansPoster);
+                            mMainThreadHandler.post(mLeScansPoster); // posts the runnable
                         }
                     }
                 }
             };
 
+    // constructor
     public BleDevicesScanner(BluetoothAdapter adapter, UUID[] servicesToDiscover, BluetoothAdapter.LeScanCallback callback) {
         mBluetoothAdapter = adapter;
         mServicesToDiscover = servicesToDiscover == null ? null : Arrays.asList(servicesToDiscover);
@@ -62,6 +65,11 @@ public class BleDevicesScanner {
         // Re-scans every 20 seconds
         if (kScanPeriod > 0) {
             // Stops scanning after a pre-defined scan period.
+            // post a new runnable to the handler every 20 seconds
+            // the handler just call this method again every 20 second
+            // and post itself to the hanlder again.
+            // the idea is to reset the blue tooth adapter listener with the call back
+            // every 20 seconds.
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -129,6 +137,8 @@ public class BleDevicesScanner {
     public boolean isScanning() {
         return mIsScanning;
     }
+
+
 
     private static class LeScansPoster implements Runnable {
         private final BluetoothAdapter.LeScanCallback leScanCallback;
