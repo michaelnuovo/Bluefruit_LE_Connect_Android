@@ -329,7 +329,7 @@ public class MainActivity extends UartInterfaceActivity implements
             @Override
             public void onRefresh() {
 
-                mScannedDevices.clear();
+                mScannedDevices.clear(); // <-- the list is being cleared TODO mScannedDevices.clear()
 
 
                 startScan(null);
@@ -1092,7 +1092,7 @@ public class MainActivity extends UartInterfaceActivity implements
         // Stop current scanning (if needed)
         stopScanning();
 
-        Log.v(TAG,"mScannedDevices.size is null is "+String.valueOf(mScannedDevices==null));
+        Log.v(TAG,"mScannedDevices.size is "+String.valueOf(mScannedDevices.size()));
 
         // Configure scanning
         BluetoothAdapter bluetoothAdapter = BleUtils.getBluetoothAdapter(getApplicationContext());
@@ -1163,16 +1163,16 @@ public class MainActivity extends UartInterfaceActivity implements
             mScanner.start(this);
         }
 
-//        // Adds to the display list devices that are connected (not broadcast)
-//        for(BluetoothDeviceData datum : connectedDeviceData) {
-//            //if(!mScannedDevices.contains(datum)){
-//            // We should only add the old connection once
-//            //datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
-//            mScannedDevices.add(datum);
-//            Log.v(TAG, "Added connected device to scanned devices list");
-//            Log.v(TAG, "Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
-//            //}
-//        }
+        // Adds to the display list devices that are connected (not broadcast)
+        for(BluetoothDeviceData datum : connectedDeviceData) {
+            //if(!mScannedDevices.contains(datum)){
+            // We should only add the old connection once
+            //datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
+            mScannedDevices.add(datum);
+            Log.v(TAG, "Added connected device to scanned devices list");
+            Log.v(TAG, "Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
+            //}
+        }
 
 
         Log.v(TAG,"Updating UI");
