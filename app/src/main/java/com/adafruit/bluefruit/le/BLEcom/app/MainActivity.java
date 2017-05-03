@@ -24,6 +24,7 @@ import android.content.pm.PackageManager;
 import android.net.nsd.NsdManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -66,6 +67,7 @@ import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity2;
 import com.adafruit.bluefruit.le.BLEcom.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.update.FirmwareUpdater;
+import com.adafruit.bluefruit.le.BLEcom.app.update.LooperThread;
 import com.adafruit.bluefruit.le.BLEcom.app.update.ReleasesParser;
 import com.adafruit.bluefruit.le.BLEcom.ble.BleDevicesScanner;
 import com.adafruit.bluefruit.le.BLEcom.ble.BleManager;
@@ -181,6 +183,10 @@ public class MainActivity extends UartInterfaceActivity implements
     private DataFragment mRetainedDataFragment;
 
     NsdManager.DiscoveryListener mDiscoveryListener;
+
+    private LooperThread mLooper;
+
+    private Handler mHandler;
 
 
     // Michael's variables
@@ -454,6 +460,8 @@ public class MainActivity extends UartInterfaceActivity implements
         requestLocationPermissionIfNeeded();
 
     }
+
+
 
     // TODO onResume()
     @Override
@@ -957,17 +965,61 @@ public class MainActivity extends UartInterfaceActivity implements
 
         }
 
-        if(BleManager.getConnectionState() > 0) addConnectedDeviceData(datum); // Add it if it's connecting or connected
-        datum.isConnected = true;
-        updateUI(); // need to update the connection button
-
-
-
-
+        if(BleManager.getConnectionState() > 0) {
+            addConnectedDeviceData(datum); // Add it if it's connecting or connected
+            datum.isConnected = true;
+            updateUI(); // need to update the connection button
+            start();
+        }
         // TODO open chat activity
 
 //        Intent intent = new Intent(MainActivity.this, UartActivity.class);
 //        startActivityForResult(intent, 2);
+    }
+
+    private void start(){
+
+        if(mHandler == null) mHandler = new Handler();
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG,"Executing message");
+                removeDeadConnectionsAndUpdateUi();
+                start();
+            }
+        }, 2000);
+    }
+
+    private void removeDeadConnectionsAndUpdateUi(){
+        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
+        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        while(itData.hasNext()){
+            MainActivity.BluetoothDeviceData data = itData.next();
+            while(itGatt.hasNext()){
+                BluetoothGatt gatt = itGatt.next();
+                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
+                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
+                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
+                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+                    BleManager.getInstance().mGatt = gatt;
+                    Log.v(TAG,"Addresses match");
+                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
+                    if(BleManager.getConnectionState() == 0){
+                        itData.remove();
+                        itGatt.remove();
+                        Log.v(TAG,"Removed device data and gat server");
+                        removeDataFromList(data.device.getAddress(),mScannedDevices);
+                        data.isConnected = false;
+                        updateUI();
+                    }
+                    BleManager.getInstance().mGatt = oldGatt;
+                } else {
+                    Log.v(TAG,"Addresses do not match");
+                }
+
+            }
+        }
     }
 
     private void addConnectedDeviceData(BluetoothDeviceData datum){
