@@ -11,7 +11,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.adafruit.bluefruit.le.BlEcom.app.InfoActivity">
+    tools:context="com.adafruit.bluefruit.le.BLEcom.app.InfoActivity">
 
     <TextView
         android:id="@+id/nameTextView"

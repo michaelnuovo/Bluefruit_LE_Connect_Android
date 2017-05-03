@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.adafruit.bluefruit.le.BlEcom.app.ControllerActivity">
+    tools:context="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity">
 
 
     <LinearLayout
@@ -53,7 +53,7 @@
                 android:text="@string/controller_sectiontitle_stream"
                 android:textColor="@drawable/default_textcolor" />
 
-            <com.adafruit.bluefruit.le.BlEcom.ui.utils.ExpandableHeightExpandableListView
+            <com.adafruit.bluefruit.le.BLEcom.ui.utils.ExpandableHeightExpandableListView
                 android:id="@+id/controllerListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

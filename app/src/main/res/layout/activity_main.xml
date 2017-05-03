@@ -205,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.adafruit.bluefruit.le.BlEcom.ui.utils.ExpandableHeightExpandableListView
+                    <com.adafruit.bluefruit.le.BLEcom.ui.utils.ExpandableHeightExpandableListView
                         android:id="@+id/scannedDevicesListView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
