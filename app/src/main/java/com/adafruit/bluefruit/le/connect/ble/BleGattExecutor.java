@@ -235,7 +235,7 @@ class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
-        Log.v(TAG,"XXX onCharacteristicRead");
+        Log.v(TAG,"YYY onCharacteristicRead");
         mCurrentAction = null;
         execute(gatt);
     }
