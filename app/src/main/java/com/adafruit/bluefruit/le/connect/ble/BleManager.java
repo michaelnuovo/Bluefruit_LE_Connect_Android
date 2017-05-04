@@ -434,6 +434,9 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+
+        Log.v(TAG,"onCharacteristicChanged");
+
         if (mBleListener != null) {
             mBleListener.onDataAvailable(characteristic);
         }
