@@ -22,7 +22,7 @@ import java.util.UUID;
 public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     // Log
-    private final static String TAG = BleManagerBackup.class.getSimpleName();
+    private final static String TAG = BleManager.class.getSimpleName();
 
     // Enumerations
     private static final int STATE_DISCONNECTED = 0;
