@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 // Encapsulate a list of actions to execute. Actions should be queued and executed sequentially to avoid problems
-public class BleGattExecutor extends BluetoothGattCallback {
+class BleGattExecutor extends BluetoothGattCallback {
     // Log
     private final static String TAG = BleGattExecutor.class.getSimpleName();
 
@@ -218,9 +218,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
-
         Log.v(TAG,"YYY onCharacteristicWrite");
-
         mCurrentAction = null;
         execute(gatt);
     }
@@ -237,9 +235,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
-
-        Log.v(TAG,"YYY onCharacteristicRead");
-
+        Log.v(TAG,"XXX onCharacteristicRead");
         mCurrentAction = null;
         execute(gatt);
     }
@@ -249,10 +245,8 @@ public class BleGattExecutor extends BluetoothGattCallback {
     }
 
 
-    // Static factory method returns an instance of this class (which extends the GATT BluetoothGattCallback)
     // Helper function to create a Gatt Executor with a custom listener
-    // https://developer.android.com/reference/android/bluetooth/BluetoothGattCallback.html
-    public static BleGattExecutor createExecutor(final BleExecutorListener listener) {
+    static BleGattExecutor createExecutor(final BleExecutorListener listener) {
         return new BleGattExecutor() {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -280,7 +274,6 @@ public class BleGattExecutor extends BluetoothGattCallback {
                 super.onCharacteristicChanged(gatt, characteristic);
                 Log.v(TAG,"XXX onCharacteristicChanged");
                 listener.onCharacteristicChanged(gatt, characteristic);
-
             }
 
             @Override
