@@ -120,21 +120,28 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         randButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Random rand = new Random();
 
                 for(View view : viewHolder.viewsList){
-
-                    int r = rand.nextInt(255); // [0,255]
-                    int g = rand.nextInt(255); // [0,255]
-                    int b = rand.nextInt(255); // [0,255]
-
-                    int color = Color.rgb(r,g,b);
+                    int color = getRandomColor();
                     saveToPreferences(String.valueOf(view.getId()),color);
                 }
 
-                setBackgroundColors();;
+                setBackgroundColors();
             }
         });
+    }
+
+    private int getRandomColor() {
+
+        Random rand = new Random();
+
+        int r = rand.nextInt(255); // [0,255]
+        int g = rand.nextInt(255); // [0,255]
+        int b = rand.nextInt(255); // [0,255]
+
+        int color = Color.rgb(r,g,b);
+
+        return color;
     }
 
     private void setColorsPickerColors(){
@@ -157,7 +164,7 @@ public class ColorPickerActivity4Colors extends UartInterfaceActivity implements
         for( View view : viewHolder.viewsList){
             stringyId = String.valueOf(view.getId());
             colorVal = loadFromPreferences(stringyId);
-            if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
+            if(colorVal == -1) saveToPreferences(stringyId, getRandomColor());
         }
     }
 

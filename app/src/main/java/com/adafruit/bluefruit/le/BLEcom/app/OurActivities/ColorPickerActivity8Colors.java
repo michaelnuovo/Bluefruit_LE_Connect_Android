@@ -134,19 +134,13 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         randButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                Random rand = new Random();
 
                 for(View view : viewHolder.viewsList){
-
-                    int r = rand.nextInt(255); // [0,255]
-                    int g = rand.nextInt(255); // [0,255]
-                    int b = rand.nextInt(255); // [0,255]
-
-                    int color = Color.rgb(r,g,b);
+                    int color = getRandomColor();
                     saveToPreferences(String.valueOf(view.getId()),color);
                 }
 
-                setBackgroundColors();;
+                setBackgroundColors();
             }
         });
     }
@@ -171,11 +165,23 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         for( View view : viewHolder.viewsList){
             stringyId = String.valueOf(view.getId());
             colorVal = loadFromPreferences(stringyId);
-            //Log.v("TAG","Color val is "+String.valueOf(colorVal));
-            if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
-            //Log.v("TAG","Color val is "+String.valueOf(loadFromPreferences(stringyId)));
+            if(colorVal == -1) saveToPreferences(stringyId, getRandomColor());
         }
     }
+
+    private int getRandomColor() {
+
+        Random rand = new Random();
+
+        int r = rand.nextInt(255); // [0,255]
+        int g = rand.nextInt(255); // [0,255]
+        int b = rand.nextInt(255); // [0,255]
+
+        int color = Color.rgb(r,g,b);
+
+        return color;
+    }
+
 
     private void setClickListeners(){
         for( View view : viewHolder.viewsList)
@@ -187,16 +193,7 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
             public void onClick(View v) {
 
                 int id;
-                int colorVal;
-                String stringyId;
 
-                // Save current selected color as default color before switching views
-                id = returnDefaultColorView().getId();
-                stringyId = String.valueOf(id);
-                colorVal = currentSelectedColor;
-                saveToPreferences(stringyId,colorVal);
-
-                // Overwrite new default color view id
                 id = colorView.getId();
                 saveToPreferences("defaultColorView",id);
 
@@ -249,7 +246,7 @@ public class ColorPickerActivity8Colors extends UartInterfaceActivity implements
         // currentSelectedColor as the defaultColor so that when the activity is re-opened
         // the currentSelectedColor will be set as the default color.
         //saveDefaultColor(currentSelectedColor);
-        saveToPreferences(String.valueOf(returnDefaultColorView().getId()),currentSelectedColor);
+        //saveToPreferences(String.valueOf(returnDefaultColorView().getId()),currentSelectedColor);
 
         super.onStop();
     }

@@ -146,11 +146,23 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
         for( View view : viewHolder.viewsList){
             stringyId = String.valueOf(view.getId());
             colorVal = loadFromPreferences(stringyId);
-            Log.v("TAG","@#ER# "+String.valueOf(colorVal));
-            if(colorVal == -1) saveToPreferences(stringyId, defaultColor);
-            Log.v("TAG","@#ER# "+String.valueOf(loadFromPreferences(stringyId)));
+            if(colorVal == -1) saveToPreferences(stringyId, getRandomColor());
         }
     }
+
+    private int getRandomColor() {
+
+        Random rand = new Random();
+
+        int r = rand.nextInt(255); // [0,255]
+        int g = rand.nextInt(255); // [0,255]
+        int b = rand.nextInt(255); // [0,255]
+
+        int color = Color.rgb(r,g,b);
+
+        return color;
+    }
+
 
     private void setClickListeners(){
         for( View view : viewHolder.viewsList)

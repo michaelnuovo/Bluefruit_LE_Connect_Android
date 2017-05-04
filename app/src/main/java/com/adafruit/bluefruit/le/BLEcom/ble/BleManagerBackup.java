@@ -45,10 +45,10 @@ public class BleManagerBackup implements BleGattExecutor.BleExecutorListener {
     public static BleManagerBackup getInstance(Context context) {
         if(mInstance == null)
         {
-            Log.v("TAG","instance is null");
+            //Log.v("TAG","instance is null");
             mInstance = new BleManagerBackup(context);
         } else {
-            Log.v("TAG","instance is not null");
+            //Log.v("TAG","instance is not null");
         }
         return mInstance;
     }

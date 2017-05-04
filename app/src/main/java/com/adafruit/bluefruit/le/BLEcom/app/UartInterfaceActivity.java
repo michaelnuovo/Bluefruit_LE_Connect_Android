@@ -68,6 +68,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
             Log.v(TAG,"BluetoothGatt connection is "+String.valueOf(connection));
             Log.v(TAG,"BluetoothGatt connection name is "+String.valueOf(connection.getDevice().getName()));
             UUID serviceUuid = UUID.fromString(UUID_SERVICE);
+            Log.v("TAG","serviceUuid is "+String.valueOf(serviceUuid));
             mUartService = connection.getService(serviceUuid);
             if (mUartService != null) {
                 // Split the value into chunks (UART service has a maximum number of characters that can be written )
@@ -142,6 +143,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     final private Handler sendDataTimeoutHandler = new Handler();
     private Runnable sendDataRunnable = null;
     private SendDataCompletionHandler sendDataCompletionHandler = null;
+
     protected void sendData(byte[] data, SendDataCompletionHandler completionHandler) {
 
         if (completionHandler == null) {
@@ -215,6 +217,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
     @Override
     public void onDataAvailable(BluetoothGattCharacteristic characteristic) {
+        Log.v(TAG,"onDataAvailable");
         // Check if there is a pending sendDataRunnable
         if (sendDataRunnable != null) {
             if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {
@@ -225,9 +228,10 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
                     sendDataRunnable = null;
 
                     if (sendDataCompletionHandler != null) {
-                        final byte[] bytes = characteristic.getValue();
-                        final String data = new String(bytes, Charset.forName("UTF-8"));
 
+                        final byte[] bytes = characteristic.getValue();
+
+                        final String data = new String(bytes, Charset.forName("UTF-8"));
                         final SendDataCompletionHandler dataCompletionHandler =  sendDataCompletionHandler;
                         sendDataCompletionHandler = null;
                         dataCompletionHandler.sendDataResponse(data);

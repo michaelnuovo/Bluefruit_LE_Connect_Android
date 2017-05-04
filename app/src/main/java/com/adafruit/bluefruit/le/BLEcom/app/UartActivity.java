@@ -561,6 +561,8 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
 
                 final byte[] bytes = characteristic.getValue(); // TODO here is the packet
 
+                Log.v("TAG","got a value");
+
                 mReceivedBytes += bytes.length;
 
                 final UartDataChunk dataChunk = new UartDataChunk(System.currentTimeMillis(), UartDataChunk.TRANSFERMODE_RX, bytes);

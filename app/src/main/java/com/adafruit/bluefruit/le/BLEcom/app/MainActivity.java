@@ -969,12 +969,14 @@ public class MainActivity extends UartInterfaceActivity implements
             addConnectedDeviceData(datum); // Add it if it's connecting or connected
             datum.isConnected = true;
             updateUI(); // need to update the connection button
-            start();
+            start(); // start this "background service" one a device is connected.
+//
+//            Intent intent = new Intent(MainActivity.this, UartActivity.class);
+//            startActivityForResult(intent, 2);
         }
         // TODO open chat activity
 
-//        Intent intent = new Intent(MainActivity.this, UartActivity.class);
-//        startActivityForResult(intent, 2);
+
     }
 
     private void start(){
@@ -984,9 +986,9 @@ public class MainActivity extends UartInterfaceActivity implements
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.v(TAG,"Executing message");
+                //Log.v(TAG,"Executing message");
                 removeDeadConnectionsAndUpdateUi();
-                start();
+                if(connectedDeviceData.size() > 0) start(); // Stops calling itself when the connected devices list is size zero
             }
         }, 2000);
     }
@@ -998,24 +1000,24 @@ public class MainActivity extends UartInterfaceActivity implements
             MainActivity.BluetoothDeviceData data = itData.next();
             while(itGatt.hasNext()){
                 BluetoothGatt gatt = itGatt.next();
-                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
-                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
+                //Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
+                //Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
                 if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
                     BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
                     BleManager.getInstance().mGatt = gatt;
-                    Log.v(TAG,"Addresses match");
-                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
+                    //Log.v(TAG,"Addresses match");
+                    //Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
                     if(BleManager.getConnectionState() == 0){
                         itData.remove();
                         itGatt.remove();
-                        Log.v(TAG,"Removed device data and gat server");
+                        //Log.v(TAG,"Removed device data and gat server");
                         removeDataFromList(data.device.getAddress(),mScannedDevices);
                         data.isConnected = false;
                         updateUI();
                     }
                     BleManager.getInstance().mGatt = oldGatt;
                 } else {
-                    Log.v(TAG,"Addresses do not match");
+                    //Log.v(TAG,"Addresses do not match");
                 }
 
             }

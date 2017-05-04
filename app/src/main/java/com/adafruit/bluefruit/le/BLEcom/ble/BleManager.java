@@ -53,10 +53,10 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     public static BleManager getInstance(Context context) {
         if(mInstance == null)
         {
-            Log.v("TAG","instance is null");
+            //Log.v("TAG","instance is null");
             mInstance = new BleManager(context);
         } else {
-            Log.v("TAG","instance is not null");
+            //Log.v("TAG","instance is not null");
         }
         ctx = context;
         return mInstance;
@@ -66,9 +66,9 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     public static BleManager getInstance() {
         if(mInstance == null)
         {
-            Log.v("TAG","instance is null");
+            //Log.v("TAG","instance is null");
         } else {
-            Log.v("TAG","instance is not null");
+            //Log.v("TAG","instance is not null");
         }
         return mInstance;
     }
