@@ -271,9 +271,12 @@ public class BleGattExecutor extends BluetoothGattCallback {
 
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+
+                Log.v("TAG","onCharacteristicChanged");
+
                 super.onCharacteristicChanged(gatt, characteristic);
                 listener.onCharacteristicChanged(gatt, characteristic);
-                Log.v("TAG","characteristic changed");
+
             }
 
             @Override

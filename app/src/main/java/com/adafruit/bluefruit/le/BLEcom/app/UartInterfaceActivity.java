@@ -217,7 +217,7 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
 
     @Override
     public void onDataAvailable(BluetoothGattCharacteristic characteristic) {
-        Log.v(TAG,"onDataAvailable");
+        Log.v("TAG","onDataAvailable");
         // Check if there is a pending sendDataRunnable
         if (sendDataRunnable != null) {
             if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {

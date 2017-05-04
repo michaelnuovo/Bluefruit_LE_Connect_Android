@@ -555,6 +555,9 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
     @Override
     public synchronized void onDataAvailable(BluetoothGattCharacteristic characteristic) {
         super.onDataAvailable(characteristic);
+
+        Log.v(TAG,"onDataAvailable()");
+
         // UART RX
         if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {
             if (characteristic.getUuid().toString().equalsIgnoreCase(UUID_RX)) {
