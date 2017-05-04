@@ -202,7 +202,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
         super.onDescriptorRead(gatt, descriptor, status);
-
+        Log.v(TAG,"YYY onDescriptorRead");
         mCurrentAction = null;
         execute(gatt);
     }
@@ -210,7 +210,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
         super.onDescriptorWrite(gatt, descriptor, status);
-
+        Log.v(TAG,"YYY onDescriptorWrite");
         mCurrentAction = null;
         execute(gatt);
     }
@@ -219,7 +219,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
 
-        Log.v(TAG,"onCharacteristicWrite");
+        Log.v(TAG,"YYY onCharacteristicWrite");
 
         mCurrentAction = null;
         execute(gatt);
@@ -227,6 +227,7 @@ public class BleGattExecutor extends BluetoothGattCallback {
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        Log.v(TAG,"YYY onConnectionStateChange");
         if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             mQueue.clear();
             mCurrentAction = null;
@@ -236,6 +237,8 @@ public class BleGattExecutor extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
+
+        Log.v(TAG,"YYY onCharacteristicRead");
 
         mCurrentAction = null;
         execute(gatt);
@@ -254,27 +257,28 @@ public class BleGattExecutor extends BluetoothGattCallback {
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
+                Log.v(TAG,"XXX onConnectionStateChange");
                 listener.onConnectionStateChange(gatt, status, newState);
             }
 
             @Override
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 super.onServicesDiscovered(gatt, status);
+                Log.v(TAG,"XXX onServicesDiscovered");
                 listener.onServicesDiscovered(gatt, status);
             }
 
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 super.onCharacteristicRead(gatt, characteristic, status);
+                Log.v(TAG,"XXX onCharacteristicRead");
                 listener.onCharacteristicRead(gatt, characteristic, status);
             }
 
             @Override
             public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-
-                Log.v("TAG","onCharacteristicChanged");
-
                 super.onCharacteristicChanged(gatt, characteristic);
+                Log.v(TAG,"XXX onCharacteristicChanged");
                 listener.onCharacteristicChanged(gatt, characteristic);
 
             }
@@ -282,12 +286,14 @@ public class BleGattExecutor extends BluetoothGattCallback {
             @Override
             public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
                 super.onDescriptorRead(gatt, descriptor, status);
+                Log.v(TAG,"XXX onDescriptorRead");
                 listener.onDescriptorRead(gatt, descriptor, status);
             }
 
             @Override
             public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
                 super.onReadRemoteRssi(gatt, rssi, status);
+                Log.v(TAG,"XXX onReadRemoteRssi");
                 listener.onReadRemoteRssi(gatt, rssi, status);
             }
         };
