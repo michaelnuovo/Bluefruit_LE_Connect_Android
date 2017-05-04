@@ -158,7 +158,7 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         //mGatt = mDevice.connectGatt(context, false, BleGattExecutor.createExecutor(this)); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
 
         Log.v("TAG","Value of mExecutor is "+mExecutor);
-        mGatt = mDevice.connectGatt(context, gattAutoconnect, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
+        mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         // BleGattExecutor extends BluetoothGattCallback
 
         // After connecting to the gat service, add it to the GATT connections hash set

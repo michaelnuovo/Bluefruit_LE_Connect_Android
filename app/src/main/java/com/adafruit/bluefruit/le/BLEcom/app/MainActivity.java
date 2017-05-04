@@ -459,6 +459,9 @@ public class MainActivity extends UartInterfaceActivity implements
         // Request Bluetooth scanning permissions
         requestLocationPermissionIfNeeded();
 
+        // Start services
+        //onServicesDiscovered();
+
     }
 
 
@@ -970,6 +973,7 @@ public class MainActivity extends UartInterfaceActivity implements
             datum.isConnected = true;
             updateUI(); // need to update the connection button
             start(); // start this "background service" one a device is connected.
+            //onServicesDiscovered();
 //
 //            Intent intent = new Intent(MainActivity.this, UartActivity.class);
 //            startActivityForResult(intent, 2);
