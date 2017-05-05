@@ -109,6 +109,7 @@ public class MainActivity extends UartInterfaceActivity implements
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
 
     private final static String kPreferences = "MainActivity_prefs";
+    //private final static String kPreferences = "UartActivity_prefs";
     private final static String kPreferences_filtersPanelOpen = "filtersPanelOpen";
 
     // Components string IDs are of type int
@@ -240,6 +241,7 @@ public class MainActivity extends UartInterfaceActivity implements
         // Init variables
         mBleManager = BleManager.getInstance(this);
         mBleManager.setBleListener(this);
+        //mBleManager.setBleListener(new UartActivity());
         //onServicesDiscovered();
 
         restoreRetainedDataFragment();
@@ -1467,6 +1469,7 @@ public class MainActivity extends UartInterfaceActivity implements
     // endregion
 
     private void launchComponentActivity() {
+        Log.v(TAG,"launchComponentActivity");
 
         // Enable generic attribute service
         final BluetoothGattService genericAttributeService = mBleManager.getGattService(kGenericAttributeService);

@@ -251,6 +251,7 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
     }
 
     private void uartSendData(String data, boolean wasReceivedFromMqtt) {
+        Log.v(TAG,"uartSendData");
         // MQTT publish to TX
         MqttSettings settings = MqttSettings.getInstance(UartActivity.this);
         if (!wasReceivedFromMqtt) {
@@ -511,6 +512,7 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+        Log.v(TAG,"onActivityResult");
         if (requestCode == kActivityRequestCode_ConnectedSettingsActivity && resultCode == RESULT_OK) {
             finish();
         } else if (requestCode == kActivityRequestCode_MqttSettingsActivity && resultCode == RESULT_OK) {
@@ -554,15 +556,18 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
 
     @Override
     public synchronized void onDataAvailable(BluetoothGattCharacteristic characteristic) {
+        Log.v(TAG,"onDataAvailable()");
         super.onDataAvailable(characteristic);
 
-        Log.v(TAG,"onDataAvailable()");
+
 
         // UART RX
         if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {
             if (characteristic.getUuid().toString().equalsIgnoreCase(UUID_RX)) {
 
                 final byte[] bytes = characteristic.getValue(); // TODO here is the packet
+
+
 
                 Log.v("TAG","got a value");
 

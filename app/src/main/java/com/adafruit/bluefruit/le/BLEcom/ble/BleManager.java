@@ -14,6 +14,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
+
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
@@ -160,6 +162,9 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         Log.v("TAG","Value of mExecutor is "+mExecutor);
         mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         // BleGattExecutor extends BluetoothGattCallback
+
+        UUID serviceUuid = UUID.fromString(UartInterfaceActivity.UUID_SERVICE);
+        enableNotification(mGatt.getService(serviceUuid),UartInterfaceActivity.UUID_SERVICE,true);
 
         // After connecting to the gat service, add it to the GATT connections hash set
         Log.v(TAG,"was that gatt service already added");
@@ -315,6 +320,9 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
             // See BleGattExecutor
             mExecutor.enableIndication(service, uuid, enabled);
             mExecutor.execute(mGatt);
+
+            Log.v(TAG,"Indication enabled");
+            Log.v(TAG,"service is "+String.valueOf(service));
         }
     }
 
