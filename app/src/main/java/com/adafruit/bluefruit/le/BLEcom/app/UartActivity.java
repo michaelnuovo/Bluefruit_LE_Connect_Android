@@ -118,7 +118,7 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uart);
 
-        mBleManager = BleManager.getInstance(this);
+        //mBleManager = BleManager.getInstance(this);
         restoreRetainedDataFragment();
 
         // Get default theme colors
@@ -178,7 +178,7 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
         invalidateOptionsMenu();        // udpate options menu with current values
 
         // Continue
-        onServicesDiscovered();
+        //onServicesDiscovered();
 
         // Mqtt init
         mMqttManager = MqttManager.getInstance(this);
@@ -556,10 +556,9 @@ public class UartActivity extends UartInterfaceActivity implements MqttManager.M
 
     @Override
     public synchronized void onDataAvailable(BluetoothGattCharacteristic characteristic) {
+
         Log.v(TAG,"onDataAvailable()");
         super.onDataAvailable(characteristic);
-
-
 
         // UART RX
         if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {

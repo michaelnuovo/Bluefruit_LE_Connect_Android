@@ -1,9 +1,6 @@
 package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
@@ -15,57 +12,15 @@ import android.widget.Button;
 import com.adafruit.bluefruit.le.BLEcom.R;
 import com.adafruit.bluefruit.le.BLEcom.app.CommonHelpActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.Commands;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.Constants;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.Palette1;
-import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
-import com.adafruit.bluefruit.le.BLEcom.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 import com.larswerkman.holocolorpicker.ValueBar;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class ColorPickerActivity1Color extends UartInterfaceActivity implements ColorPicker.OnColorChangedListener {
-    // Log
+public class ColorPickerActivity1Color extends ColorPickerActivity {
+
     private final static String TAG = ColorPickerActivity2Colors.class.getSimpleName();
-
-    // Constants
-    private final static String classPrefs = ColorPickerActivity1Color.class.getName();
-    //private final static int defaultColor = 0xFFF0FF00;
-    //private final static int defaultColor = 0xffffff00;
-    private final static int defaultColor = 0xff4A14CC;
-
-
-    // Widgets
-    private ColorPicker mColorPicker; // This is the color wheel widget
-    private ViewHolder viewHolder = new ViewHolder(); // A view holder for the color views
-
-    // Data
-    //int currentSelectedColor; // The current selected color of the color wheel
-
-    // View holder class
-    private class ViewHolder {
-
-        public ArrayList<View> viewsList = new ArrayList<>();
-
-        public View mRgbColorView1; // This will be the default color view if there is no default
-
-        public void pushViewsToList(){
-
-            viewsList.add(mRgbColorView1);
-        }
-    }
-
-    /**
-     *  Structure of of class preferences
-     *
-     *  String defaultColorView : int id  <-- default color view string handle maps to the view id of type int
-     *  String view_1_id : int colorValue <-- each view has the string value of its id mapped to a color value of type int
-     *  String view_2_id : int colorValue
-     *  ....
-     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,160 +28,37 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker_1color);
 
-        mBleManager = BleManager.getInstance(this);
+        className = this.getClass().toString();
 
-        // UI
-        viewHolder.mRgbColorView1 = findViewById(R.id.rgbColorViewOne);
+        viewList = new ArrayList<>();
+        viewList.add(findViewById(R.id.rgbColorViewOne));
 
-        viewHolder.pushViewsToList();
-
+        mColorPicker = (ColorPicker) findViewById(R.id.colorPicker);
         SaturationBar mSaturationBar = (SaturationBar) findViewById(R.id.saturationbar);
         ValueBar mValueBar = (ValueBar) findViewById(R.id.valuebar);
-        mColorPicker = (ColorPicker) findViewById(R.id.colorPicker);
-
         if (mColorPicker != null) { // Prevents null reference error?
             mColorPicker.addSaturationBar(mSaturationBar);
             mColorPicker.addValueBar(mValueBar);
             mColorPicker.setOnColorChangedListener(this);
         }
 
-        // Sets the defaults the FIRST time the activity opens
-        saveDefaultColors();
-        setBackgroundColors();
-        saveDefaultColorView();
-
-        // Sets background colors and text to their defaults EVERY time the activity opens
-        setColorsPickerColors();
-        setClickListeners();
-
         Button randomizeButton = (Button) findViewById(R.id.randomizeButton);
-        setRandomButtonClickListener(randomizeButton);
 
-        //onServicesDiscovered(); // Start services
-    }
+        saveFirstDefaultColors(); // generates random colors and saves them to preferences
+        setDefaultBackgroundColors(); // sets the randomly generated colors to the views
 
-    private void setRandomButtonClickListener(Button randButton){
-        randButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        saveFirstDefaultColorView(viewList.get(0)); // saves the default view id to memory
+        setAndSaveColorPickerColors(); // sets and saves color picker color to memory
 
-                Random rand = new Random();
+        setColorViewClickListeners(); // Button changes default color view
 
-                for(View view : viewHolder.viewsList){
+        setRandomButtonClickListener(randomizeButton); // Button randomizes colors
 
-                    int r = rand.nextInt(255); // [0,255]
-                    int g = rand.nextInt(255); // [0,255]
-                    int b = rand.nextInt(255); // [0,255]
-
-                    int color = Color.rgb(r,g,b);
-                    saveToPreferences(String.valueOf(view.getId()),color);
-                }
-
-                setBackgroundColors();;
-            }
-        });
-    }
-
-    private void setColorsPickerColors(){
-        View defaultColorView = returnDefaultColorView();
-        int colorPickerColor = loadFromPreferences(String.valueOf(defaultColorView.getId()));
-        mColorPicker.setOldCenterColor(colorPickerColor);
-        mColorPicker.setColor(colorPickerColor); // Sets position of color wheel
-    }
-
-    private void setBackgroundColors(){
-        for( View view : viewHolder.viewsList)
-            view.setBackgroundColor(loadFromPreferences(String.valueOf(view.getId())));
-    }
-
-    private void saveDefaultColors(){
-
-        String stringyId;
-        int colorVal;
-
-        for( View view : viewHolder.viewsList){
-            stringyId = String.valueOf(view.getId());
-            colorVal = loadFromPreferences(stringyId);
-            if(colorVal == -1) saveToPreferences(stringyId, getRandomColor());
-        }
-    }
-
-    private int getRandomColor() {
-
-        Random rand = new Random();
-
-        int r = rand.nextInt(255); // [0,255]
-        int g = rand.nextInt(255); // [0,255]
-        int b = rand.nextInt(255); // [0,255]
-
-        int color = Color.rgb(r,g,b);
-
-        return color;
-    }
-
-
-    private void setClickListeners(){
-        for( View view : viewHolder.viewsList)
-            setListener(view);
-    }
-
-    private void setListener(final View colorView){
-        colorView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                int id;
-
-                id = colorView.getId();
-                saveToPreferences("defaultColorView",id);
-
-                // Set the color pickers colors and knob positions to the new default colors
-                setColorsPickerColors();
-            }
-        });
-    }
-
-    private void saveDefaultColorView(){
-        int viewId = loadFromPreferences("defaultColorView");
-        if(viewId == -1) saveToPreferences("defaultColorView", viewHolder.mRgbColorView1.getId());
-
-    }
-
-    private View returnDefaultColorView(){
-        int viewId = loadFromPreferences("defaultColorView");
-        return findViewById(viewId);
-    }
-
-    private int returnDefaultColor(){
-        return loadFromPreferences(String.valueOf(returnDefaultColorView().getId()));
-    }
-
-    private void saveToPreferences(String stringHandle, int intVal){
-        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(stringHandle, intVal);
-        editor.apply();
-    }
-
-    private int loadFromPreferences(String stringHandle){
-        SharedPreferences preferences = getSharedPreferences(classPrefs, Context.MODE_PRIVATE);
-        return preferences.getInt(stringHandle,-1);
-    }
-
-    // This method is called when the color on the color wheel (color picker) is changed
-    @Override
-    public void onColorChanged(int color) {
-        //currentSelectedColor = color;
-        View defaultColorView = returnDefaultColorView();
-        defaultColorView.setBackgroundColor(color);
-        saveToPreferences(String.valueOf(defaultColorView.getId()),color);
+        useReceivedPacketValues(); // Sets a listener for receiving packets
     }
 
     @Override
     public void onStop() {
-        // If the user selects a new colorView and closes the activity we need to save the
-        // currentSelectedColor as the defaultColor so that when the activity is re-opened
-        // the currentSelectedColor will be set as the default color.
-        //saveDefaultColor(currentSelectedColor);
-        //saveToPreferences(String.valueOf(returnDefaultColorView().getId()),currentSelectedColor);
 
         super.onStop();
     }
@@ -276,13 +108,5 @@ public class ColorPickerActivity1Color extends UartInterfaceActivity implements 
         Log.d(TAG, "Disconnected. Back to previous activity");
         setResult(-1);      // Unexpected Disconnect
         finish();
-    }
-
-    public void onClickSend(View view) {
-        int color1 = loadFromPreferences(String.valueOf(viewHolder.mRgbColorView1.getId()));
-        byte[] palettePacket = new Palette1(color1).packet;
-        PacketUtils.logByteArray(palettePacket);
-        sendDataWithCRC(palettePacket);
-        if(Constants.turnLEDSOffAfterSendingPallet == true) Commands.turnLightsOff();
     }
 }

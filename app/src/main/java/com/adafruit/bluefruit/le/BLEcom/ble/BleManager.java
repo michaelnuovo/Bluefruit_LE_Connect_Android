@@ -163,8 +163,12 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         // BleGattExecutor extends BluetoothGattCallback
 
-        UUID serviceUuid = UUID.fromString(UartInterfaceActivity.UUID_SERVICE);
-        enableNotification(mGatt.getService(serviceUuid),UartInterfaceActivity.UUID_SERVICE,true);
+        //UUID serviceUuid = UUID.fromString(UartInterfaceActivity.UUID_SERVICE); // <-- needs to be UUID_RX
+        //enableNotification(mGatt.getService(serviceUuid),UartInterfaceActivity.UUID_SERVICE,true);
+//        enableNotification(getGattService("6e400001-b5a3-f393-e0a9-e50e24dcca9e"),
+//                "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
+//                true
+//                );
 
         // After connecting to the gat service, add it to the GATT connections hash set
         Log.v(TAG,"was that gatt service already added");
@@ -392,9 +396,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     // TODO getGattService
     public BluetoothGattService getGattService(String uuid) {
         if (mGatt != null) {
+            Log.v(TAG,"mGatt is not null");
             final UUID serviceUuid = UUID.fromString(uuid);
             return mGatt.getService(serviceUuid); // 6e400001-b5a3-f393-e0a9-e50e24dcca9e
         } else {
+            Log.v(TAG,"mGatt is null");
             return null;
         }
     }
@@ -487,9 +493,12 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        Log.v(TAG,"onCharacteristicChanged()");
         if (mBleListener != null) {
+            Log.v(TAG,"mBleListener is "+String.valueOf(mBleListener));
             mBleListener.onDataAvailable(characteristic);
         }
+        Log.v(TAG,"END");
     }
 
     @Override

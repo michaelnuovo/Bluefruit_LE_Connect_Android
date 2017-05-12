@@ -62,6 +62,7 @@ import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity1Co
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity2Colors;
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity4Colors;
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity8Colors;
+import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.SensorDataActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity2;
 import com.adafruit.bluefruit.le.BLEcom.app.neopixel.NeopixelActivity;
@@ -240,7 +241,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
         // Init variables
         mBleManager = BleManager.getInstance(this);
-        mBleManager.setBleListener(this);
+        //mBleManager.setBleListener(this);
         //mBleManager.setBleListener(new UartActivity());
         //onServicesDiscovered();
 
@@ -977,6 +978,11 @@ public class MainActivity extends UartInterfaceActivity implements
             start(); // start this "background service" one a device is connected.
             //onServicesDiscovered();
 //
+//            super.onServicesDiscovered();
+//            enableRxNotifications();
+
+            mBleManager.setBleListener(this);
+
 //            Intent intent = new Intent(MainActivity.this, UartActivity.class);
 //            startActivityForResult(intent, 2);
         }
@@ -1517,6 +1523,10 @@ public class MainActivity extends UartInterfaceActivity implements
 
     @Override
     public void onServicesDiscovered() {
+
+        super.onServicesDiscovered();
+        enableRxNotifications();
+
         Log.d(TAG, "services discovered");
 
         // Check if there is a failed installation that was stored to retry
@@ -1580,7 +1590,31 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
     @Override
-    public void onDataAvailable(BluetoothGattCharacteristic characteristic) {
+    public synchronized void onDataAvailable(BluetoothGattCharacteristic characteristic) { // TODO onDataAvailable()
+        Log.v(TAG,"onDataAvailable()");
+
+
+        if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {
+            if (characteristic.getUuid().toString().equalsIgnoreCase(UUID_RX)) {
+
+                final byte[] packet = characteristic.getValue();
+
+                Log.v(TAG,"Packet to String");
+                String stringyPacket = PacketUtils.packetToString(packet);
+                Log.v(TAG,stringyPacket);
+
+                Intent intent = new Intent(this, ColorPickerActivity1Color.class);
+                int r = packet[3];
+                int g = packet[4];
+                int b = packet[5];
+                intent.putExtra("values",new int[]{r,g,b});
+                startActivity(intent);
+
+
+            }
+        }
+
+        Log.v(TAG,"END");
     }
 
     @Override

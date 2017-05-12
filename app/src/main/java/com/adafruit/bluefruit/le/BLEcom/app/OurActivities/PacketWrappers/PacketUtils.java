@@ -38,6 +38,15 @@ public class PacketUtils {
         PAL_8//11
     }
 
+    /**
+     * Converts one of Richard's packets to a string (ASSUMES packets DO NOT have checksums)
+     * Packets are just byte arrays.
+     * New line characters are represented by \n
+     * Packet IDs are represented as numbers
+     * All other bytes are represented by their ASCII equivalents.
+     * @param packet
+     * @return
+     */
     public static String packetToString(byte[] packet){
 
         int packetLength = packet.length;
@@ -77,13 +86,25 @@ public class PacketUtils {
         //palette
         if (packetId > 7) {
 
-            for(int idx = 3; idx < packetLength; idx += 3)
-                if(idx + 3 < packetLength - 1) {
+            // Delimiter 1
+            // Delimiter 1
+            // Packet ID
+            // R
+            // G
+            // B
+            // Checksum
+
+            for(int idx = 3; idx < packetLength; idx += 3){
+                Log.v(TAG,"idx < packetLength");
+                Log.v(TAG,"packet length is "+String.valueOf(packetLength));
+                if(idx + 2 < packetLength) { // Prevents out of bounds error
+                    Log.v(TAG,"here");
                     int red = packet[idx];
                     int blue = packet[idx+1];
                     int green = packet[idx+2];
                     result += "("+String.valueOf(red)+","+String.valueOf(blue)+","+String.valueOf(green)+") ";
                 }
+            }
         }
 
         result += " Checksum: " + String.valueOf(packet[packet.length - 1]);

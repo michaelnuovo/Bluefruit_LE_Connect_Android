@@ -207,17 +207,21 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
     @Override
     public void onServicesDiscovered() {
         mUartService = mBleManager.getGattService(UUID_SERVICE); // "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+        Log.v(TAG,"onServicesDiscovered()");
+        Log.v(TAG,"mUartService is "+String.valueOf(mUartService));
+        //enableRxNotifications();
         //Log.v("TAG","mUartService.toString() "+ mUartService.toString());
     }
 
     protected void enableRxNotifications() {
+        Log.v(TAG,"enableRxNotifications()");
         isRxNotificationEnabled = true;
         mBleManager.enableNotification(mUartService, UUID_RX, true);
     }
 
     @Override
     public void onDataAvailable(BluetoothGattCharacteristic characteristic) {
-        Log.v(TAG,"onDataAvailable");
+        Log.v(TAG,"onDataAvailable()");
         // Check if there is a pending sendDataRunnable
         if (sendDataRunnable != null) {
             if (characteristic.getService().getUuid().toString().equalsIgnoreCase(UUID_SERVICE)) {

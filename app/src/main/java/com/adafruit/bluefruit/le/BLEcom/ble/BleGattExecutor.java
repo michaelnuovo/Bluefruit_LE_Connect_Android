@@ -89,6 +89,7 @@ class BleGattExecutor extends BluetoothGattCallback {
     }
 
     private BleGattExecutor.ServiceAction serviceNotifyAction(final BluetoothGattService gattService, final String characteristicUuidString, final boolean enable) {
+        Log.v(TAG,"serviceNotifyAction()");
         return new BleGattExecutor.ServiceAction() {
             @Override
             public boolean execute(BluetoothGatt bluetoothGatt) {
@@ -107,7 +108,8 @@ class BleGattExecutor extends BluetoothGattCallback {
                         return true;
 
                     // enableNotification/disable locally
-                    bluetoothGatt.setCharacteristicNotification(dataCharacteristic, enable);
+                    Log.v(TAG,"Enabling notification");
+                    bluetoothGatt.setCharacteristicNotification(dataCharacteristic, enable); // TODO setCharacteristicNotification
                     // enableNotification/disable remotely
                     config.setValue(enable ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
                     bluetoothGatt.writeDescriptor(config);
@@ -122,6 +124,7 @@ class BleGattExecutor extends BluetoothGattCallback {
     }
 
     void enableIndication(BluetoothGattService gattService, String characteristicUUID, boolean enable) {
+        Log.v(TAG,"enableIndication()");
         ServiceAction action = serviceIndicateAction(gattService, characteristicUUID, enable);
         mQueue.add(action);
     }
@@ -145,6 +148,7 @@ class BleGattExecutor extends BluetoothGattCallback {
                         return true;
 
                     // enableNotification/disable remotely
+                    Log.v(TAG,"value of enable is "+String.valueOf(enable));
                     config.setValue(enable ? BluetoothGattDescriptor.ENABLE_INDICATION_VALUE : BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
                     bluetoothGatt.writeDescriptor(config);
 
