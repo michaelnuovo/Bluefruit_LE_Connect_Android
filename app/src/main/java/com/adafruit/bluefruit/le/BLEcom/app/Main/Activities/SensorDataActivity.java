@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,7 +29,7 @@ import android.widget.ToggleButton;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
 import com.adafruit.bluefruit.le.BLEcom.app.CommonHelpActivity;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.PacketUtils;
 import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.BLEcom.ui.utils.ExpandableHeightExpandableListView;

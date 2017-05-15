@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.UserCommand;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Adapters.CommandLineAdapter;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.UserCommand;
 import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

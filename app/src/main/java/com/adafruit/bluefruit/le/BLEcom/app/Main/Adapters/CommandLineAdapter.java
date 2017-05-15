@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.UserCommand;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.TerminalActivity2;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.UserCommand;
 
 import java.util.ArrayList;
 

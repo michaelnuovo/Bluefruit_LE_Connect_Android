@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.adafruit.bluefruit.le.BLEcom.app.MainActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Objects.BluetoothDeviceData;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import static com.adafruit.bluefruit.le.BLEcom.app.MainActivity.connectedDeviceData;
+import static com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity.connectedDeviceData;
 
 public class BleDevicesScanner {
     private static final String TAG = BleDevicesScanner.class.getSimpleName();
@@ -95,9 +96,9 @@ public class BleDevicesScanner {
         // We have to use an iterator to remove elements or we can get a concurrent modification error.
 
         Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
         while(itData.hasNext()){
-            MainActivity.BluetoothDeviceData data = itData.next();
+            BluetoothDeviceData data = itData.next();
             while(itGatt.hasNext()){
                 BluetoothGatt gatt = itGatt.next();
                 Log.v(TAG,"Addresses is "+data.device.getAddress().toString());

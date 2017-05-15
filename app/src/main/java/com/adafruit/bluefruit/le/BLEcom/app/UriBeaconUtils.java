@@ -5,7 +5,7 @@ import com.adafruit.bluefruit.le.BLEcom.ble.BleUtils;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
-class UriBeaconUtils {
+public class UriBeaconUtils {
 
     private static String getSchemeFromPrefix(byte schemePrefix) {
         switch (schemePrefix) {
@@ -59,7 +59,7 @@ class UriBeaconUtils {
         }
     }
 
-    static String getUriFromAdvertisingPacket(byte[] scanRecord) {
+    public static String getUriFromAdvertisingPacket(byte[] scanRecord) {
         byte schemeByte = scanRecord[10];
         String scheme = UriBeaconUtils.getSchemeFromPrefix(schemeByte);
 

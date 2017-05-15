@@ -57,6 +57,14 @@
     </LinearLayout>
 
     <Switch
+        android:id="@+id/activationSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="45dp"/>
+
+
+    <Switch
         android:id="@+id/connectionSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

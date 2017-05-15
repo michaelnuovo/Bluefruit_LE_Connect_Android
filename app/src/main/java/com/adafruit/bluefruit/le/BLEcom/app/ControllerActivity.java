@@ -30,12 +30,12 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity1Color;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity2Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity4Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity8Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity1Color;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity2Colors;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity4Colors;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity8Colors;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.PacketUtils;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.TerminalActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.settings.ConnectedSettingsActivity;
 import com.adafruit.bluefruit.le.BLEcom.ble.BleManager;
 import com.adafruit.bluefruit.le.BLEcom.ui.utils.ExpandableHeightExpandableListView;

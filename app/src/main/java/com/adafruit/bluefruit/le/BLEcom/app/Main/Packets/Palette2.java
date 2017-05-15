@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Packets;
 
 import android.graphics.Color;
 

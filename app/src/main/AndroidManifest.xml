@@ -42,7 +42,7 @@
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -54,20 +54,20 @@
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.MainHelpActivity"
             android:label="@string/title_activity_mainhelp"
-            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.InfoActivity"
             android:label="@string/title_activity_info"
-            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.CommonHelpActivity"
@@ -84,7 +84,7 @@
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.PinIOActivity"
@@ -92,16 +92,16 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity"
             android:label="@string/title_activity_controller"
-            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.PadActivity"
@@ -109,12 +109,12 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.update.NotificationActivity"
@@ -157,11 +157,11 @@
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.neopixel.NeopixelActivity"
             android:label="@string/title_activity_neopixel"
-            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.MainActivity"
+            android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.adafruit.bluefruit.le.BLEcom.app.MainActivity" />
+                android:value="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.MainActivity" />
         </activity>
         <activity
             android:name="com.adafruit.bluefruit.le.BLEcom.app.neopixel.NeopixelColorPickerActivity"
@@ -183,7 +183,7 @@
 
         <!-- Michael's Activities -->
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity1Color"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity1Color"
             android:label="@string/title_activity_color_picker"
             android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity"
             android:screenOrientation="portrait">
@@ -192,7 +192,7 @@
                 android:value="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity" />
         </activity>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity2Colors"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity2Colors"
             android:label="@string/title_activity_color_picker"
             android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity"
             android:screenOrientation="portrait">
@@ -201,7 +201,7 @@
                 android:value="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity" />
         </activity>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity4Colors"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity4Colors"
             android:label="@string/title_activity_color_picker"
             android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity"
             android:screenOrientation="portrait">
@@ -210,7 +210,7 @@
                 android:value="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity" />
         </activity>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity8Colors"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity8Colors"
             android:label="@string/title_activity_color_picker"
             android:parentActivityName="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity"
             android:screenOrientation="portrait">
@@ -219,25 +219,20 @@
                 android:value="com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity" />
         </activity>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.TerminalActivity"
             android:label="@string/title_activity_terminal"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.test"
-            android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
-        <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity2"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.TerminalActivity2"
             android:label="@string/title_activity_terminal"
             android:screenOrientation="portrait"/>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.AndroidClient"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.SocketActivity"
             android:label="@string/title_activity_android_client"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name="com.adafruit.bluefruit.le.BLEcom.app.OurActivities.SensorDataActivity"
+            android:name="com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.SensorDataActivity"
             android:label="@string/title_activity_android_client"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"></activity>

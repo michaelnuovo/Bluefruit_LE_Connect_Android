@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.PacketUtils;
 import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
 import com.adafruit.bluefruit.le.BLEcom.ble.BleManager;
 

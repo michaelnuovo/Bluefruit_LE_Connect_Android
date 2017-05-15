@@ -1,5 +1,8 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Packets;
 
+import android.view.View;
+
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Activities.ColorPickerActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
 
 /**

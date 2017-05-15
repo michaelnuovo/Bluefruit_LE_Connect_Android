@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.PacketUtils;
 import com.adafruit.bluefruit.le.BLEcom.ble.BleManager;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;

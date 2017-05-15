@@ -1,11 +1,11 @@
-package com.adafruit.bluefruit.le.BLEcom.app.OurActivities;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.Palette1;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.Palette1;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class AndroidClient extends Activity {
+public class SocketActivity extends Activity {
 
     static EditText textOut;
     static TextView textIn;

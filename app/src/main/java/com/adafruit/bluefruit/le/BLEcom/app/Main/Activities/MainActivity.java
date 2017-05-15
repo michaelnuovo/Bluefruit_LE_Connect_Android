@@ -1,4 +1,4 @@
-package com.adafruit.bluefruit.le.BLEcom.app;
+package com.adafruit.bluefruit.le.BLEcom.app.Main.Activities;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -57,14 +57,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.adafruit.bluefruit.le.BLEcom.R;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.AndroidClient;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity1Color;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity2Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity4Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.ColorPickerActivity8Colors;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.PacketWrappers.PacketUtils;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.SensorDataActivity;
-import com.adafruit.bluefruit.le.BLEcom.app.OurActivities.TerminalActivity2;
+import com.adafruit.bluefruit.le.BLEcom.app.BeaconActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.CommonHelpActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.ControllerActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.InfoActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.MainHelpActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Objects.BluetoothDeviceData;
+import com.adafruit.bluefruit.le.BLEcom.app.Main.Packets.PacketUtils;
+import com.adafruit.bluefruit.le.BLEcom.app.PinIOActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.UartActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.UartInterfaceActivity;
+import com.adafruit.bluefruit.le.BLEcom.app.UriBeaconUtils;
 import com.adafruit.bluefruit.le.BLEcom.app.neopixel.NeopixelActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.settings.SettingsActivity;
 import com.adafruit.bluefruit.le.BLEcom.app.update.FirmwareUpdater;
@@ -221,7 +224,7 @@ public class MainActivity extends UartInterfaceActivity implements
                 Intent intent = new Intent(MainActivity.this, TerminalActivity2.class);
         startActivityForResult(intent, 2);
 //
-//        Intent intent = new Intent(MainActivity.this, AndroidClient.class);
+//        Intent intent = new Intent(MainActivity.this, SocketActivity.class);
 //        startActivityForResult(intent, 2);
 
 
@@ -300,7 +303,7 @@ public class MainActivity extends UartInterfaceActivity implements
         androidClient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AndroidClient.class);
+                Intent intent = new Intent(MainActivity.this, SocketActivity.class);
                 startActivityForResult(intent, 2);
             }
         });
@@ -964,7 +967,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     private void connect(BluetoothDeviceData datum) {
         BluetoothDevice device = datum.device;
-        boolean isConnecting = mBleManager.connect(this, device.getAddress());
+        boolean isConnecting = mBleManager.connect(this, datum);
         Log.d(TAG, "device.getAddress() is"+device.getAddress());
         if (isConnecting) {
             showConnectionStatus(true);
@@ -975,7 +978,7 @@ public class MainActivity extends UartInterfaceActivity implements
             addConnectedDeviceData(datum); // Add it if it's connecting or connected
             datum.isConnected = true;
             updateUI(); // need to update the connection button
-            start(); // start this "background service" one a device is connected.
+            listenForDeadConnections(); // listenForDeadConnections this "background service" one a device is connected.
             //onServicesDiscovered();
 //
 //            super.onServicesDiscovered();
@@ -991,7 +994,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     }
 
-    private void start(){
+    private void listenForDeadConnections(){ // TODO listenForDeadConnections()
 
         if(mHandler == null) mHandler = new Handler();
 
@@ -1000,16 +1003,34 @@ public class MainActivity extends UartInterfaceActivity implements
             public void run() {
                 //Log.v(TAG,"Executing message");
                 removeDeadConnectionsAndUpdateUi();
-                if(connectedDeviceData.size() > 0) start(); // Stops calling itself when the connected devices list is size zero
+                if(connectedDeviceData.size() > 0) listenForDeadConnections(); // Stops calling itself when the connected devices list is size zero
             }
         }, 2000);
     }
 
     private void removeDeadConnectionsAndUpdateUi(){
+
+        Iterator<BluetoothDeviceData> itDatum = BleManager.myConnectedDeviceData.iterator();
+        while(itDatum.hasNext()){
+            BluetoothDeviceData datum = itDatum.next();
+            BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+            BleManager.getInstance().mGatt = datum.connection;
+            if(BleManager.getConnectionState() == 0){
+                Log.v(TAG,"Connections states of "+datum.device.getAddress()+"is "+String.valueOf(BleManager.getConnectionState() ));
+                datum.isConnected = false;
+                //datum.selectedForTransmit = false;
+                removeDataFromList(datum.device.getAddress(),mScannedDevices);
+                itDatum.remove();
+                updateUI();
+            }
+            BleManager.getInstance().mGatt = oldGatt;
+        }
+
+        /**
         Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
         while(itData.hasNext()){
-            MainActivity.BluetoothDeviceData data = itData.next();
+            BluetoothDeviceData data = itData.next();
             while(itGatt.hasNext()){
                 BluetoothGatt gatt = itGatt.next();
                 //Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
@@ -1033,7 +1054,7 @@ public class MainActivity extends UartInterfaceActivity implements
                 }
 
             }
-        }
+        }**/
     }
 
     private void addConnectedDeviceData(BluetoothDeviceData datum){
@@ -1106,7 +1127,7 @@ public class MainActivity extends UartInterfaceActivity implements
         // Set the title on the builder
         // Set list items
         // Pass in an event listener to be set on items
-        // Set the component activity to start
+        // Set the component activity to listenForDeadConnections
         builder.setTitle(title)
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -1233,7 +1254,7 @@ public class MainActivity extends UartInterfaceActivity implements
             });
 
             // Start scanning
-            Log.v(TAG,"mScanner.start()");
+            Log.v(TAG,"mScanner.listenForDeadConnections()");
             mScanner.start(this);
         }
 
@@ -1257,7 +1278,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     private void ifDisconnectedRemove(){
         Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<MainActivity.BluetoothDeviceData> itData = connectedDeviceData.iterator();
+        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
         while(itData.hasNext()){
             BluetoothDeviceData data = itData.next();
             while(itGatt.hasNext()){
@@ -1289,7 +1310,10 @@ public class MainActivity extends UartInterfaceActivity implements
         Iterator<BluetoothDeviceData> it = arrayList.iterator();
         while(it.hasNext()) {
             BluetoothDeviceData mData = it.next();
-            if(mData.device.getAddress() == address) it.remove();
+            if(mData.device.getAddress().equals(address)) {
+                Log.v(TAG,"mData.device.getAddress() remove was "+String.valueOf(mData.device.getAddress() ));
+                it.remove();
+            }
         }
     }
 
@@ -1728,67 +1752,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
     // region Helpers
     // TODO BluetoothDeviceData class
-    public class BluetoothDeviceData {
 
-        /**
-         * BluetoothDevice represents a remote Bluetooth device. A BluetoothDevice lets you create a connection with
-         * the respective device or query information about it, such as the name, address, class,
-         * and bonding state. This class is really just a thin wrapper for a Bluetooth hardware
-         * address. Objects of this class are immutable. Operations on this class are performed on
-         * the remote Bluetooth hardware address, using the BluetoothAdapter that was used to create
-         * this BluetoothDevice. To get a BluetoothDevice, use BluetoothAdapter.getRemoteDevice(String)
-         * to create one representing a device of a known MAC address (which you can get through
-         * device discovery with BluetoothAdapter) or get one from the set of bonded devices
-         * returned by BluetoothAdapter.getBondedDevices(). You can then open a BluetoothSocket for
-         * communication with the remote device, using createRfcommSocketToServiceRecord(UUID).
-         */
-        public BluetoothDevice device;
-
-        public int rssi; // RSSI (Received Signal Strength Indicator) is a common name for the
-                         // signal strength in a wireless network environment. It is a measure of
-                         // the power level that a RF client device is receiving from an access
-                         // point, for example.
-        byte[] scanRecord;
-        private String advertisedName;           // Advertised name
-        private String cachedNiceName;
-        private String cachedName;
-
-        // Decoded scan record (update R.array.scan_devicetypes if this list is modified)
-        static final int kType_Unknown = 0;
-        static final int kType_Uart = 1;
-        static final int kType_Beacon = 2;
-        static final int kType_UriBeacon = 3;
-
-        // Michael's variables
-        public boolean isConnected = false;
-
-        public int type;
-        int txPower;
-        ArrayList<UUID> uuids;
-
-        String getName() {
-            if (cachedName == null) {
-                cachedName = device.getName();
-                if (cachedName == null) {
-                    cachedName = advertisedName;      // Try to get a name (but it seems that if
-                                                    // device.getName() is null, this is also null)
-                }
-            }
-
-            return cachedName;
-        }
-
-        String getNiceName() {
-            if (cachedNiceName == null) {
-                cachedNiceName = getName();
-                if (cachedNiceName == null) {
-                    cachedNiceName = device.getAddress();
-                }
-            }
-
-            return cachedNiceName;
-        }
-    }
     //endregion
 
     // region Peripheral List
