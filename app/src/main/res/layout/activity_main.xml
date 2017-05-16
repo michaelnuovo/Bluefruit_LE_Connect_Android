@@ -292,6 +292,13 @@
                     android:layout_height="match_parent"
                     android:text="Sensor Data"/>
 
+                <Button
+                    android:id="@+id/patternsActivity"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:text="PATTERNS"/>
+
             </LinearLayout>
 
 

@@ -186,7 +186,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         ByteBuffer buffer = ByteBuffer.allocate(3 + 3 * 1).order(java.nio.ByteOrder.LITTLE_ENDIAN);
 
 
-        //  PAL_1
+        //  PACK_PAL_1
         buffer.put((byte) PacketUtils.DELIMTER_ONE);
         buffer.put((byte) PacketUtils.DELIMTER_TWO);
         buffer.put((byte) PacketUtils.PacketTypes.PAL_1.ordinal()); // Pushes bytes to the array
@@ -194,7 +194,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         buffer.put(g);
         buffer.put(b);
 
-        //  PAL_2
+        //  PACK_PAL_2
         buffer.put((byte) PacketUtils.DELIMTER_ONE);
         buffer.put((byte) PacketUtils.DELIMTER_TWO);
         buffer.put((byte) (byte) PacketUtils.PacketTypes.PAL_2.ordinal()); // Pushes bytes to the array
@@ -205,7 +205,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         buffer.put(g1);
         buffer.put(b1);
 
-        //  PAL_4
+        //  PACK_PAL_4
         buffer.put((byte) PacketUtils.DELIMTER_ONE);
         buffer.put((byte) PacketUtils.DELIMTER_TWO);
         buffer.put((byte) PacketUtils.PacketTypes.PAL_4.ordinal()); // Pushes bytes to the array
@@ -222,7 +222,7 @@ public class ColorPickerActivity extends UartInterfaceActivity implements ColorP
         buffer.put(g1);
         buffer.put(b1);
 
-        //  PAL_8
+        //  PACK_PAL_8
         buffer.put((byte) PacketUtils.DELIMTER_ONE);
         buffer.put((byte) PacketUtils.DELIMTER_TWO);
         buffer.put((byte) PacketUtils.PacketTypes.PAL_8.ordinal()); // Pushes bytes to the array

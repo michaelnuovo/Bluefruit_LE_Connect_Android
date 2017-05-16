@@ -89,41 +89,6 @@ public class BleDevicesScanner {
 
     }
 
-    private void ifDisconnected(MainActivity main){
-        Log.v(TAG,"ifDisconnected");
-        // Remove devices from scanned devices data list that have disconnected GATT servers, maybe device went out of range ect.
-        // We might as well remove the GATT server from the gat server list
-        // We have to use an iterator to remove elements or we can get a concurrent modification error.
-
-        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
-        while(itData.hasNext()){
-            BluetoothDeviceData data = itData.next();
-            while(itGatt.hasNext()){
-                BluetoothGatt gatt = itGatt.next();
-                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
-                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
-                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
-                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
-                    BleManager.getInstance().mGatt = gatt;
-                    Log.v(TAG,"Addresses match");
-                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
-                    if(BleManager.getConnectionState() == 0){
-                        itData.remove();
-                        itGatt.remove();
-                        Log.v(TAG,"Removed device data and gat server");
-                        main.removeDataFromList(data.device.getAddress(),main.mScannedDevices);
-                        data.isConnected = false;
-                        main.updateUI();
-                    }
-                    BleManager.getInstance().mGatt = oldGatt;
-                } else {
-                    Log.v(TAG,"Addresses do not match");
-                }
-
-            }
-        }
-    }
 
     public void stop() {
         if (mIsScanning) {

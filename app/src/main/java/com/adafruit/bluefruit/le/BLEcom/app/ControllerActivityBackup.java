@@ -365,7 +365,7 @@ public class ControllerActivityBackup extends UartInterfaceActivity implements S
                     (byte) PacketUtils.PacketTypes.ACCEL.ordinal(),
                     (byte) PacketUtils.PacketTypes.GYRO.ordinal(),
                     (byte) PacketUtils.PacketTypes.MAG.ordinal(),
-                    (byte) PacketUtils.PacketTypes.MAG.ordinal(), // We don't have a location enum, so lets use MAG
+                    (byte) PacketUtils.PacketTypes.MAG.ordinal(), // We don't have a location enum, so lets use PACK_MAG
             };     // same order that kSensorType, G
 
             // G is gyro

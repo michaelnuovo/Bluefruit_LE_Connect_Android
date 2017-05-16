@@ -16,7 +16,7 @@ import java.util.UUID;
 public class BluetoothDeviceData {
 
     // Michael's variables
-    public boolean isConnected = false;
+    public int mConnectionState = 0;
     public boolean selectedForTransmit = false;
     public BluetoothGatt connection = null;
 

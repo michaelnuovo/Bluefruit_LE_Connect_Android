@@ -69,15 +69,15 @@ public class UartInterfaceActivity extends AppCompatActivity implements BleManag
                 Log.w(TAG, "Uart Service not discovered, or selectedForTransmit set to false");
             }
 
-            if (mUartService != null) {
-                // Split the value into chunks (UART service has a maximum number of characters that can be written )
-                for (int i = 0; i < data.length; i += kTxMaxCharacters) {
-                    final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
-                    mBleManager.writeService(mUartService, UUID_TX, chunk);
-                }
-            } else {
-                Log.w(TAG, "Uart Service not discovered. Unable to send data");
-            }
+//            if (mUartService != null) {
+//                // Split the value into chunks (UART service has a maximum number of characters that can be written )
+//                for (int i = 0; i < data.length; i += kTxMaxCharacters) {
+//                    final byte[] chunk = Arrays.copyOfRange(data, i, Math.min(i + kTxMaxCharacters, data.length));
+//                    mBleManager.writeService(mUartService, UUID_TX, chunk);
+//                }
+//            } else {
+//                Log.w(TAG, "Uart Service not discovered. Unable to send data");
+//            }
 
 
 

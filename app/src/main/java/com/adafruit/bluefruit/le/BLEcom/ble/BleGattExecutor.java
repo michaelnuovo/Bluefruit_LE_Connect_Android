@@ -163,6 +163,7 @@ class BleGattExecutor extends BluetoothGattCallback {
 
 
     void write(BluetoothGattService gattService, String uuid, byte[] value) {
+        Log.v(TAG,"Write action queued");
         ServiceAction action = serviceWriteAction(gattService, uuid, value);
         mQueue.add(action);
     }

@@ -169,6 +169,7 @@ public class MainActivity extends UartInterfaceActivity implements
     private Button userCommands;
     private Button androidClient;
     private Button sensorData;
+    private Button patternPicker;
 
     private Switch mConnectButton;
 
@@ -259,6 +260,7 @@ public class MainActivity extends UartInterfaceActivity implements
         userCommands = (Button) findViewById(R.id.userCommands);
         androidClient = (Button) findViewById(R.id.androidClient);
         sensorData = (Button) findViewById(R.id.sensorData);
+        patternPicker = (Button) findViewById(R.id.patternsActivity);
 
         p1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +314,14 @@ public class MainActivity extends UartInterfaceActivity implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SensorDataActivity.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        patternPicker.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, PatternPickerActivity.class);
                 startActivityForResult(intent, 2);
             }
         });
@@ -944,24 +954,24 @@ public class MainActivity extends UartInterfaceActivity implements
     public void onClickDeviceDisconnect(int scannedDeviceIndex){
         Log.v(TAG,"Disconnecting device");
         ArrayList<BluetoothDeviceData> filteredPeripherals = mPeripheralList.filteredPeripherals(false);
-        BluetoothDeviceData mDeselectedDeviceData = filteredPeripherals.get(scannedDeviceIndex);
-        BluetoothDevice device = mDeselectedDeviceData.device;
+        BluetoothDeviceData deviceToDisconnect = filteredPeripherals.get(scannedDeviceIndex);
+        BluetoothDevice device = deviceToDisconnect.device;
 //        for(BluetoothGatt gatt : BleManager.getInstance().myGattConnections)
 //            if(device.getAddress() == gatt.getDevice().getAddress()){
 //                gatt.close();
 //                BleManager.getInstance().myGattConnections.remove(gatt);
 //            }
-        Iterator<BluetoothGatt> it = BleManager.getInstance().myGattConnections.iterator();
+        Iterator<BluetoothDeviceData> it = BleManager.myConnectedDeviceData.iterator();
         while (it.hasNext()) {
-            BluetoothGatt gatt = it.next();
-            if(gatt.getDevice().getAddress().equals(device.getAddress())){
-                gatt.close();
+            BluetoothDeviceData data = it.next();
+            if(data.device.getAddress().equals(device.getAddress())){
+                data.connection.close();
                 it.remove();
                 Log.v(TAG,"GATT connection closed");
             }
         }
-        mDeselectedDeviceData.isConnected = false;
-        connectedDeviceData.remove(mDeselectedDeviceData);
+        //deviceToDisconnect.mConnectionState = 2;
+        //connectedDeviceData.remove(deviceToDisconnect);
         updateUI();
     }
 
@@ -976,7 +986,7 @@ public class MainActivity extends UartInterfaceActivity implements
 
         if(BleManager.getConnectionState() > 0) {
             addConnectedDeviceData(datum); // Add it if it's connecting or connected
-            datum.isConnected = true;
+            datum.mConnectionState = 2;
             updateUI(); // need to update the connection button
             listenForDeadConnections(); // listenForDeadConnections this "background service" one a device is connected.
             //onServicesDiscovered();
@@ -1013,17 +1023,15 @@ public class MainActivity extends UartInterfaceActivity implements
         Iterator<BluetoothDeviceData> itDatum = BleManager.myConnectedDeviceData.iterator();
         while(itDatum.hasNext()){
             BluetoothDeviceData datum = itDatum.next();
-            BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
-            BleManager.getInstance().mGatt = datum.connection;
-            if(BleManager.getConnectionState() == 0){
+            //BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
+           // BleManager.getInstance().mGatt = datum.connection;
+            if(datum.mConnectionState == 0){
                 Log.v(TAG,"Connections states of "+datum.device.getAddress()+"is "+String.valueOf(BleManager.getConnectionState() ));
-                datum.isConnected = false;
-                //datum.selectedForTransmit = false;
                 removeDataFromList(datum.device.getAddress(),mScannedDevices);
                 itDatum.remove();
                 updateUI();
             }
-            BleManager.getInstance().mGatt = oldGatt;
+           // BleManager.getInstance().mGatt = oldGatt;
         }
 
         /**
@@ -1058,7 +1066,7 @@ public class MainActivity extends UartInterfaceActivity implements
     }
 
     private void addConnectedDeviceData(BluetoothDeviceData datum){
-        datum.isConnected = true; // Set toggle state to true
+        datum.mConnectionState = 2; // Set toggle state to true
         connectedDeviceData.add(datum); // Add device data to list of connected device data
         Log.v(TAG,"Adding connected device from connected devices list");
         Log.v(TAG,"Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
@@ -1259,14 +1267,10 @@ public class MainActivity extends UartInterfaceActivity implements
         }
 
         // Adds to the display list devices that are connected (not broadcast)
-        for(BluetoothDeviceData datum : connectedDeviceData) {
-            //if(!mScannedDevices.contains(datum)){
-            // We should only add the old connection once
-            //datum.isConnected = true; // isConnected determines the toggle state of the connected button in the adapter
+        for(BluetoothDeviceData datum : BleManager.myConnectedDeviceData) {
             mScannedDevices.add(datum);
             Log.v(TAG, "Added connected device to scanned devices list");
             Log.v(TAG, "Connected devices list has " + String.valueOf(connectedDeviceData.size()) + " devices");
-            //}
         }
 
 
@@ -1276,35 +1280,6 @@ public class MainActivity extends UartInterfaceActivity implements
         updateUI();
     }
 
-    private void ifDisconnectedRemove(){
-        Iterator<BluetoothGatt> itGatt = BleManager.getInstance().myGattConnections.iterator();
-        Iterator<BluetoothDeviceData> itData = connectedDeviceData.iterator();
-        while(itData.hasNext()){
-            BluetoothDeviceData data = itData.next();
-            while(itGatt.hasNext()){
-                BluetoothGatt gatt = itGatt.next();
-                Log.v(TAG,"Addresses is "+data.device.getAddress().toString());
-                Log.v(TAG,"gatt.getDevice().getAddress() is "+gatt.getDevice().getAddress().toString());
-                if(data.device.getAddress().equals(gatt.getDevice().getAddress())){
-                    BluetoothGatt oldGatt = BleManager.getInstance().mGatt;
-                    BleManager.getInstance().mGatt = gatt;
-                    Log.v(TAG,"Addresses match");
-                    Log.v(TAG,"BleManager.getConnectionState is "+String.valueOf(BleManager.getConnectionState()));
-                    if(BleManager.getConnectionState() == 0){
-                        itData.remove();
-                        itGatt.remove();
-                        Log.v(TAG,"Removed device data and gat server");
-                        removeDataFromList(data.device.getAddress(),mScannedDevices);
-                        data.isConnected = false;
-                    }
-                    BleManager.getInstance().mGatt = oldGatt;
-                } else {
-                    Log.v(TAG,"Addresses do not match");
-                }
-
-            }
-        }
-    }
 
     public void removeDataFromList(String address, ArrayList<BluetoothDeviceData> arrayList){
         Iterator<BluetoothDeviceData> it = arrayList.iterator();
@@ -1317,22 +1292,6 @@ public class MainActivity extends UartInterfaceActivity implements
         }
     }
 
-    private void addConnectedDeviceToScannedDevicesList(int rssi, byte[] scanRecord){
-        // We need to add the connected devices to the list.
-        // As soon as a peripheral connects to a central device, it will stop
-        // advertising itself and other devices will no longer be able to see it or
-        // connect to it until the existing connection is broken.
-        HashSet<BluetoothDevice> devices = BleManager.getInstance().myConnectedDevices;
-        for(BluetoothDevice device : devices) {
-
-            BluetoothDeviceData deviceData = new BluetoothDeviceData();
-            deviceData.device = device;
-            deviceData.rssi = rssi;
-            deviceData.scanRecord = scanRecord;
-            decodeScanRecords(deviceData);
-            mScannedDevices.add(deviceData);
-        }
-    }
 
 
     public void stopScanning() {
@@ -2212,14 +2171,16 @@ public class MainActivity extends UartInterfaceActivity implements
             //mSelectedDeviceData = mFilteredPeripherals.get(groupPosition);
             final BluetoothDeviceData deviceData = mFilteredPeripherals.get(groupPosition);
 
-            holder.connectButton.setChecked(deviceData.isConnected);
+            boolean buttonState;
+            buttonState = (deviceData.mConnectionState == 2) ? true : false;
+            holder.connectButton.setChecked(buttonState);
 
             myView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     // connect
-                    if(deviceData.isConnected == false){
+                    if(deviceData.mConnectionState == 0){
 
                         onClickDeviceConnect(groupPosition); // Connect to the ble device
 

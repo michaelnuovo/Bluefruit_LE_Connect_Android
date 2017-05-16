@@ -50,8 +50,8 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
     private BleManagerListener mBleListener;
 
     // Michael's variables
-    public HashSet<BluetoothGatt> myGattConnections = new HashSet<>();
-    public HashSet<BluetoothDevice> myConnectedDevices = new HashSet<>();
+    //public HashSet<BluetoothGatt> myGattConnections = new HashSet<>();
+    //public HashSet<BluetoothDevice> myConnectedDevices = new HashSet<>();
 
 
     public static ArrayList<BluetoothDeviceData> myConnectedDeviceData = new ArrayList<>();
@@ -172,11 +172,11 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
         Log.v("TAG","Value of mExecutor is "+mExecutor);
         mGatt = mDevice.connectGatt(context, false, mExecutor); // https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#connectGatt(android.content.Context, boolean, android.bluetooth.BluetoothGattCallback)
         Log.v(TAG,"was that gatt service already added");
-        boolean alreadyAdded = alreadyAdded(mGatt, myGattConnections);
-        if (!alreadyAdded) myGattConnections.add(mGatt); // Add it only if it's not already contained in the set
+        //boolean alreadyAdded = alreadyAdded(mGatt, myGattConnections);
+        //if (!alreadyAdded) myGattConnections.add(mGatt); // Add it only if it's not already contained in the set
 
         datum.connection = mGatt;
-        datum.isConnected = true;
+        datum.mConnectionState = STATE_CONNECTED;
         datum.selectedForTransmit = true;
         myConnectedDeviceData.add(datum);
 
@@ -452,17 +452,40 @@ public class BleManager implements BleGattExecutor.BleExecutorListener {
             // Attempts to discover services after successful connection.
             gatt.discoverServices();
 
+            String address = gatt.getDevice().getAddress();
+            for(BluetoothDeviceData data : myConnectedDeviceData){
+                if(address.equals(data.device.getAddress())){
+                    data.mConnectionState = STATE_CONNECTED;
+                }
+            }
+
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             mConnectionState = STATE_DISCONNECTED;
 
             if (mBleListener != null) {
                 mBleListener.onDisconnected();
             }
+
+            String address = gatt.getDevice().getAddress();
+            for(BluetoothDeviceData data : myConnectedDeviceData){
+                if(address.equals(data.device.getAddress())){
+                    data.mConnectionState = STATE_DISCONNECTED;
+                }
+            }
+
+
         } else if (newState == BluetoothProfile.STATE_CONNECTING) {
             mConnectionState = STATE_CONNECTING;
 
             if (mBleListener != null) {
                 mBleListener.onConnecting();
+            }
+
+            String address = gatt.getDevice().getAddress();
+            for(BluetoothDeviceData data : myConnectedDeviceData){
+                if(address.equals(data.device.getAddress())){
+                    data.mConnectionState = STATE_CONNECTING;
+                }
             }
         }
     }

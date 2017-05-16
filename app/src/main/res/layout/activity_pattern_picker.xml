@@ -1,0 +1,108 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".app.Main.Activities.MainActivity"
+    android:background="@drawable/default_background"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            >
+            <TextView
+                android:id="@+id/patIdVal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="ID"
+                android:textSize="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
+                android:padding="10dp"/>
+            <SeekBar
+                android:id="@+id/patId"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="10dp" />
+            <TextView
+                android:id="@+id/patSecVal"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="SECONDS"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
+                android:padding="10dp"/>
+            <SeekBar
+                android:id="@+id/patSec"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="10dp" />
+            <TextView
+                android:id="@+id/gammaVal"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="GAMMA"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
+                android:padding="10dp"/>
+            <SeekBar
+                android:id="@+id/gamma"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="10dp"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- send button -->
+        <Button
+            android:id="@+id/randomizeButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:onClick="onClickSend"
+            android:text="@string/randomize_palette" />
+
+        <!-- send button -->
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:onClick="onClickSend"
+            android:layout_weight="1"
+            android:text="@string/send_palette" />
+
+    </LinearLayout>
+
+</LinearLayout>

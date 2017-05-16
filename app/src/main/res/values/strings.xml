@@ -436,6 +436,7 @@
     <string name="randomize_palette">Randomize</string>
     <string name="title_activity_anroid_client">AnroidClient</string>
     <string name="title_activity_android_client">AndroidClient</string>
+    <string name="title_activity_pattern_picker">PatternPickerActivity</string>
 
     randomize_palette
 

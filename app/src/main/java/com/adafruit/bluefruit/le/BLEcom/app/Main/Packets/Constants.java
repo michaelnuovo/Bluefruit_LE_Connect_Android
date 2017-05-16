@@ -11,22 +11,26 @@ public class Constants {
     static public final int DELIMTER_ONE = 0xAA;
     static public final int DELIMTER_TWO = 0x55;
 
+    static public final int PATTERN_MAX = 14;
+    static public final int SECONDS_MAX = 99;
+    static public final int GAMMA_MAX = 8;
 
     static public boolean turnLEDSOffAfterSendingPallet = false;
 
     public enum PacketTypes {
-        NONE,//0
+        NO_COMMAND,//0
         USER_COMMAND,//1
-        ACCEL,//2
-        GYRO,//3
-        MAG,//4
-        QUAT,//5
-        GPS,//6
-        BUTTONS,//7
-        PAL_1,//8
-        PAL_2,//9
-        PAL_4,//10
-        PAL_8//11
+        PACK_ACCEL,//2
+        PACK_GYRO,//3
+        PACK_MAG,//4
+        PACK_QUAT,//5
+        PACK_GPS,//6
+        PACK_BUTTONS,//7
+        PACK_PAL_1,//8
+        PACK_PAL_2,//9
+        PACK_PAL_4,//10
+        PACK_PAL_8,//11
+        PACK_PAT,
+        COMMAND_END
     }
-
 }

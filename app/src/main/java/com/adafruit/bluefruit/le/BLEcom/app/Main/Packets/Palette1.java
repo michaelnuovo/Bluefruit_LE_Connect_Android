@@ -18,7 +18,7 @@ public class Palette1 extends PaletteBaseClass {
         buffer.put((byte) Constants.DELIMTER_TWO);
 
         // Add ID
-        buffer.put((byte) Constants.PacketTypes.PAL_1.ordinal());
+        buffer.put((byte) Constants.PacketTypes.PACK_PAL_1.ordinal());
 
         // Add RGBs
         buffer.put((byte) Color.red(color));
