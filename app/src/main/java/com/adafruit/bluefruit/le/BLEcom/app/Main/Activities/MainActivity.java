@@ -40,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -966,6 +967,7 @@ public class MainActivity extends UartInterfaceActivity implements
             BluetoothDeviceData data = it.next();
             if(data.device.getAddress().equals(device.getAddress())){
                 data.connection.close();
+                mScannedDevices.remove(deviceToDisconnect);
                 it.remove();
                 Log.v(TAG,"GATT connection closed");
             }
@@ -2175,14 +2177,37 @@ public class MainActivity extends UartInterfaceActivity implements
             buttonState = (deviceData.mConnectionState == 2) ? true : false;
             holder.connectButton.setChecked(buttonState);
 
+
+
+            // onLongClick() - This returns a boolean to indicate whether you have consumed the
+            // event and it should not be carried further. That is, return true to indicate that you
+            // have handled the event and it should stop here; return false if you have not handled
+            // it and/or the event should continue to any other on-click listeners.
+            myView.setOnLongClickListener(new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View v) {
+
+                    Log.v(TAG,"Long press");
+
+                    return true;
+                }
+            });
+
             myView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    Log.v(TAG,"on click");
+
 
                     // connect
                     if(deviceData.mConnectionState == 0){
 
                         onClickDeviceConnect(groupPosition); // Connect to the ble device
+
+                        Intent intent = new Intent(MainActivity.this, ServerInfoActivity.class);
+                        startActivity(intent);
 
                     // disconnect
                     } else {

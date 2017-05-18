@@ -5,4 +5,6 @@ package com.adafruit.bluefruit.le.BLEcom.app.Main.Adapters;
  */
 
 public class ExpandableListAdapter {
+
+
 }

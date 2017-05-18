@@ -239,6 +239,11 @@
             android:name=".app.Main.Activities.PatternPickerActivity"
             android:label="@string/title_activity_pattern_picker"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".app.Main.Activities.ServerInfoActivity"
+            android:label="@string/title_activity_server_info"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

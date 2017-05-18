@@ -437,6 +437,7 @@
     <string name="title_activity_anroid_client">AnroidClient</string>
     <string name="title_activity_android_client">AndroidClient</string>
     <string name="title_activity_pattern_picker">PatternPickerActivity</string>
+    <string name="title_activity_server_info">ServerInfoActivity</string>
 
     randomize_palette
 
